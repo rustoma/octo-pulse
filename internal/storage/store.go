@@ -1,4 +1,5 @@
 package storage
 
-type Storage interface {
+type Store struct {
+	User UserStore
 }
