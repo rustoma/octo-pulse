@@ -8,7 +8,7 @@ import (
 	"github.com/rustoma/octo-pulse/internal/utils"
 )
 
-func NewLogger() (*zerolog.Logger, *os.File, error) {
+func NewLogger() (*zerolog.Logger, *os.File) {
 	var (
 		logger zerolog.Logger
 	)
@@ -22,7 +22,7 @@ func NewLogger() (*zerolog.Logger, *os.File, error) {
 	)
 
 	if err != nil {
-		return nil, nil, err
+		panic(err)
 	}
 
 	if utils.IsProdDev() {
@@ -31,5 +31,5 @@ func NewLogger() (*zerolog.Logger, *os.File, error) {
 		logger = log.Logger
 	}
 
-	return &logger, file, nil
+	return &logger, file
 }

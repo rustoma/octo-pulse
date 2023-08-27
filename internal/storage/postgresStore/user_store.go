@@ -4,19 +4,16 @@ import (
 	"context"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/rustoma/octo-pulse/internal/app"
 	"github.com/rustoma/octo-pulse/internal/models"
 )
 
 type PostgressUserStore struct {
-	ctx *app.Ctx
-	DB  *pgxpool.Pool
+	DB *pgxpool.Pool
 }
 
-func NewUserStore(ctx *app.Ctx, DB *pgxpool.Pool) *PostgressUserStore {
+func NewUserStore(DB *pgxpool.Pool) *PostgressUserStore {
 	return &PostgressUserStore{
-		ctx: ctx,
-		DB:  DB,
+		DB: DB,
 	}
 }
 
