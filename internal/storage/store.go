@@ -3,7 +3,7 @@ package storage
 import (
 	"context"
 
-	"github.com/rustoma/octo-pulse/internal/model"
+	"github.com/rustoma/octo-pulse/internal/models"
 )
 
 type Store struct {
@@ -11,5 +11,5 @@ type Store struct {
 }
 
 type UserStore interface {
-	GetUserByID(context.Context, int) (*model.User, error)
+	GetUserByID(context.Context, int) (*models.User, error)
 }

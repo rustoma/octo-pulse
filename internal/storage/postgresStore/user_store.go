@@ -3,7 +3,7 @@ package postgresstore
 import (
 	"context"
 
-	"github.com/rustoma/octo-pulse/internal/model"
+	"github.com/rustoma/octo-pulse/internal/models"
 )
 
 type PostgressUserStore struct{}
@@ -12,6 +12,6 @@ func newUserStore() *PostgressUserStore {
 	return &PostgressUserStore{}
 }
 
-func (u *PostgressUserStore) GetUserByID(context.Context, int) (*model.User, error) {
-	return &model.User{ID: 1}, nil
+func (u *PostgressUserStore) GetUserByID(context.Context, int) (*models.User, error) {
+	return &models.User{ID: 1}, nil
 }

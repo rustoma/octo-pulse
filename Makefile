@@ -7,7 +7,7 @@ run: build
 	@./bin/api
 
 seed:
-	@go run internal/cripts/seed.go
+	@go run internal/scripts/seed.go
 
 test:
 	@go test -v ./...

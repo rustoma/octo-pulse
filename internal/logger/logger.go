@@ -8,11 +8,11 @@ import (
 	"github.com/rustoma/octo-pulse/internal/utils"
 )
 
-var (
-	Logger zerolog.Logger
-)
+func NewLogger() (*zerolog.Logger, *os.File, error) {
+	var (
+		logger zerolog.Logger
+	)
 
-func InitLogger() (*os.File, error) {
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 
 	file, err := os.OpenFile(
@@ -22,14 +22,14 @@ func InitLogger() (*os.File, error) {
 	)
 
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	if utils.IsProdDev() {
-		Logger = zerolog.New(file).With().Timestamp().Logger()
+		logger = zerolog.New(file).With().Timestamp().Logger()
 	} else {
-		Logger = log.Logger
+		logger = log.Logger
 	}
 
-	return file, nil
+	return &logger, file, nil
 }
