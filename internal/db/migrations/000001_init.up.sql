@@ -60,8 +60,8 @@ CREATE TABLE "Article" (
     "description" TEXT,
     "image_url" TEXT,
     "publication_date" TIMESTAMP(3),
-    "creation_date" TIMESTAMP(3) NOT NULL,
-    "author_id" INTEGER NOT NULL,
+    "is_published" BOOLEAN NOT NULL DEFAULT false,
+    "author_id" INTEGER,
     "category_id" INTEGER NOT NULL,
     "domain_id" INTEGER NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -83,7 +83,7 @@ CREATE UNIQUE INDEX "Category_category_name_key" ON "Category"("category_name");
 ALTER TABLE "User" ADD CONSTRAINT "User_role_id_fkey" FOREIGN KEY ("role_id") REFERENCES "Role"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Article" ADD CONSTRAINT "Article_author_id_fkey" FOREIGN KEY ("author_id") REFERENCES "Author"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Article" ADD CONSTRAINT "Article_author_id_fkey" FOREIGN KEY ("author_id") REFERENCES "Author"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Article" ADD CONSTRAINT "Article_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES "Category"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
