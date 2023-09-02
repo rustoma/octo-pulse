@@ -14,7 +14,6 @@ import (
 	lr "github.com/rustoma/octo-pulse/internal/logger"
 	"github.com/rustoma/octo-pulse/internal/routes"
 	"github.com/rustoma/octo-pulse/internal/services"
-	"github.com/rustoma/octo-pulse/internal/storage"
 	postgresstore "github.com/rustoma/octo-pulse/internal/storage/postgresStore"
 )
 
@@ -34,9 +33,7 @@ func main() {
 	var (
 		//Storage
 		userStore = postgresstore.NewUserStore(dbpool)
-		store     = &storage.Store{
-			User: userStore,
-		}
+		store     = postgresstore.NewPostgresStorage(dbpool)
 		//Services
 		authService = services.NewAuthService(userStore)
 		//Controllers
@@ -59,10 +56,10 @@ func main() {
 func init() {
 
 	//Init logger
-	l, logFile := lr.NewLogger()
+	l, lFile := lr.NewLogger()
 	defer logFile.Close()
 	logger = l
-	logFile = logFile
+	logFile = lFile
 
 	//Init .env
 	if err := godotenv.Load(filepath.Join(".", ".env")); err != nil {
