@@ -21,6 +21,15 @@ type AuthService interface {
 	Login(*dto.AuthLogin) (*dto.AuthUser, *http.Cookie, error)
 	Logout(*dto.LogoutRequest) (*http.Cookie, error)
 	RefreshToken(refreshTokenRequest *dto.RefreshTokenRequest) (string, error)
+	CheckPassword(password string, hashedPassword string) error
+	HashPassword(password string) (string, error)
+	bearerToken(r *http.Request, header string) (string, error)
+	isJWTTokenValid(tokenString string, validRoles ...int) error
+	validateUserRoles(userRoles []int, validRoles []int) error
+	parseToken(jwtString string) (*jwt.Token, error)
+	generateJWTToken(claims JWTClaims) (string, error)
+	createTokenExpirationTimeForJWTRefreshToken() *jwt.NumericDate
+	createTokenExpirationTimeForJWTToken() *jwt.NumericDate
 }
 
 type authService struct {
@@ -45,7 +54,7 @@ func (a *authService) Login(userCredentials *dto.AuthLogin) (*dto.AuthUser, *htt
 		return nil, nil, api.Error{Err: "user not found", Status: http.StatusBadRequest}
 	}
 
-	err = checkPassword(userCredentials.Password, user.Password)
+	err = a.CheckPassword(userCredentials.Password, user.PasswordHash)
 
 	if err != nil {
 		return nil, nil, api.Error{Err: "bad user password", Status: http.StatusBadRequest}
@@ -55,7 +64,7 @@ func (a *authService) Login(userCredentials *dto.AuthLogin) (*dto.AuthUser, *htt
 		Email: userCredentials.Email,
 		Roles: []int{},
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: createTokenExpirationTimeForJWTToken(),
+			ExpiresAt: a.createTokenExpirationTimeForJWTToken(),
 			Issuer:    os.Getenv("SERVER_IP"),
 			IssuedAt:  &jwt.NumericDate{Time: time.Now().UTC()},
 		},
@@ -65,14 +74,14 @@ func (a *authService) Login(userCredentials *dto.AuthLogin) (*dto.AuthUser, *htt
 		Email: userCredentials.Email,
 		Roles: []int{},
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: createTokenExpirationTimeForJWTRefreshToken(),
+			ExpiresAt: a.createTokenExpirationTimeForJWTRefreshToken(),
 			Issuer:    os.Getenv("SERVER_IP"),
 			IssuedAt:  &jwt.NumericDate{Time: time.Now().UTC()},
 		},
 	}
 
-	encodedJWT, _ := generateJWTToken(JWTTokenClaims)
-	encodedRefreshToken, _ := generateJWTToken(refreshTokenClaims)
+	encodedJWT, _ := a.generateJWTToken(JWTTokenClaims)
+	encodedRefreshToken, _ := a.generateJWTToken(refreshTokenClaims)
 
 	_, err = a.userStore.UpdateRefreshToken(user.ID, encodedRefreshToken)
 
@@ -128,7 +137,7 @@ func (a *authService) RefreshToken(refreshTokenRequest *dto.RefreshTokenRequest)
 		return "", api.Error{Err: "user not found", Status: http.StatusUnauthorized}
 	}
 
-	token, err := parseToken(refreshTokenRequest.RefreshToken)
+	token, err := a.parseToken(refreshTokenRequest.RefreshToken)
 
 	if err != nil {
 		return "", api.Error{Err: err.Error(), Status: http.StatusUnauthorized}
@@ -145,13 +154,13 @@ func (a *authService) RefreshToken(refreshTokenRequest *dto.RefreshTokenRequest)
 			Email: user.Email,
 			Roles: []int{2, 1, 3, 4},
 			RegisteredClaims: jwt.RegisteredClaims{
-				ExpiresAt: createTokenExpirationTimeForJWTToken(),
+				ExpiresAt: a.createTokenExpirationTimeForJWTToken(),
 				Issuer:    os.Getenv("SERVER_IP"),
 				IssuedAt:  &jwt.NumericDate{Time: time.Now().UTC()},
 			},
 		}
 
-		encodedJWT, _ := generateJWTToken(JWTTokenClaims)
+		encodedJWT, _ := a.generateJWTToken(JWTTokenClaims)
 		return encodedJWT, nil
 	} else {
 		return "", api.Error{Err: "JWT Claims are not correct", Status: http.StatusUnauthorized}
@@ -165,19 +174,19 @@ func (claims JWTClaims) Validate() error {
 	return nil
 }
 
-func createTokenExpirationTimeForJWTToken() *jwt.NumericDate {
+func (a *authService) createTokenExpirationTimeForJWTToken() *jwt.NumericDate {
 	ttl := 300 * time.Second
 	expirationTime := time.Now().UTC().Add(ttl)
 	return &jwt.NumericDate{Time: expirationTime}
 }
 
-func createTokenExpirationTimeForJWTRefreshToken() *jwt.NumericDate {
+func (a *authService) createTokenExpirationTimeForJWTRefreshToken() *jwt.NumericDate {
 	ttl := 24 * time.Hour
 	expirationTime := time.Now().UTC().Add(ttl)
 	return &jwt.NumericDate{Time: expirationTime}
 }
 
-func generateJWTToken(claims JWTClaims) (string, error) {
+func (a *authService) generateJWTToken(claims JWTClaims) (string, error) {
 	var (
 		key []byte
 		t   *jwt.Token
@@ -197,7 +206,7 @@ func generateJWTToken(claims JWTClaims) (string, error) {
 	return s, nil
 }
 
-func parseToken(jwtString string) (*jwt.Token, error) {
+func (a *authService) parseToken(jwtString string) (*jwt.Token, error) {
 	return jwt.ParseWithClaims(jwtString, &JWTClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
@@ -207,7 +216,7 @@ func parseToken(jwtString string) (*jwt.Token, error) {
 	})
 }
 
-func validateUserRoles(userRoles []int, validRoles []int) error {
+func (a *authService) validateUserRoles(userRoles []int, validRoles []int) error {
 	if len(validRoles) > 0 {
 
 		isUserHasValidRoles := utils.Every(validRoles, func(value int, index int) bool {
@@ -228,11 +237,11 @@ func validateUserRoles(userRoles []int, validRoles []int) error {
 	return nil
 }
 
-func isJWTTokenValid(tokenString string, validRoles ...int) error {
+func (a *authService) isJWTTokenValid(tokenString string, validRoles ...int) error {
 
 	var err error
 
-	token, err := parseToken(tokenString)
+	token, err := a.parseToken(tokenString)
 
 	if err != nil {
 		return err
@@ -240,13 +249,13 @@ func isJWTTokenValid(tokenString string, validRoles ...int) error {
 
 	if claims, ok := token.Claims.(*JWTClaims); ok && token.Valid {
 		userRoles := claims.Roles
-		return validateUserRoles(userRoles, validRoles)
+		return a.validateUserRoles(userRoles, validRoles)
 	} else {
 		return errors.New("JWT Claims are not correct")
 	}
 }
 
-func bearerToken(r *http.Request, header string) (string, error) {
+func (a *authService) bearerToken(r *http.Request, header string) (string, error) {
 	rawToken := r.Header.Get(header)
 	pieces := strings.SplitN(rawToken, " ", 2)
 
@@ -259,7 +268,7 @@ func bearerToken(r *http.Request, header string) (string, error) {
 	return token, nil
 }
 
-func hashPassword(password string) (string, error) {
+func (a *authService) HashPassword(password string) (string, error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return "", fmt.Errorf("failed to hash password: %w", err)
@@ -267,6 +276,6 @@ func hashPassword(password string) (string, error) {
 	return string(hashedPassword), nil
 }
 
-func checkPassword(password string, hashedPassword string) error {
+func (a *authService) CheckPassword(password string, hashedPassword string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 }
