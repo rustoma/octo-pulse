@@ -81,12 +81,28 @@ func main() {
 	}
 
 	homeCategory := fixtures.CreateCategory("Home")
+
+	_, err = store.Category.InsertCategory(homeCategory)
+
+	if err != nil {
+		logger.Fatal().Err(err).Send()
+	}
+
 	generalCategory := fixtures.CreateCategory("General")
+
+	_, err = store.Category.InsertCategory(generalCategory)
+
+	if err != nil {
+		logger.Fatal().Err(err).Send()
+	}
+
 	newsCategory := fixtures.CreateCategory("News")
 
-	_ = homeCategory
-	_ = generalCategory
-	_ = newsCategory
+	_, err = store.Category.InsertCategory(newsCategory)
+
+	if err != nil {
+		logger.Fatal().Err(err).Send()
+	}
 
 	john := fixtures.CreateAuthor("John", "Doe", "Lorem ipsum dolor", "https://thispersondoesnotexist.com/")
 	jane := fixtures.CreateAuthor("Jane", "Doe", "Lorem ipsum dolor", "https://thispersondoesnotexist.com/")

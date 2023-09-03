@@ -5,9 +5,10 @@ import (
 )
 
 type Store struct {
-	User   UserStore
-	Role   RoleStore
-	Domain DomainStore
+	User     UserStore
+	Role     RoleStore
+	Domain   DomainStore
+	Category CategoryStore
 }
 
 type UserStore interface {
@@ -24,4 +25,8 @@ type RoleStore interface {
 
 type DomainStore interface {
 	InsertDomain(domain *models.Domain) (int, error)
+}
+
+type CategoryStore interface {
+	InsertCategory(category *models.Category) (int, error)
 }
