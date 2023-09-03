@@ -33,9 +33,9 @@ func (f *fixtures) CreateUser(email string, pass string, roleId int) *models.Use
 	return user
 }
 
-func (f *fixtures) CreateRole(roleName string) *models.Role {
+func (f *fixtures) CreateRole(name string) *models.Role {
 	return &models.Role{
-		RoleName:  roleName,
+		Name:      name,
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
 	}

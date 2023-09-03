@@ -29,7 +29,7 @@ func main() {
 
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
-		logger.Fatal().Err(err).Msg("")
+		logger.Fatal().Err(err).Send()
 	}
 
 	logger.Info().Msg("Connected to the DB")
@@ -44,17 +44,31 @@ func main() {
 	adminRole := fixtures.CreateRole("Admin")
 	editorRole := fixtures.CreateRole("Editor")
 
-	_ = adminRole
-	_ = editorRole
+	_, err = store.Role.InsertRole(adminRole)
+
+	if err != nil {
+		panic(err)
+	}
+
+	_, err = store.Role.InsertRole(editorRole)
+
+	if err != nil {
+		logger.Fatal().Err(err).Send()
+	}
 
 	adminUser := fixtures.CreateUser("admin@admin.com", "admin", 1)
 	editorUser := fixtures.CreateUser("editor@editor.com", "editor", 2)
 
 	_, err = store.User.InsertUser(adminUser)
+
+	if err != nil {
+		logger.Fatal().Err(err).Send()
+	}
+
 	_, err = store.User.InsertUser(editorUser)
 
 	if err != nil {
-		panic(err)
+		logger.Fatal().Err(err).Send()
 	}
 
 	_ = editorUser

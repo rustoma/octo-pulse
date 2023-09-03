@@ -13,6 +13,7 @@ var logger *zerolog.Logger
 func NewPostgresStorage(DB *pgxpool.Pool) *storage.Store {
 	return &storage.Store{
 		User: NewUserStore(DB),
+		Role: NewRoleStore(DB),
 	}
 }
 
