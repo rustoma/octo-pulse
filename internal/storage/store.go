@@ -9,6 +9,7 @@ type Store struct {
 	Role     RoleStore
 	Domain   DomainStore
 	Category CategoryStore
+	Author   AuthorStore
 }
 
 type UserStore interface {
@@ -29,4 +30,8 @@ type DomainStore interface {
 
 type CategoryStore interface {
 	InsertCategory(category *models.Category) (int, error)
+}
+
+type AuthorStore interface {
+	InsertAuthor(author *models.Author) (int, error)
 }

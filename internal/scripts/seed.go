@@ -105,10 +105,20 @@ func main() {
 	}
 
 	john := fixtures.CreateAuthor("John", "Doe", "Lorem ipsum dolor", "https://thispersondoesnotexist.com/")
+
+	_, err = store.Author.InsertAuthor(john)
+
+	if err != nil {
+		logger.Fatal().Err(err).Send()
+	}
+
 	jane := fixtures.CreateAuthor("Jane", "Doe", "Lorem ipsum dolor", "https://thispersondoesnotexist.com/")
 
-	_ = john
-	_ = jane
+	_, err = store.Author.InsertAuthor(jane)
+
+	if err != nil {
+		logger.Fatal().Err(err).Send()
+	}
 
 	for i := 0; i < 10; i++ {
 		title := fmt.Sprintf("Home Article-%d", i+1)
