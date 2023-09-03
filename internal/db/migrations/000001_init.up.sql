@@ -1,5 +1,5 @@
 -- CreateTable
-CREATE TABLE "User" (
+CREATE TABLE IF NOT EXISTS public.user (
     "id" SERIAL NOT NULL,
     "email" TEXT NOT NULL,
     "refresh_token" TEXT,
@@ -8,41 +8,41 @@ CREATE TABLE "User" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "user_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "Role" (
+CREATE TABLE IF NOT EXISTS public.role (
     "id" SERIAL NOT NULL,
     "role_name" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "Role_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "role_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "Domain" (
+CREATE TABLE IF NOT EXISTS public.domain (
     "id" SERIAL NOT NULL,
     "domain_name" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "Domain_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "domain_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "Category" (
+CREATE TABLE IF NOT EXISTS public.category (
     "id" SERIAL NOT NULL,
     "category_name" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "Category_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "category_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "Author" (
+CREATE TABLE IF NOT EXISTS public.author (
     "id" SERIAL NOT NULL,
     "first_name" TEXT NOT NULL,
     "last_name" TEXT NOT NULL,
@@ -51,11 +51,11 @@ CREATE TABLE "Author" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "Author_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "author_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "Article" (
+CREATE TABLE IF NOT EXISTS public.article (
     "id" SERIAL NOT NULL,
     "title" TEXT NOT NULL,
     "description" TEXT,
@@ -68,27 +68,27 @@ CREATE TABLE "Article" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "Article_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "article_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+CREATE UNIQUE INDEX "user_email_key" ON public.user("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Domain_domain_name_key" ON "Domain"("domain_name");
+CREATE UNIQUE INDEX "domain_domain_name_key" ON public.domain("domain_name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Category_category_name_key" ON "Category"("category_name");
+CREATE UNIQUE INDEX "category_category_name_key" ON public.category("category_name");
 
 -- AddForeignKey
-ALTER TABLE "User" ADD CONSTRAINT "User_role_id_fkey" FOREIGN KEY ("role_id") REFERENCES "Role"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE public.user ADD CONSTRAINT "user_role_id_fkey" FOREIGN KEY ("role_id") REFERENCES public.role("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Article" ADD CONSTRAINT "Article_author_id_fkey" FOREIGN KEY ("author_id") REFERENCES "Author"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE public.article ADD CONSTRAINT "article_author_id_fkey" FOREIGN KEY ("author_id") REFERENCES public.author("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Article" ADD CONSTRAINT "Article_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES "Category"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE public.article ADD CONSTRAINT "article_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES public.category("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Article" ADD CONSTRAINT "Article_domain_id_fkey" FOREIGN KEY ("domain_id") REFERENCES "Domain"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE public.article ADD CONSTRAINT "article_domain_id_fkey" FOREIGN KEY ("domain_id") REFERENCES public.domain("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
