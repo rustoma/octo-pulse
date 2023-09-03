@@ -3,25 +3,23 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
+	"github.com/rustoma/octo-pulse/internal/fixtures"
 	lr "github.com/rustoma/octo-pulse/internal/logger"
+	"github.com/rustoma/octo-pulse/internal/services"
+	postgresstore "github.com/rustoma/octo-pulse/internal/storage/postgresStore"
 )
 
 func main() {
 	//Init logger
-	logger, logFile, err := lr.NewLogger()
+	logger, logFile := lr.NewLogger()
 	defer logFile.Close()
 
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	//Init .env
-	err = godotenv.Load()
+	err := godotenv.Load()
 	if err != nil {
 		logger.Fatal().Msg("Error loading .env file")
 	}
@@ -35,4 +33,82 @@ func main() {
 
 	logger.Info().Msg("Connected to the DB")
 	defer dbpool.Close()
+
+	var (
+		store       = postgresstore.NewPostgresStorage(dbpool)
+		authService = services.NewAuthService(store.User)
+		fixtures    = fixtures.NewFixtures(authService)
+	)
+
+	adminRole := fixtures.CreateRole("Admin")
+	editorRole := fixtures.CreateRole("Editor")
+
+	_ = adminRole
+	_ = editorRole
+
+	adminUser := fixtures.CreateUser("admin@admin.com", "admin", 1)
+	editorUser := fixtures.CreateUser("editor@editor.com", "editor", 2)
+
+	_ = adminUser
+	_ = editorUser
+
+	for i := 0; i < 3; i++ {
+		domain := fixtures.CreateDomain(fmt.Sprintf("exampleDomain%d.com", i))
+
+		_ = domain
+	}
+
+	homeCategory := fixtures.CreateCategory("Home")
+	generalCategory := fixtures.CreateCategory("General")
+	newsCategory := fixtures.CreateCategory("News")
+
+	_ = homeCategory
+	_ = generalCategory
+	_ = newsCategory
+
+	john := fixtures.CreateAuthor("John", "Doe", "Lorem ipsum dolor", "https://thispersondoesnotexist.com/")
+	jane := fixtures.CreateAuthor("Jane", "Doe", "Lorem ipsum dolor", "https://thispersondoesnotexist.com/")
+
+	_ = john
+	_ = jane
+
+	for i := 0; i < 10; i++ {
+		title := fmt.Sprintf("Home Article-%d", i+1)
+		desc := "Lorem ipsum dolor"
+		imageUrl := ""
+		isPubished := true
+		authorId := 1
+		categoryId := 1
+		domainId := 1
+		article := fixtures.CreateArticle(title, desc, imageUrl, isPubished, authorId, categoryId, domainId)
+
+		_ = article
+	}
+
+	for i := 0; i < 20; i++ {
+		title := fmt.Sprintf("General Article %d", i+1)
+		desc := "Lorem ipsum dolor"
+		imageUrl := ""
+		isPubished := true
+		authorId := 1
+		categoryId := 1
+		domainId := 1
+		article := fixtures.CreateArticle(title, desc, imageUrl, isPubished, authorId, categoryId, domainId)
+
+		_ = article
+	}
+
+	for i := 0; i < 15; i++ {
+		title := fmt.Sprintf("News Article %d", i+1)
+		desc := "Lorem ipsum dolor"
+		imageUrl := ""
+		isPubished := true
+		authorId := 1
+		categoryId := 1
+		domainId := 1
+		article := fixtures.CreateArticle(title, desc, imageUrl, isPubished, authorId, categoryId, domainId)
+
+		_ = article
+	}
+
 }
