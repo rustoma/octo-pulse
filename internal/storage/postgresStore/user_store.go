@@ -39,10 +39,10 @@ func (u *PostgressUserStore) InsertUser(user *models.User) (int, error) {
 		return 0, err
 	}
 
-	var userID int
+	var userId int
 
-	err = u.DB.QueryRow(ctx, stmt, args...).Scan(&userID)
-	return userID, err
+	err = u.DB.QueryRow(ctx, stmt, args...).Scan(&userId)
+	return userId, err
 
 }
 

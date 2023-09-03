@@ -6,6 +6,7 @@ import (
 
 type Store struct {
 	User UserStore
+	Role RoleStore
 }
 
 type UserStore interface {
@@ -14,4 +15,8 @@ type UserStore interface {
 	SelectUserByRefreshToken(refreshToken string) (*models.User, error)
 	UpdateUserRefreshToken(userId int, refreshToken string) (int, error)
 	InsertUser(user *models.User) (int, error)
+}
+
+type RoleStore interface {
+	InsertRole(role *models.Role) (int, error)
 }
