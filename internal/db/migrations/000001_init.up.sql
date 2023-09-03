@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS public.role (
 -- CreateTable
 CREATE TABLE IF NOT EXISTS public.domain (
     "id" SERIAL NOT NULL,
-    "domain_name" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS public.domain (
 -- CreateTable
 CREATE TABLE IF NOT EXISTS public.category (
     "id" SERIAL NOT NULL,
-    "category_name" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
@@ -75,10 +75,10 @@ CREATE TABLE IF NOT EXISTS public.article (
 CREATE UNIQUE INDEX "user_email_key" ON public.user("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "domain_domain_name_key" ON public.domain("domain_name");
+CREATE UNIQUE INDEX "domain_domain_name_key" ON public.domain("name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "category_category_name_key" ON public.category("category_name");
+CREATE UNIQUE INDEX "category_category_name_key" ON public.category("name");
 
 -- AddForeignKey
 ALTER TABLE public.user ADD CONSTRAINT "user_role_id_fkey" FOREIGN KEY ("role_id") REFERENCES public.role("id") ON DELETE RESTRICT ON UPDATE CASCADE;

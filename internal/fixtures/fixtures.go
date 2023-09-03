@@ -41,19 +41,19 @@ func (f *fixtures) CreateRole(name string) *models.Role {
 	}
 }
 
-func (f *fixtures) CreateDomain(domainName string) *models.Domain {
+func (f *fixtures) CreateDomain(name string) *models.Domain {
 	return &models.Domain{
-		DomainName: domainName,
-		CreatedAt:  time.Now().UTC(),
-		UpdatedAt:  time.Now().UTC(),
+		Name:      name,
+		CreatedAt: time.Now().UTC(),
+		UpdatedAt: time.Now().UTC(),
 	}
 }
 
-func (f *fixtures) CreateCategory(categoryName string) *models.Category {
+func (f *fixtures) CreateCategory(name string) *models.Category {
 	return &models.Category{
-		CategoryName: categoryName,
-		CreatedAt:    time.Now().UTC(),
-		UpdatedAt:    time.Now().UTC(),
+		Name:      name,
+		CreatedAt: time.Now().UTC(),
+		UpdatedAt: time.Now().UTC(),
 	}
 }
 
