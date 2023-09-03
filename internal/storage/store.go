@@ -13,4 +13,5 @@ type UserStore interface {
 	UpdateRefreshToken(userId int, refreshToken string) (int, error)
 	SelectUserByRefreshToken(refreshToken string) (*models.User, error)
 	UpdateUserRefreshToken(userId int, refreshToken string) (int, error)
+	InsertUser(user *models.User) (int, error)
 }
