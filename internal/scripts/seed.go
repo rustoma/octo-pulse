@@ -26,6 +26,7 @@ func main() {
 
 	//Init DB
 	dbpool, err := pgxpool.New(context.Background(), os.Getenv("SEED_DATABASE_URL"))
+
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		logger.Fatal().Err(err).Msg("")
@@ -49,7 +50,13 @@ func main() {
 	adminUser := fixtures.CreateUser("admin@admin.com", "admin", 1)
 	editorUser := fixtures.CreateUser("editor@editor.com", "editor", 2)
 
-	_ = adminUser
+	_, err = store.User.InsertUser(adminUser)
+	_, err = store.User.InsertUser(editorUser)
+
+	if err != nil {
+		panic(err)
+	}
+
 	_ = editorUser
 
 	for i := 0; i < 3; i++ {
