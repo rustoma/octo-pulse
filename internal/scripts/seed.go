@@ -71,18 +71,23 @@ func main() {
 		logger.Fatal().Err(err).Send()
 	}
 
-	for i := 0; i < 3; i++ {
-		domain := fixtures.CreateDomain(fmt.Sprintf("exampleDomain%d.com", i+1))
-		_, err = store.Domain.InsertDomain(domain)
+	homeDesignDomain := fixtures.CreateDomain("homedesign.com")
+	homeDesignDomainId, err := store.Domain.InsertDomain(homeDesignDomain)
 
-		if err != nil {
-			logger.Fatal().Err(err).Send()
-		}
+	if err != nil {
+		logger.Fatal().Err(err).Send()
+	}
+
+	newsDomain := fixtures.CreateDomain("hotnews.com")
+	newsDomainId, err := store.Domain.InsertDomain(newsDomain)
+
+	if err != nil {
+		logger.Fatal().Err(err).Send()
 	}
 
 	homeCategory := fixtures.CreateCategory("Home")
 
-	_, err = store.Category.InsertCategory(homeCategory)
+	homeCategoryId, err := store.Category.InsertCategory(homeCategory)
 
 	if err != nil {
 		logger.Fatal().Err(err).Send()
@@ -90,7 +95,7 @@ func main() {
 
 	generalCategory := fixtures.CreateCategory("General")
 
-	_, err = store.Category.InsertCategory(generalCategory)
+	generalCategoryId, err := store.Category.InsertCategory(generalCategory)
 
 	if err != nil {
 		logger.Fatal().Err(err).Send()
@@ -98,7 +103,7 @@ func main() {
 
 	newsCategory := fixtures.CreateCategory("News")
 
-	_, err = store.Category.InsertCategory(newsCategory)
+	newsCategoryId, err := store.Category.InsertCategory(newsCategory)
 
 	if err != nil {
 		logger.Fatal().Err(err).Send()
@@ -106,7 +111,7 @@ func main() {
 
 	john := fixtures.CreateAuthor("John", "Doe", "Lorem ipsum dolor", "https://thispersondoesnotexist.com/")
 
-	_, err = store.Author.InsertAuthor(john)
+	johnId, err := store.Author.InsertAuthor(john)
 
 	if err != nil {
 		logger.Fatal().Err(err).Send()
@@ -114,23 +119,27 @@ func main() {
 
 	jane := fixtures.CreateAuthor("Jane", "Doe", "Lorem ipsum dolor", "https://thispersondoesnotexist.com/")
 
-	_, err = store.Author.InsertAuthor(jane)
+	janeId, err := store.Author.InsertAuthor(jane)
 
 	if err != nil {
 		logger.Fatal().Err(err).Send()
 	}
 
 	for i := 0; i < 10; i++ {
-		title := fmt.Sprintf("Home Article-%d", i+1)
+		title := fmt.Sprintf("Home Article %d", i+1)
 		desc := "Lorem ipsum dolor"
 		imageUrl := ""
 		isPubished := true
-		authorId := 1
-		categoryId := 1
-		domainId := 1
+		authorId := janeId
+		categoryId := homeCategoryId
+		domainId := homeDesignDomainId
 		article := fixtures.CreateArticle(title, desc, imageUrl, isPubished, authorId, categoryId, domainId)
 
-		_ = article
+		_, err = store.Article.InsertArticle(article)
+
+		if err != nil {
+			logger.Fatal().Err(err).Send()
+		}
 	}
 
 	for i := 0; i < 20; i++ {
@@ -138,12 +147,33 @@ func main() {
 		desc := "Lorem ipsum dolor"
 		imageUrl := ""
 		isPubished := true
-		authorId := 1
-		categoryId := 1
-		domainId := 1
+		authorId := johnId
+		categoryId := generalCategoryId
+		domainId := homeDesignDomainId
 		article := fixtures.CreateArticle(title, desc, imageUrl, isPubished, authorId, categoryId, domainId)
 
-		_ = article
+		_, err = store.Article.InsertArticle(article)
+
+		if err != nil {
+			logger.Fatal().Err(err).Send()
+		}
+	}
+
+	for i := 0; i < 15; i++ {
+		title := fmt.Sprintf("Clean Home Article %d", i+1)
+		desc := "Lorem ipsum dolor"
+		imageUrl := ""
+		isPubished := true
+		authorId := johnId
+		categoryId := homeCategoryId
+		domainId := homeDesignDomainId
+		article := fixtures.CreateArticle(title, desc, imageUrl, isPubished, authorId, categoryId, domainId)
+
+		_, err = store.Article.InsertArticle(article)
+
+		if err != nil {
+			logger.Fatal().Err(err).Send()
+		}
 	}
 
 	for i := 0; i < 15; i++ {
@@ -151,12 +181,16 @@ func main() {
 		desc := "Lorem ipsum dolor"
 		imageUrl := ""
 		isPubished := true
-		authorId := 1
-		categoryId := 1
-		domainId := 1
+		authorId := johnId
+		categoryId := newsCategoryId
+		domainId := newsDomainId
 		article := fixtures.CreateArticle(title, desc, imageUrl, isPubished, authorId, categoryId, domainId)
 
-		_ = article
+		_, err = store.Article.InsertArticle(article)
+
+		if err != nil {
+			logger.Fatal().Err(err).Send()
+		}
 	}
 
 }
