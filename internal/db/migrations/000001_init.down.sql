@@ -1,31 +1,31 @@
 -- DropForeignKey
-ALTER TABLE "User" DROP CONSTRAINT "User_role_id_fkey";
+ALTER TABLE public.user DROP CONSTRAINT "user_role_id_fkey";
 
 -- DropForeignKey
-ALTER TABLE "Article" DROP CONSTRAINT "Article_author_id_fkey";
+ALTER TABLE public.article DROP CONSTRAINT "article_author_id_fkey";
 
 -- DropForeignKey
-ALTER TABLE "Article" DROP CONSTRAINT "Article_category_id_fkey";
+ALTER TABLE public.article DROP CONSTRAINT "article_category_id_fkey";
 
 -- DropForeignKey
-ALTER TABLE "Article" DROP CONSTRAINT "Article_domain_id_fkey";
+ALTER TABLE public.article DROP CONSTRAINT "article_domain_id_fkey";
 
 -- DropTable
-DROP TABLE "User";
+DROP TABLE public.user;
 
 -- DropTable
-DROP TABLE "Role";
+DROP TABLE public.role;
 
 -- DropTable
-DROP TABLE "Domain";
+DROP TABLE public.domain;
 
 -- DropTable
-DROP TABLE "Category";
+DROP TABLE public.category;
 
 -- DropTable
-DROP TABLE "Author";
+DROP TABLE public.author;
 
 -- DropTable
-DROP TABLE "Article";
+DROP TABLE public.article;
 
 
