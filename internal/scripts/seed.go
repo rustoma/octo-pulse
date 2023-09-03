@@ -71,12 +71,13 @@ func main() {
 		logger.Fatal().Err(err).Send()
 	}
 
-	_ = editorUser
-
 	for i := 0; i < 3; i++ {
-		domain := fixtures.CreateDomain(fmt.Sprintf("exampleDomain%d.com", i))
+		domain := fixtures.CreateDomain(fmt.Sprintf("exampleDomain%d.com", i+1))
+		_, err = store.Domain.InsertDomain(domain)
 
-		_ = domain
+		if err != nil {
+			logger.Fatal().Err(err).Send()
+		}
 	}
 
 	homeCategory := fixtures.CreateCategory("Home")

@@ -40,5 +40,4 @@ func (r *PostgressRoleStore) InsertRole(role *models.Role) (int, error) {
 
 	err = r.DB.QueryRow(ctx, stmt, args...).Scan(&roleId)
 	return roleId, err
-
 }
