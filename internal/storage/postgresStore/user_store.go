@@ -47,7 +47,6 @@ func (u *PostgressUserStore) InsertUser(user *models.User) (int, error) {
 }
 
 func (u *PostgressUserStore) GetUserByEmail(email string) (*models.User, error) {
-
 	ctx, cancel := context.WithTimeout(context.Background(), u.dbTimeout)
 	defer cancel()
 
@@ -91,7 +90,26 @@ func (u *PostgressUserStore) GetUserByEmail(email string) (*models.User, error) 
 }
 
 func (u *PostgressUserStore) UpdateRefreshToken(userId int, refreshToken string) (int, error) {
-	return 1, nil
+	ctx, cancel := context.WithTimeout(context.Background(), u.dbTimeout)
+	defer cancel()
+
+	stmt, args, err := pgQb().
+		Update("public.user").
+		SetMap(map[string]interface{}{
+			"refresh_token": refreshToken,
+		}).
+		Where(squirrel.Eq{"id": userId}).
+		Suffix("RETURNING \"id\"").ToSql()
+
+	if err != nil {
+		logger.Err(err).Send()
+		return 0, err
+	}
+
+	var updatedUserId int
+
+	err = u.DB.QueryRow(ctx, stmt, args...).Scan(&updatedUserId)
+	return userId, err
 }
 
 func (u *PostgressUserStore) SelectUserByRefreshToken(refreshToken string) (*models.User, error) {

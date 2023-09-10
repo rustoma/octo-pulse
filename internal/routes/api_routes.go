@@ -22,7 +22,7 @@ func NewApiRoutes(controllers ApiControllers) http.Handler {
 		//AUTH
 		r.Post("/login", api.MakeHTTPHandler(controllers.Auth.HandleLogin))
 		//r.Post("/logout", api.MakeHTTPHandler(controllers.Auth.HandleLogout))
-		//r.Post("/refresh", api.MakeHTTPHandler(controllers.Auth.HandleRefreshToken))
+		r.Post("/refresh", api.MakeHTTPHandler(controllers.Auth.HandleRefreshToken))
 	})
 	//r.Get("/assets/images/*", api.MakeHTTPHandler(controllers.HandleGetImage))
 
