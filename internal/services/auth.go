@@ -25,7 +25,7 @@ type AuthService interface {
 	HashPassword(password string) (string, error)
 	bearerToken(r *http.Request, header string) (string, error)
 	isJWTTokenValid(tokenString string, validRoles ...int) error
-	validateUserRoles(userRoles []int, validRoles []int) error
+	validateUserRole(userRoles int, validRoles []int) error
 	parseToken(jwtString string) (*jwt.Token, error)
 	generateJWTToken(claims JWTClaims) (string, error)
 	createTokenExpirationTimeForJWTRefreshToken() *jwt.NumericDate
@@ -34,16 +34,20 @@ type AuthService interface {
 
 type authService struct {
 	userStore storage.UserStore
+	userRoles models.UserRoles
 }
 
 type JWTClaims struct {
 	Email string `json:"email"`
-	Roles []int  `json:"roles"`
+	Role  int    `json:"role"`
 	jwt.RegisteredClaims
 }
 
 func NewAuthService(userStore storage.UserStore) AuthService {
-	return &authService{userStore: userStore}
+	return &authService{userStore: userStore, userRoles: models.UserRoles{
+		Admin:  1,
+		Editor: 2,
+	}}
 }
 
 func (a *authService) Login(userCredentials *dto.AuthLogin) (*dto.AuthUser, *http.Cookie, error) {
@@ -62,7 +66,7 @@ func (a *authService) Login(userCredentials *dto.AuthLogin) (*dto.AuthUser, *htt
 
 	JWTTokenClaims := JWTClaims{
 		Email: userCredentials.Email,
-		Roles: []int{},
+		Role:  user.RoleId,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: a.createTokenExpirationTimeForJWTToken(),
 			Issuer:    os.Getenv("SERVER_IP"),
@@ -72,7 +76,7 @@ func (a *authService) Login(userCredentials *dto.AuthLogin) (*dto.AuthUser, *htt
 
 	refreshTokenClaims := JWTClaims{
 		Email: userCredentials.Email,
-		Roles: []int{},
+		Role:  user.RoleId,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: a.createTokenExpirationTimeForJWTRefreshToken(),
 			Issuer:    os.Getenv("SERVER_IP"),
@@ -99,7 +103,9 @@ func (a *authService) Login(userCredentials *dto.AuthLogin) (*dto.AuthUser, *htt
 		SameSite: 4,
 	}
 
-	return &dto.AuthUser{User: &models.User{ID: 1}, AccessToken: encodedJWT}, &cookie, nil
+	user.RefreshToken = encodedRefreshToken
+
+	return &dto.AuthUser{User: user, AccessToken: encodedJWT}, &cookie, nil
 }
 
 func (a *authService) Logout(logoutRequest *dto.LogoutRequest) (*http.Cookie, error) {
@@ -120,7 +126,7 @@ func (a *authService) Logout(logoutRequest *dto.LogoutRequest) (*http.Cookie, er
 		return cookie, api.Error{Err: "user not found", Status: http.StatusForbidden}
 	}
 
-	_, err = a.userStore.UpdateUserRefreshToken(user.ID, "")
+	_, err = a.userStore.UpdateRefreshToken(user.ID, "")
 
 	if err != nil {
 		return nil, api.Error{Err: "internal server error", Status: http.StatusInternalServerError}
@@ -152,7 +158,7 @@ func (a *authService) RefreshToken(refreshTokenRequest *dto.RefreshTokenRequest)
 
 		JWTTokenClaims := JWTClaims{
 			Email: user.Email,
-			Roles: []int{2, 1, 3, 4},
+			Role:  user.RoleId,
 			RegisteredClaims: jwt.RegisteredClaims{
 				ExpiresAt: a.createTokenExpirationTimeForJWTToken(),
 				Issuer:    os.Getenv("SERVER_IP"),
@@ -216,22 +222,18 @@ func (a *authService) parseToken(jwtString string) (*jwt.Token, error) {
 	})
 }
 
-func (a *authService) validateUserRoles(userRoles []int, validRoles []int) error {
+func (a *authService) validateUserRole(userRole int, validRoles []int) error {
+	if userRole == a.userRoles.Admin {
+		return nil
+	}
+
 	if len(validRoles) > 0 {
-
-		isUserHasValidRoles := utils.Every(validRoles, func(value int, index int) bool {
-			for _, role := range userRoles {
-
-				if role == value {
-					return true
-				}
+		for _, role := range validRoles {
+			if role == userRole {
+				return nil
 			}
-			return false
-		})
-
-		if !isUserHasValidRoles {
-			return errors.New("you do not have enough permissions")
 		}
+		return errors.New("you do not have enough permissions")
 	}
 
 	return nil
@@ -248,8 +250,8 @@ func (a *authService) isJWTTokenValid(tokenString string, validRoles ...int) err
 	}
 
 	if claims, ok := token.Claims.(*JWTClaims); ok && token.Valid {
-		userRoles := claims.Roles
-		return a.validateUserRoles(userRoles, validRoles)
+		userRole := claims.Role
+		return a.validateUserRole(userRole, validRoles)
 	} else {
 		return errors.New("JWT Claims are not correct")
 	}

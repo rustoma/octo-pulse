@@ -113,11 +113,46 @@ func (u *PostgressUserStore) UpdateRefreshToken(userId int, refreshToken string)
 }
 
 func (u *PostgressUserStore) SelectUserByRefreshToken(refreshToken string) (*models.User, error) {
-	return &models.User{ID: 1}, nil
-}
+	ctx, cancel := context.WithTimeout(context.Background(), u.dbTimeout)
+	defer cancel()
 
-func (u *PostgressUserStore) UpdateUserRefreshToken(userId int, refreshToken string) (int, error) {
-	return 1, nil
+	stmt, args, err := pgQb().
+		Select("id, email, COALESCE(refresh_token, '') AS refresh_token, password_hash, role_id, created_at, updated_at").
+		From("public.user").
+		Where(squirrel.Eq{"refresh_token": refreshToken}).
+		ToSql()
+
+	if err != nil {
+		logger.Err(err).Send()
+		return nil, err
+	}
+
+	rows, err := u.DB.Query(ctx, stmt, args...)
+	defer rows.Close()
+
+	if err != nil {
+		logger.Err(err).Send()
+		return nil, err
+	}
+
+	var user *models.User
+
+	for rows.Next() {
+		userFromScan, err := scanToUser(rows)
+
+		if err != nil {
+			logger.Err(err).Send()
+			return nil, err
+		}
+
+		user = userFromScan
+	}
+
+	if user == nil {
+		return nil, errors.New("no user found")
+	}
+
+	return user, err
 }
 
 func scanToUser(rows pgx.Rows) (*models.User, error) {
