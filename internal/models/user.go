@@ -11,3 +11,8 @@ type User struct {
 	CreatedAt    time.Time `json:"-"`
 	UpdatedAt    time.Time `json:"-"`
 }
+
+type UserRoles struct {
+	Admin  int
+	Editor int
+}
