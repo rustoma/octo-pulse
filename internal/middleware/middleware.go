@@ -52,8 +52,8 @@ func (m *middleware) EnableCORS(h http.Handler) http.Handler {
 }
 
 func (m *middleware) RequireApiKey(h http.Handler) http.Handler {
-	apiKeyHeader := os.Getenv("APIKeyHeader")
-	apiKey := os.Getenv("APIKey")
+	apiKeyHeader := os.Getenv("API_KEY_HEADER")
+	apiKey := os.Getenv("API_KEY")
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
