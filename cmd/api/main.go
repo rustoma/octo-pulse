@@ -41,13 +41,16 @@ func main() {
 		apiControllers = routes.ApiControllers{
 			Auth: authController,
 		}
+		apiServices = routes.ApiServices{
+			Auth: authService,
+		}
 	)
 
 	_ = store
 
 	//start a web server
 	log.Println("Starting application on port", os.Getenv("PORT"))
-	err = http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), routes.NewApiRoutes(apiControllers))
+	err = http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), routes.NewApiRoutes(apiControllers, apiServices))
 	if err != nil {
 		log.Fatal(err)
 	}

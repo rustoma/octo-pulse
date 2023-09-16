@@ -23,8 +23,8 @@ type AuthService interface {
 	RefreshToken(refreshTokenRequest *dto.RefreshTokenRequest) (string, error)
 	CheckPassword(password string, hashedPassword string) error
 	HashPassword(password string) (string, error)
-	bearerToken(r *http.Request, header string) (string, error)
-	isJWTTokenValid(tokenString string, validRoles ...int) error
+	BearerToken(r *http.Request, header string) (string, error)
+	IsJWTTokenValid(tokenString string, validRoles ...int) error
 	validateUserRole(userRoles int, validRoles []int) error
 	parseToken(jwtString string) (*jwt.Token, error)
 	generateJWTToken(claims JWTClaims) (string, error)
@@ -51,7 +51,7 @@ func NewAuthService(userStore storage.UserStore) AuthService {
 }
 
 func (a *authService) Login(userCredentials *dto.AuthLogin) (*dto.AuthUser, *http.Cookie, error) {
-
+	logger.Info().Interface("userCredentials", userCredentials)
 	user, err := a.userStore.GetUserByEmail(userCredentials.Email)
 
 	if err != nil {
@@ -239,7 +239,7 @@ func (a *authService) validateUserRole(userRole int, validRoles []int) error {
 	return nil
 }
 
-func (a *authService) isJWTTokenValid(tokenString string, validRoles ...int) error {
+func (a *authService) IsJWTTokenValid(tokenString string, validRoles ...int) error {
 
 	var err error
 
@@ -257,7 +257,7 @@ func (a *authService) isJWTTokenValid(tokenString string, validRoles ...int) err
 	}
 }
 
-func (a *authService) bearerToken(r *http.Request, header string) (string, error) {
+func (a *authService) BearerToken(r *http.Request, header string) (string, error) {
 	rawToken := r.Header.Get(header)
 	pieces := strings.SplitN(rawToken, " ", 2)
 

@@ -28,6 +28,7 @@ func NewAuthController(authService services.AuthService) *AuthController {
 func (c *AuthController) HandleLogin(w http.ResponseWriter, r *http.Request) error {
 	var userCredentials *dto.AuthLogin
 
+	logger.Info().Interface("userCredentials", userCredentials)
 	err := api.ReadJSON(w, r, &userCredentials)
 
 	if err != nil {
