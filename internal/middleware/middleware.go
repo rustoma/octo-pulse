@@ -1,15 +1,12 @@
 package middleware
 
 import (
-	"crypto/sha256"
 	"crypto/subtle"
-	"encoding/hex"
 	"fmt"
 	"log"
 	"net"
 	"net/http"
 	"os"
-	"strings"
 
 	"github.com/rustoma/octo-pulse/internal/api"
 	"github.com/rustoma/octo-pulse/internal/services"
@@ -58,20 +55,7 @@ func (m *middleware) RequireApiKey(h http.Handler) http.Handler {
 	apiKeyHeader := os.Getenv("APIKeyHeader")
 	apiKey := os.Getenv("APIKey")
 
-	decodedApiKey, err := hex.DecodeString(apiKey)
-
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
-		if !strings.Contains(r.URL.Path, "api/v1") {
-			h.ServeHTTP(w, r)
-			return
-		}
-
-		if err != nil {
-			fmt.Printf("error occur when decoding api key error : %+v\n", err)
-			_ = api.ErrorJSON(w, fmt.Errorf("unauthorized"), http.StatusInternalServerError)
-			return
-		}
 
 		apiKeyFromReq, err := m.authService.BearerToken(r, apiKeyHeader)
 		if err != nil {
@@ -81,7 +65,7 @@ func (m *middleware) RequireApiKey(h http.Handler) http.Handler {
 			return
 		}
 
-		if !apiKeyIsValid(apiKeyFromReq, decodedApiKey) {
+		if !apiKeyIsValid(apiKeyFromReq, apiKey) {
 			hostIP, _, err := net.SplitHostPort(r.RemoteAddr)
 			if err != nil {
 				fmt.Printf("failed to parse remote address, error : %+v\n", err)
@@ -126,11 +110,9 @@ func (m *middleware) RequireAuth(validRoles ...int) func(h http.Handler) http.Ha
 
 }
 
-func apiKeyIsValid(rawKey string, expectedApiKey []byte) bool {
-	hash := sha256.Sum256([]byte(rawKey))
-	key := string(hash[:])
+func apiKeyIsValid(apiKey string, expectedApiKey string) bool {
 
-	contentEqual := subtle.ConstantTimeCompare(expectedApiKey, []byte(key)) == 1
+	contentEqual := subtle.ConstantTimeCompare([]byte(expectedApiKey), []byte(apiKey)) == 1
 
 	if contentEqual {
 		return true
