@@ -125,6 +125,24 @@ func main() {
 		logger.Fatal().Err(err).Send()
 	}
 
+	err = store.CategoriesDomains.AsignCategoryToDomain(homeCategoryId, homeDesignDomainId)
+
+	if err != nil {
+		logger.Fatal().Err(err).Send()
+	}
+
+	err = store.CategoriesDomains.AsignCategoryToDomain(newsCategoryId, homeDesignDomainId)
+
+	if err != nil {
+		logger.Fatal().Err(err).Send()
+	}
+
+	err = store.CategoriesDomains.AsignCategoryToDomain(newsCategoryId, newsDomainId)
+
+	if err != nil {
+		logger.Fatal().Err(err).Send()
+	}
+
 	for i := 0; i < 10; i++ {
 		title := fmt.Sprintf("Home Article %d", i+1)
 		desc := "Lorem ipsum dolor"
