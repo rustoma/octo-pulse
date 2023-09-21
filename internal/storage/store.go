@@ -5,12 +5,13 @@ import (
 )
 
 type Store struct {
-	User     UserStore
-	Role     RoleStore
-	Domain   DomainStore
-	Category CategoryStore
-	Author   AuthorStore
-	Article  ArticleStore
+	User              UserStore
+	Role              RoleStore
+	Domain            DomainStore
+	Category          CategoryStore
+	Author            AuthorStore
+	Article           ArticleStore
+	CategoriesDomains CategoriesDomainsStore
 }
 
 type UserStore interface {
@@ -30,6 +31,10 @@ type DomainStore interface {
 
 type CategoryStore interface {
 	InsertCategory(category *models.Category) (int, error)
+}
+
+type CategoriesDomainsStore interface {
+	AsignCategoryToDomain(categoryId int, domainId int) error
 }
 
 type AuthorStore interface {
