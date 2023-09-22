@@ -181,7 +181,7 @@ func (claims JWTClaims) Validate() error {
 }
 
 func (a *authService) createTokenExpirationTimeForJWTToken() *jwt.NumericDate {
-	ttl := 300 * time.Second
+	ttl := 1 * time.Hour
 	expirationTime := time.Now().UTC().Add(ttl)
 	return &jwt.NumericDate{Time: expirationTime}
 }
