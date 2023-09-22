@@ -43,4 +43,6 @@ type AuthorStore interface {
 
 type ArticleStore interface {
 	InsertArticle(article *models.Article) (int, error)
+	GetArticle(id int) (*models.Article, error)
+	UpdateArticle(id int, article *models.Article) (int, error)
 }
