@@ -27,3 +27,12 @@ migration_go_to:
 migration_create:
 	migrate create -ext sql -dir internal/db/migrations -seq init
 
+task_monit:
+	./asynqmon --port=9090 --redis-password=${REDIS_PASSWORD}
+
+
+build_workers:
+	@cd ./cmd/workers && go build -o ../../bin/workers 
+
+run_workers: build_workers
+	@./bin/workers
