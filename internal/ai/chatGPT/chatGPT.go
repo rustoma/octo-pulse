@@ -2,25 +2,49 @@ package chatgpt
 
 import (
 	"context"
+	"os"
 
 	"github.com/rs/zerolog"
-	"github.com/rustoma/octo-pulse/internal/ai"
 	lr "github.com/rustoma/octo-pulse/internal/logger"
 	"github.com/sashabaranov/go-openai"
 )
 
 var logger *zerolog.Logger
 
+type ChatGPTer interface {
+	GenerateArticleDescription() (string, error)
+}
+
 type chatGPT struct {
 	retriesLimit int
 	Client       *openai.Client
 }
 
-func newChatGPT(client *openai.Client) ai.AI {
-	return chatGPT{
+func NewChatGPT() ChatGPTer {
+	client := openai.NewClient(os.Getenv("AI_KEY"))
+
+	return &chatGPT{
 		retriesLimit: 2,
 		Client:       client,
 	}
+}
+
+func (c *chatGPT) GenerateArticleDescription() (string, error) {
+
+	messages := []openai.ChatCompletionMessage{
+		{
+			Role:    openai.ChatMessageRoleUser,
+			Content: "Wygeneruj losowy tekst",
+		},
+	}
+
+	resp, err := c.ask(messages)
+
+	if err != nil {
+		return "", err
+	}
+
+	return resp, nil
 }
 
 func (ai *chatGPT) newChatCompletion(messages []openai.ChatCompletionMessage) (openai.ChatCompletionResponse, error) {
