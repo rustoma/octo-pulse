@@ -9,12 +9,14 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/rs/zerolog"
+	"github.com/rustoma/octo-pulse/internal/ai"
 	"github.com/rustoma/octo-pulse/internal/controllers"
 	"github.com/rustoma/octo-pulse/internal/db"
 	lr "github.com/rustoma/octo-pulse/internal/logger"
 	"github.com/rustoma/octo-pulse/internal/routes"
 	"github.com/rustoma/octo-pulse/internal/services"
 	postgresstore "github.com/rustoma/octo-pulse/internal/storage/postgresStore"
+	"github.com/rustoma/octo-pulse/internal/tasks"
 )
 
 var logger *zerolog.Logger
@@ -31,15 +33,21 @@ func main() {
 	defer dbpool.Close()
 
 	var (
+		//AI
+		ai = ai.NewAI()
 		//Storage
-		userStore = postgresstore.NewUserStore(dbpool)
-		store     = postgresstore.NewPostgresStorage(dbpool)
+		store = postgresstore.NewPostgresStorage(dbpool)
 		//Services
-		authService = services.NewAuthService(userStore)
+		authService    = services.NewAuthService(store.User)
+		articleService = services.NewArticleService(store.Article, ai)
+		//Tasks
+		tasks = tasks.NewTasks(articleService)
 		//Controllers
-		authController = controllers.NewAuthController(authService)
-		apiControllers = routes.ApiControllers{
-			Auth: authController,
+		authController    = controllers.NewAuthController(authService)
+		articleController = controllers.NewArticleController(articleService, tasks.Article)
+		apiControllers    = routes.ApiControllers{
+			Auth:    authController,
+			Article: articleController,
 		}
 		apiServices = routes.ApiServices{
 			Auth: authService,
@@ -50,7 +58,7 @@ func main() {
 
 	//start a web server
 	log.Println("Starting application on port", os.Getenv("PORT"))
-	err = http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), routes.NewApiRoutes(apiControllers, apiServices))
+	err = http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), routes.NewApiRoutes(apiControllers, apiServices, tasks))
 	if err != nil {
 		log.Fatal(err)
 	}
