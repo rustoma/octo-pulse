@@ -13,10 +13,11 @@ import (
 )
 
 type ApiControllers struct {
-	Auth    *controllers.AuthController
-	Article *controllers.ArticleController
-	Task    *controllers.TaskController
-	Domain  *controllers.DomainController
+	Auth     *controllers.AuthController
+	Article  *controllers.ArticleController
+	Task     *controllers.TaskController
+	Domain   *controllers.DomainController
+	Category *controllers.CategoryController
 }
 
 type ApiServices struct {
@@ -48,7 +49,7 @@ func NewApiRoutes(controllers ApiControllers, services ApiServices, tasks *tasks
 		// r.Get("/domains/{id}", api.MakeHTTPHandler(controllers.Domain.HandleGetDomain))
 		// r.Get("/articles", api.MakeHTTPHandler(controllers.Article.HandleGetArticles))
 		// r.Get("/articles/{id}", api.MakeHTTPHandler(controllers.Article.HandleGetArticle))
-		// r.Get("/categories", api.MakeHTTPHandler(controllers.Category.HandleGetCategories))
+		r.Get("/categories", api.MakeHTTPHandler(controllers.Category.HandleGetCategories))
 		// r.Get("/categories/{id}", api.MakeHTTPHandler(controllers.Category.HandleGetCategory))
 	})
 
