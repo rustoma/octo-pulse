@@ -22,7 +22,6 @@ type articleTasks struct {
 func NewArticleTasks(articleService services.ArticleService) articleTasks {
 	return articleTasks{
 		articleService: articleService,
-		inspector:      asynq.NewInspector(asynq.RedisClientOpt{Addr: os.Getenv("REDIS_ADDR"), Password: os.Getenv("REDIS_PASSWORD")}),
 	}
 }
 

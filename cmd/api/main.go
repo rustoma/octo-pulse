@@ -16,7 +16,7 @@ import (
 	"github.com/rustoma/octo-pulse/internal/routes"
 	"github.com/rustoma/octo-pulse/internal/services"
 	postgresstore "github.com/rustoma/octo-pulse/internal/storage/postgresStore"
-	"github.com/rustoma/octo-pulse/internal/tasks"
+	ts "github.com/rustoma/octo-pulse/internal/tasks"
 )
 
 var logger *zerolog.Logger
@@ -41,13 +41,16 @@ func main() {
 		authService    = services.NewAuthService(store.User)
 		articleService = services.NewArticleService(store.Article, ai)
 		//Tasks
-		tasks = tasks.NewTasks(articleService)
+		tasks         = ts.NewTasks(articleService)
+		taskInspector = ts.NewTaskInspector()
 		//Controllers
 		authController    = controllers.NewAuthController(authService)
 		articleController = controllers.NewArticleController(articleService, tasks.Article)
+		taskController    = controllers.NewTaskController(taskInspector)
 		apiControllers    = routes.ApiControllers{
 			Auth:    authController,
 			Article: articleController,
+			Task:    taskController,
 		}
 		apiServices = routes.ApiServices{
 			Auth: authService,
