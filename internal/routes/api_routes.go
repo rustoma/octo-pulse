@@ -15,6 +15,7 @@ import (
 type ApiControllers struct {
 	Auth    *controllers.AuthController
 	Article *controllers.ArticleController
+	Task    *controllers.TaskController
 }
 
 type ApiServices struct {
@@ -40,6 +41,7 @@ func NewApiRoutes(controllers ApiControllers, services ApiServices, tasks *tasks
 		r.Use(middlewares.RequireAuth())
 		r.Use(middlewares.RequireApiKey)
 		r.Get("/article/{id}/generate-description", api.MakeHTTPHandler(controllers.Article.HandleGenerateDescritption))
+		r.Post("/task", api.MakeHTTPHandler(controllers.Task.GetTasksInfo))
 	})
 
 	return r
