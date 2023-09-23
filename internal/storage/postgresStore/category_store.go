@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rustoma/octo-pulse/internal/models"
 )
@@ -40,4 +41,54 @@ func (c *PostgressCategoryStore) InsertCategory(category *models.Category) (int,
 
 	err = c.DB.QueryRow(ctx, stmt, args...).Scan(&categoryId)
 	return categoryId, err
+}
+
+func (s *PostgressCategoryStore) GetCategories() ([]*models.Category, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), s.dbTimeout)
+	defer cancel()
+
+	stmt, args, err := pgQb().
+		Select("*").
+		From("public.category").
+		ToSql()
+
+	if err != nil {
+		logger.Err(err).Send()
+		return nil, err
+	}
+
+	rows, err := s.DB.Query(ctx, stmt, args...)
+	defer rows.Close()
+
+	if err != nil {
+		logger.Err(err).Send()
+		return nil, err
+	}
+
+	var categories []*models.Category
+
+	for rows.Next() {
+		categoryFromScan, err := scanToCategory(rows)
+
+		if err != nil {
+			logger.Err(err).Send()
+			return nil, err
+		}
+
+		categories = append(categories, categoryFromScan)
+	}
+
+	return categories, err
+}
+
+func scanToCategory(rows pgx.Rows) (*models.Category, error) {
+	var category models.Category
+	err := rows.Scan(
+		&category.ID,
+		&category.Name,
+		&category.CreatedAt,
+		&category.UpdatedAt,
+	)
+
+	return &category, err
 }

@@ -38,22 +38,25 @@ func main() {
 		//Storage
 		store = postgresstore.NewPostgresStorage(dbpool)
 		//Services
-		authService    = services.NewAuthService(store.User)
-		articleService = services.NewArticleService(store.Article, ai)
-		domainService  = services.NewDomainService(store.Domain)
+		authService     = services.NewAuthService(store.User)
+		articleService  = services.NewArticleService(store.Article, ai)
+		domainService   = services.NewDomainService(store.Domain)
+		categoryService = services.NewCategoryService(store.Category)
 		//Tasks
 		tasks         = ts.NewTasks(articleService)
 		taskInspector = ts.NewTaskInspector()
 		//Controllers
-		authController    = controllers.NewAuthController(authService)
-		articleController = controllers.NewArticleController(articleService, tasks.Article)
-		taskController    = controllers.NewTaskController(taskInspector)
-		domainController  = controllers.NewDomainController(domainService)
-		apiControllers    = routes.ApiControllers{
-			Auth:    authController,
-			Article: articleController,
-			Task:    taskController,
-			Domain:  domainController,
+		authController     = controllers.NewAuthController(authService)
+		articleController  = controllers.NewArticleController(articleService, tasks.Article)
+		taskController     = controllers.NewTaskController(taskInspector)
+		domainController   = controllers.NewDomainController(domainService)
+		categoryController = controllers.NewCategoryController(categoryService)
+		apiControllers     = routes.ApiControllers{
+			Auth:     authController,
+			Article:  articleController,
+			Task:     taskController,
+			Domain:   domainController,
+			Category: categoryController,
 		}
 		apiServices = routes.ApiServices{
 			Auth: authService,
