@@ -18,7 +18,7 @@ func NewTaskController(inspector tasks.Inspectorer) *TaskController {
 	}
 }
 
-func (c *TaskController) GetTasksInfo(w http.ResponseWriter, r *http.Request) error {
+func (c *TaskController) HandleGetTasksInfo(w http.ResponseWriter, r *http.Request) error {
 
 	var request *dto.GetTasksInfoRequest
 
