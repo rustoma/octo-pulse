@@ -30,9 +30,8 @@ func NewApiRoutes(controllers ApiControllers, services ApiServices, tasks *tasks
 	r.Use(middlewares.EnableCORS)
 
 	r.Route("/api/v1", func(r chi.Router) {
-		//AUTH
 		r.Post("/login", api.MakeHTTPHandler(controllers.Auth.HandleLogin))
-		//r.Post("/logout", api.MakeHTTPHandler(controllers.Auth.HandleLogout))
+		r.Post("/logout", api.MakeHTTPHandler(controllers.Auth.HandleLogout))
 		r.Post("/refresh", api.MakeHTTPHandler(controllers.Auth.HandleRefreshToken))
 	})
 	//r.Get("/assets/images/*", api.MakeHTTPHandler(controllers.HandleGetImage))
@@ -40,8 +39,16 @@ func NewApiRoutes(controllers ApiControllers, services ApiServices, tasks *tasks
 	r.Route("/api/v1/dashboard", func(r chi.Router) {
 		r.Use(middlewares.RequireAuth())
 		r.Use(middlewares.RequireApiKey)
-		r.Get("/article/{id}/generate-description", api.MakeHTTPHandler(controllers.Article.HandleGenerateDescritption))
-		r.Post("/task", api.MakeHTTPHandler(controllers.Task.GetTasksInfo))
+
+		r.Get("/articles/{id}/generate-description", api.MakeHTTPHandler(controllers.Article.HandleGenerateDescritption))
+		r.Post("/tasks", api.MakeHTTPHandler(controllers.Task.GetTasksInfo))
+
+		// r.Get("/domains", api.MakeHTTPHandler(controllers.Domain.HandleGetDomains))
+		// r.Get("/domains/{id}", api.MakeHTTPHandler(controllers.Domain.HandleGetDomain))
+		// r.Get("/articles", api.MakeHTTPHandler(controllers.Article.HandleGetArticles))
+		// r.Get("/articles/{id}", api.MakeHTTPHandler(controllers.Article.HandleGetArticle))
+		// r.Get("/categories", api.MakeHTTPHandler(controllers.Category.HandleGetCategories))
+		// r.Get("/categories/{id}", api.MakeHTTPHandler(controllers.Category.HandleGetCategory))
 	})
 
 	return r
