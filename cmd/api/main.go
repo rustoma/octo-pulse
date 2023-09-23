@@ -40,6 +40,7 @@ func main() {
 		//Services
 		authService    = services.NewAuthService(store.User)
 		articleService = services.NewArticleService(store.Article, ai)
+		domainService  = services.NewDomainService(store.Domain)
 		//Tasks
 		tasks         = ts.NewTasks(articleService)
 		taskInspector = ts.NewTaskInspector()
@@ -47,10 +48,12 @@ func main() {
 		authController    = controllers.NewAuthController(authService)
 		articleController = controllers.NewArticleController(articleService, tasks.Article)
 		taskController    = controllers.NewTaskController(taskInspector)
+		domainController  = controllers.NewDomainController(domainService)
 		apiControllers    = routes.ApiControllers{
 			Auth:    authController,
 			Article: articleController,
 			Task:    taskController,
+			Domain:  domainController,
 		}
 		apiServices = routes.ApiServices{
 			Auth: authService,

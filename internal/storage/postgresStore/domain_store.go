@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rustoma/octo-pulse/internal/models"
 )
@@ -40,4 +41,54 @@ func (d *PostgressDomainStore) InsertDomain(domain *models.Domain) (int, error) 
 
 	err = d.DB.QueryRow(ctx, stmt, args...).Scan(&domainId)
 	return domainId, err
+}
+
+func (s *PostgressDomainStore) GetDomains() ([]*models.Domain, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), s.dbTimeout)
+	defer cancel()
+
+	stmt, args, err := pgQb().
+		Select("*").
+		From("public.domain").
+		ToSql()
+
+	if err != nil {
+		logger.Err(err).Send()
+		return nil, err
+	}
+
+	rows, err := s.DB.Query(ctx, stmt, args...)
+	defer rows.Close()
+
+	if err != nil {
+		logger.Err(err).Send()
+		return nil, err
+	}
+
+	var domains []*models.Domain
+
+	for rows.Next() {
+		domainFromScan, err := scanToDomain(rows)
+
+		if err != nil {
+			logger.Err(err).Send()
+			return nil, err
+		}
+
+		domains = append(domains, domainFromScan)
+	}
+
+	return domains, err
+}
+
+func scanToDomain(rows pgx.Rows) (*models.Domain, error) {
+	var domain models.Domain
+	err := rows.Scan(
+		&domain.ID,
+		&domain.Name,
+		&domain.CreatedAt,
+		&domain.UpdatedAt,
+	)
+
+	return &domain, err
 }

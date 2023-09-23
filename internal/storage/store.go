@@ -27,6 +27,7 @@ type RoleStore interface {
 
 type DomainStore interface {
 	InsertDomain(domain *models.Domain) (int, error)
+	GetDomains() ([]*models.Domain, error)
 }
 
 type CategoryStore interface {
