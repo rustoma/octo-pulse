@@ -45,6 +45,45 @@ func (s *PostgressArticleStore) InsertArticle(article *models.Article) (int, err
 	return articleId, err
 }
 
+func (s *PostgressArticleStore) GetArticles() ([]*models.Article, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), s.dbTimeout)
+	defer cancel()
+
+	stmt, args, err := pgQb().
+		Select("*").
+		From("public.article").
+		ToSql()
+
+	if err != nil {
+		logger.Err(err).Send()
+		return nil, err
+	}
+
+	rows, err := s.DB.Query(ctx, stmt, args...)
+	defer rows.Close()
+
+	if err != nil {
+		logger.Err(err).Send()
+		return nil, err
+	}
+
+	var articles []*models.Article
+
+	for rows.Next() {
+		articleFromScan, err := scanToArticle(rows)
+
+		if err != nil {
+			logger.Err(err).Send()
+			return nil, err
+		}
+
+		articles = append(articles, articleFromScan)
+	}
+
+	return articles, err
+
+}
+
 func (s *PostgressArticleStore) GetArticle(id int) (*models.Article, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), s.dbTimeout)
