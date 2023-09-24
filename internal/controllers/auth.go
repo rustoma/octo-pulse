@@ -37,7 +37,7 @@ func (c *AuthController) HandleLogin(w http.ResponseWriter, r *http.Request) err
 	authUser, cookie, err := c.authService.Login(userCredentials)
 
 	if err != nil {
-		return err
+		return api.Error{Err: "Cannot login", Status: api.HandleErrorStatus(err)}
 	}
 
 	http.SetCookie(w, cookie)
@@ -73,7 +73,7 @@ func (c *AuthController) HandleRefreshToken(w http.ResponseWriter, r *http.Reque
 	err := api.ReadJSON(w, r, &refreshTokenRequest)
 
 	if err != nil {
-		return api.Error{Err: "refresh token not found", Status: http.StatusUnauthorized}
+		return api.Error{Err: "refresh token not found", Status: api.HandleErrorStatus(err)}
 	}
 
 	encodedJWT, err := c.authService.RefreshToken(refreshTokenRequest)

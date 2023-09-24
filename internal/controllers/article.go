@@ -33,7 +33,7 @@ func (c *ArticleController) HandleGenerateDescritption(w http.ResponseWriter, r 
 	err = c.articleTasks.NewGenerateDescriptionTask(pageId)
 
 	if err != nil {
-		return api.Error{Err: err.Error(), Status: http.StatusInternalServerError}
+		return api.Error{Err: err.Error(), Status: api.HandleErrorStatus(err)}
 	}
 
 	return api.WriteJSON(w, http.StatusOK, "")
@@ -44,7 +44,7 @@ func (c *ArticleController) HandleGetArticles(w http.ResponseWriter, r *http.Req
 	articles, err := c.articleService.GetArticles()
 
 	if err != nil {
-		return api.Error{Err: "Cannot get articles", Status: http.StatusInternalServerError}
+		return api.Error{Err: "Cannot get articles", Status: api.HandleErrorStatus(err)}
 	}
 
 	return api.WriteJSON(w, http.StatusOK, articles)

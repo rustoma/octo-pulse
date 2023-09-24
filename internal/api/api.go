@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"errors"
+	e "github.com/rustoma/octo-pulse/internal/errors"
 	"io"
 	"net/http"
 )
@@ -22,6 +23,17 @@ type apiFunc func(w http.ResponseWriter, r *http.Request) error
 
 func (e Error) Error() string {
 	return e.Err
+}
+
+func HandleErrorStatus(err interface{}) int {
+	switch err.(type) {
+	case e.Unauthorized:
+		return http.StatusUnauthorized
+	case e.BadRequest, e.NotFound:
+		return http.StatusBadRequest
+	default:
+		return http.StatusInternalServerError
+	}
 }
 
 func WriteJSON(w http.ResponseWriter, status int, data interface{}, headers ...http.Header) error {

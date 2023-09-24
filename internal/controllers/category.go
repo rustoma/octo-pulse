@@ -21,7 +21,7 @@ func (c *CategoryController) HandleGetCategories(w http.ResponseWriter, r *http.
 	categories, err := c.categoryService.GetCategories()
 
 	if err != nil {
-		return api.Error{Err: "cannot get categories", Status: http.StatusInternalServerError}
+		return api.Error{Err: "cannot get categories", Status: api.HandleErrorStatus(err)}
 	}
 
 	return api.WriteJSON(w, http.StatusOK, categories)

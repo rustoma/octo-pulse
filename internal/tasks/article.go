@@ -66,7 +66,7 @@ func (t articleTasks) HandleGenerateDescription(ctx context.Context, task *asynq
 		return fmt.Errorf("article with %d not found", payload.ArticleId)
 	}
 
-	description, err := t.articleService.GenerateDescription(payload.ArticleId)
+	description, err := t.articleService.GenerateDescription()
 
 	if err != nil {
 		return err

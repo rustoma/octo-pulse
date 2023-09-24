@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/rustoma/octo-pulse/internal/api"
 	"github.com/rustoma/octo-pulse/internal/dto"
+	e "github.com/rustoma/octo-pulse/internal/errors"
 	"github.com/rustoma/octo-pulse/internal/models"
 	"github.com/rustoma/octo-pulse/internal/storage"
 	"github.com/rustoma/octo-pulse/internal/utils"
@@ -55,13 +55,13 @@ func (a *authService) Login(userCredentials *dto.AuthLogin) (*dto.AuthUser, *htt
 	user, err := a.userStore.GetUserByEmail(userCredentials.Email)
 
 	if err != nil {
-		return nil, nil, api.Error{Err: "user not found", Status: http.StatusBadRequest}
+		return nil, nil, e.NotFound{Err: "user not found"}
 	}
 
 	err = a.CheckPassword(userCredentials.Password, user.PasswordHash)
 
 	if err != nil {
-		return nil, nil, api.Error{Err: "bad user password", Status: http.StatusBadRequest}
+		return nil, nil, e.BadRequest{Err: "bad user password"}
 	}
 
 	JWTTokenClaims := JWTClaims{
@@ -90,7 +90,7 @@ func (a *authService) Login(userCredentials *dto.AuthLogin) (*dto.AuthUser, *htt
 	_, err = a.userStore.UpdateRefreshToken(user.ID, encodedRefreshToken)
 
 	if err != nil {
-		return nil, nil, api.Error{Err: "Internal server error", Status: http.StatusInternalServerError}
+		return nil, nil, err
 	}
 
 	cookie := http.Cookie{
@@ -123,13 +123,13 @@ func (a *authService) Logout(logoutRequest *dto.LogoutRequest) (*http.Cookie, er
 	user, err := a.userStore.SelectUserByRefreshToken(logoutRequest.RefreshToken)
 
 	if err != nil {
-		return cookie, api.Error{Err: "user not found", Status: http.StatusForbidden}
+		return cookie, e.NotFound{Err: "user not found"}
 	}
 
 	_, err = a.userStore.UpdateRefreshToken(user.ID, "")
 
 	if err != nil {
-		return nil, api.Error{Err: "internal server error", Status: http.StatusInternalServerError}
+		return nil, err
 	}
 
 	return cookie, nil
@@ -140,20 +140,20 @@ func (a *authService) RefreshToken(refreshTokenRequest *dto.RefreshTokenRequest)
 	user, err := a.userStore.SelectUserByRefreshToken(refreshTokenRequest.RefreshToken)
 
 	if err != nil {
-		return "", api.Error{Err: "user not found", Status: http.StatusUnauthorized}
+		return "", e.NotFound{Err: err.Error()}
 	}
 
 	token, err := a.parseToken(refreshTokenRequest.RefreshToken)
 
 	if err != nil {
-		return "", api.Error{Err: err.Error(), Status: http.StatusUnauthorized}
+		return "", e.Unauthorized{Err: err.Error()}
 	}
 
 	if claims, ok := token.Claims.(*JWTClaims); ok && token.Valid {
 		userEmail := claims.Email
 
 		if user.Email != userEmail {
-			return "", api.Error{Err: "unauthorized", Status: http.StatusUnauthorized}
+			return "", e.Unauthorized{Err: err.Error()}
 		}
 
 		JWTTokenClaims := JWTClaims{
@@ -169,7 +169,7 @@ func (a *authService) RefreshToken(refreshTokenRequest *dto.RefreshTokenRequest)
 		encodedJWT, _ := a.generateJWTToken(JWTTokenClaims)
 		return encodedJWT, nil
 	} else {
-		return "", api.Error{Err: "JWT Claims are not correct", Status: http.StatusUnauthorized}
+		return "", e.Unauthorized{Err: "JWT Claims are not correct"}
 	}
 }
 

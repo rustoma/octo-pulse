@@ -30,6 +30,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		logger.Fatal().Err(err).Msg("")
 	}
+
 	defer dbpool.Close()
 
 	var (
@@ -62,8 +63,6 @@ func main() {
 			Auth: authService,
 		}
 	)
-
-	_ = store
 
 	//start a web server
 	log.Println("Starting application on port", os.Getenv("PORT"))
