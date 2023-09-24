@@ -6,6 +6,7 @@ import (
 
 	a "github.com/rustoma/octo-pulse/internal/ai"
 	"github.com/rustoma/octo-pulse/internal/api"
+	"github.com/rustoma/octo-pulse/internal/errors"
 	"github.com/rustoma/octo-pulse/internal/models"
 	"github.com/rustoma/octo-pulse/internal/storage"
 )
@@ -14,6 +15,7 @@ type ArticleService interface {
 	GenerateDescription(articleId int) (string, error)
 	UpdateArticle(articleId int, article *models.Article) (int, error)
 	GetArticle(articleId int) (*models.Article, error)
+	GetArticles() ([]*models.Article, error)
 }
 
 type articleService struct {
@@ -52,4 +54,8 @@ func (s *articleService) UpdateArticle(articleId int, article *models.Article) (
 
 func (s *articleService) GetArticle(articleId int) (*models.Article, error) {
 	return s.articleStore.GetArticle(articleId)
+}
+
+func (s *articleService) GetArticles() ([]*models.Article, error) {
+	return s.articleStore.GetArticles()
 }
