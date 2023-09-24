@@ -7,6 +7,7 @@ import (
 
 type DomainService interface {
 	GetDomains() ([]*models.Domain, error)
+	GetDomain(id int) (*models.Domain, error)
 }
 
 type domainService struct {
@@ -19,4 +20,8 @@ func NewDomainService(domainStore storage.DomainStore) DomainService {
 
 func (s *domainService) GetDomains() ([]*models.Domain, error) {
 	return s.domainStore.GetDomains()
+}
+
+func (s *domainService) GetDomain(id int) (*models.Domain, error) {
+	return s.domainStore.GetDomain(id)
 }

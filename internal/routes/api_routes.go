@@ -43,7 +43,7 @@ func NewApiRoutes(controllers ApiControllers, services ApiServices, tasks *tasks
 		r.Use(middlewares.RequireApiKey)
 
 		r.Get("/domains", api.MakeHTTPHandler(controllers.Domain.HandleGetDomains))
-		// r.Get("/domains/{id}", api.MakeHTTPHandler(controllers.Domain.HandleGetDomain))
+		r.Get("/domains/{id}", api.MakeHTTPHandler(controllers.Domain.HandleGetDomain))
 
 		r.Get("/articles", api.MakeHTTPHandler(controllers.Article.HandleGetArticles))
 		// r.Get("/articles/{id}", api.MakeHTTPHandler(controllers.Article.HandleGetArticle))

@@ -2,7 +2,9 @@ package controllers
 
 import (
 	"net/http"
+	"strconv"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/rustoma/octo-pulse/internal/api"
 	"github.com/rustoma/octo-pulse/internal/services"
 )
@@ -21,7 +23,24 @@ func (c *DomainController) HandleGetDomains(w http.ResponseWriter, r *http.Reque
 	domains, err := c.domainService.GetDomains()
 
 	if err != nil {
-		return api.Error{Err: "cannot get domains", Status: http.StatusInternalServerError}
+		return api.Error{Err: "cannot get domains", Status: api.HandleErrorStatus(err)}
+	}
+
+	return api.WriteJSON(w, http.StatusOK, domains)
+}
+
+func (c *DomainController) HandleGetDomain(w http.ResponseWriter, r *http.Request) error {
+	domainIdParam := chi.URLParam(r, "id")
+	domainId, err := strconv.Atoi(domainIdParam)
+
+	if err != nil {
+		return api.Error{Err: "bad request", Status: http.StatusBadRequest}
+	}
+
+	domains, err := c.domainService.GetDomain(domainId)
+
+	if err != nil {
+		return api.Error{Err: "cannot get domain", Status: api.HandleErrorStatus(err)}
 	}
 
 	return api.WriteJSON(w, http.StatusOK, domains)

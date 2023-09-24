@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/Masterminds/squirrel"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rustoma/octo-pulse/internal/models"
@@ -79,6 +80,45 @@ func (s *PostgressDomainStore) GetDomains() ([]*models.Domain, error) {
 	}
 
 	return domains, err
+}
+
+func (s *PostgressDomainStore) GetDomain(id int) (*models.Domain, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), s.dbTimeout)
+	defer cancel()
+
+	stmt, args, err := pgQb().
+		Select("*").
+		From("public.domain").
+		Where(squirrel.Eq{"id": id}).
+		ToSql()
+
+	if err != nil {
+		logger.Err(err).Send()
+		return nil, err
+	}
+
+	rows, err := s.DB.Query(ctx, stmt, args...)
+	defer rows.Close()
+
+	if err != nil {
+		logger.Err(err).Send()
+		return nil, err
+	}
+
+	var domain *models.Domain
+
+	for rows.Next() {
+		domainFromScan, err := scanToDomain(rows)
+
+		if err != nil {
+			logger.Err(err).Send()
+			return nil, err
+		}
+
+		domain = domainFromScan
+	}
+
+	return domain, err
 }
 
 func scanToDomain(rows pgx.Rows) (*models.Domain, error) {
