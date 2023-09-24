@@ -34,6 +34,7 @@ type DomainStore interface {
 type CategoryStore interface {
 	InsertCategory(category *models.Category) (int, error)
 	GetCategories() ([]*models.Category, error)
+	GetCategory(id int) (*models.Category, error)
 }
 
 type CategoriesDomainsStore interface {

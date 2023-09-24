@@ -7,6 +7,7 @@ import (
 
 type CategoryService interface {
 	GetCategories() ([]*models.Category, error)
+	GetCategory(id int) (*models.Category, error)
 }
 
 type categoryService struct {
@@ -19,4 +20,8 @@ func NewCategoryService(categoryStore storage.CategoryStore) CategoryService {
 
 func (s *categoryService) GetCategories() ([]*models.Category, error) {
 	return s.categoryStore.GetCategories()
+}
+
+func (s *categoryService) GetCategory(id int) (*models.Category, error) {
+	return s.categoryStore.GetCategory(id)
 }

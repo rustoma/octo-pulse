@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/Masterminds/squirrel"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rustoma/octo-pulse/internal/models"
@@ -79,6 +80,45 @@ func (s *PostgressCategoryStore) GetCategories() ([]*models.Category, error) {
 	}
 
 	return categories, err
+}
+
+func (s *PostgressCategoryStore) GetCategory(id int) (*models.Category, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), s.dbTimeout)
+	defer cancel()
+
+	stmt, args, err := pgQb().
+		Select("*").
+		From("public.category").
+		Where(squirrel.Eq{"id": id}).
+		ToSql()
+
+	if err != nil {
+		logger.Err(err).Send()
+		return nil, err
+	}
+
+	rows, err := s.DB.Query(ctx, stmt, args...)
+	defer rows.Close()
+
+	if err != nil {
+		logger.Err(err).Send()
+		return nil, err
+	}
+
+	var category *models.Category
+
+	for rows.Next() {
+		categoryFromScan, err := scanToCategory(rows)
+
+		if err != nil {
+			logger.Err(err).Send()
+			return nil, err
+		}
+
+		category = categoryFromScan
+	}
+
+	return category, err
 }
 
 func scanToCategory(rows pgx.Rows) (*models.Category, error) {
