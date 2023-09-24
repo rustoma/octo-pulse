@@ -46,7 +46,7 @@ func NewApiRoutes(controllers ApiControllers, services ApiServices, tasks *tasks
 		r.Get("/domains/{id}", api.MakeHTTPHandler(controllers.Domain.HandleGetDomain))
 
 		r.Get("/articles", api.MakeHTTPHandler(controllers.Article.HandleGetArticles))
-		// r.Get("/articles/{id}", api.MakeHTTPHandler(controllers.Article.HandleGetArticle))
+		r.Get("/articles/{id}", api.MakeHTTPHandler(controllers.Article.HandleGetArticle))
 		r.Get("/articles/{id}/generate-description", api.MakeHTTPHandler(controllers.Article.HandleGenerateDescritption))
 
 		r.Get("/categories", api.MakeHTTPHandler(controllers.Category.HandleGetCategories))

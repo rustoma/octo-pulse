@@ -9,7 +9,7 @@ import (
 type ArticleService interface {
 	GenerateDescription() (string, error)
 	UpdateArticle(articleId int, article *models.Article) (int, error)
-	GetArticle(articleId int) (*models.Article, error)
+	GetArticle(id int) (*models.Article, error)
 	GetArticles() ([]*models.Article, error)
 }
 
@@ -37,8 +37,8 @@ func (s *articleService) UpdateArticle(articleId int, article *models.Article) (
 	return s.articleStore.UpdateArticle(articleId, article)
 }
 
-func (s *articleService) GetArticle(articleId int) (*models.Article, error) {
-	return s.articleStore.GetArticle(articleId)
+func (s *articleService) GetArticle(id int) (*models.Article, error) {
+	return s.articleStore.GetArticle(id)
 }
 
 func (s *articleService) GetArticles() ([]*models.Article, error) {

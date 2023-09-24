@@ -49,3 +49,21 @@ func (c *ArticleController) HandleGetArticles(w http.ResponseWriter, r *http.Req
 
 	return api.WriteJSON(w, http.StatusOK, articles)
 }
+
+func (c *ArticleController) HandleGetArticle(w http.ResponseWriter, r *http.Request) error {
+
+	articleIdParam := chi.URLParam(r, "id")
+	articleId, err := strconv.Atoi(articleIdParam)
+
+	if err != nil {
+		return api.Error{Err: "bad request", Status: http.StatusBadRequest}
+	}
+
+	article, err := c.articleService.GetArticle(articleId)
+
+	if err != nil {
+		return api.Error{Err: "Cannot get article", Status: api.HandleErrorStatus(err)}
+	}
+
+	return api.WriteJSON(w, http.StatusOK, article)
+}
