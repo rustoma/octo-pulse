@@ -38,3 +38,14 @@ func (c *ArticleController) HandleGenerateDescritption(w http.ResponseWriter, r 
 
 	return api.WriteJSON(w, http.StatusOK, "")
 }
+
+func (c *ArticleController) HandleGetArticles(w http.ResponseWriter, r *http.Request) error {
+
+	articles, err := c.articleService.GetArticles()
+
+	if err != nil {
+		return api.Error{Err: "Cannot get articles", Status: http.StatusInternalServerError}
+	}
+
+	return api.WriteJSON(w, http.StatusOK, articles)
+}
