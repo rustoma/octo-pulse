@@ -73,7 +73,7 @@ func (c *AuthController) HandleRefreshToken(w http.ResponseWriter, r *http.Reque
 	err := api.ReadJSON(w, r, &refreshTokenRequest)
 
 	if err != nil {
-		return api.Error{Err: "refresh token not found", Status: api.HandleErrorStatus(err)}
+		return api.Error{Err: "refresh token not found", Status: http.StatusBadRequest}
 	}
 
 	encodedJWT, err := c.authService.RefreshToken(refreshTokenRequest)

@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/rustoma/octo-pulse/internal/api"
+	"github.com/rustoma/octo-pulse/internal/models"
 	"github.com/rustoma/octo-pulse/internal/services"
 	"github.com/rustoma/octo-pulse/internal/tasks"
 )
@@ -66,4 +67,29 @@ func (c *ArticleController) HandleGetArticle(w http.ResponseWriter, r *http.Requ
 	}
 
 	return api.WriteJSON(w, http.StatusOK, article)
+}
+
+func (c *ArticleController) HandleUpdateArticle(w http.ResponseWriter, r *http.Request) error {
+	var article *models.Article
+
+	articleIdParam := chi.URLParam(r, "id")
+	articleId, err := strconv.Atoi(articleIdParam)
+
+	if err != nil {
+		return api.Error{Err: "bad request", Status: http.StatusBadRequest}
+	}
+
+	err = api.ReadJSON(w, r, &article)
+
+	if err != nil {
+		return api.Error{Err: err.Error(), Status: http.StatusBadRequest}
+	}
+
+	updatedArticle, err := c.articleService.UpdateArticle(articleId, article)
+
+	if err != nil {
+		return api.Error{Err: err.Error(), Status: api.HandleErrorStatus(err)}
+	}
+
+	return api.WriteJSON(w, http.StatusOK, updatedArticle)
 }

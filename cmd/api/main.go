@@ -17,6 +17,7 @@ import (
 	"github.com/rustoma/octo-pulse/internal/services"
 	postgresstore "github.com/rustoma/octo-pulse/internal/storage/postgresStore"
 	ts "github.com/rustoma/octo-pulse/internal/tasks"
+	"github.com/rustoma/octo-pulse/internal/validator"
 )
 
 var logger *zerolog.Logger
@@ -38,9 +39,11 @@ func main() {
 		ai = ai.NewAI()
 		//Storage
 		store = postgresstore.NewPostgresStorage(dbpool)
+		//Validator
+		validator = validator.NewValidator()
 		//Services
 		authService     = services.NewAuthService(store.User)
-		articleService  = services.NewArticleService(store.Article, ai)
+		articleService  = services.NewArticleService(store.Article, validator.Article, ai)
 		domainService   = services.NewDomainService(store.Domain)
 		categoryService = services.NewCategoryService(store.Category)
 		//Tasks
