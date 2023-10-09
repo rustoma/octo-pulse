@@ -4,6 +4,7 @@ import (
 	a "github.com/rustoma/octo-pulse/internal/ai"
 	"github.com/rustoma/octo-pulse/internal/models"
 	"github.com/rustoma/octo-pulse/internal/storage"
+	"github.com/rustoma/octo-pulse/internal/validator"
 )
 
 type ArticleService interface {
@@ -14,12 +15,13 @@ type ArticleService interface {
 }
 
 type articleService struct {
-	articleStore storage.ArticleStore
-	ai           *a.AI
+	articleStore     storage.ArticleStore
+	articleValidator validator.ArticleValidatorer
+	ai               *a.AI
 }
 
-func NewArticleService(articleStore storage.ArticleStore, ai *a.AI) ArticleService {
-	return &articleService{articleStore: articleStore, ai: ai}
+func NewArticleService(articleStore storage.ArticleStore, articleValidator validator.ArticleValidatorer, ai *a.AI) ArticleService {
+	return &articleService{articleStore: articleStore, articleValidator: articleValidator, ai: ai}
 }
 
 func (s *articleService) GenerateDescription() (string, error) {
@@ -34,6 +36,12 @@ func (s *articleService) GenerateDescription() (string, error) {
 }
 
 func (s *articleService) UpdateArticle(articleId int, article *models.Article) (int, error) {
+	err := s.articleValidator.Validate(article)
+
+	if err != nil {
+		return 0, err
+	}
+
 	return s.articleStore.UpdateArticle(articleId, article)
 }
 
