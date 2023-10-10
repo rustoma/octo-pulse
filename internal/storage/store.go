@@ -12,6 +12,7 @@ type Store struct {
 	Author            AuthorStore
 	Article           ArticleStore
 	CategoriesDomains CategoriesDomainsStore
+	Scrapper          ScrapperStore
 }
 
 type UserStore interface {
@@ -50,4 +51,8 @@ type ArticleStore interface {
 	GetArticle(id int) (*models.Article, error)
 	GetArticles() ([]*models.Article, error)
 	UpdateArticle(id int, article *models.Article) (int, error)
+}
+
+type ScrapperStore interface {
+	GetQuestion(id int) (*models.Question, error)
 }

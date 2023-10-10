@@ -6,7 +6,9 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"time"
 
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
 	"github.com/rs/zerolog"
 	"github.com/rustoma/octo-pulse/internal/ai"
@@ -15,7 +17,9 @@ import (
 	lr "github.com/rustoma/octo-pulse/internal/logger"
 	"github.com/rustoma/octo-pulse/internal/routes"
 	"github.com/rustoma/octo-pulse/internal/services"
+	"github.com/rustoma/octo-pulse/internal/storage"
 	postgresstore "github.com/rustoma/octo-pulse/internal/storage/postgresStore"
+	sqlstore "github.com/rustoma/octo-pulse/internal/storage/sqlStore"
 	ts "github.com/rustoma/octo-pulse/internal/tasks"
 	"github.com/rustoma/octo-pulse/internal/validator"
 )
@@ -31,14 +35,36 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		logger.Fatal().Err(err).Msg("")
 	}
-
+	logger.Info().Msg("Connected to the Postgress DB")
 	defer dbpool.Close()
+
+	//Init SQL DB
+	db, err := db.SqlConnect()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to connect to SQL database: %v\n", err)
+		logger.Fatal().Err(err).Msg("")
+	}
+	logger.Info().Msg("Connected to the SQL DB")
+	db.SetConnMaxLifetime(time.Minute * 3)
+	db.SetMaxOpenConns(10)
+	db.SetMaxIdleConns(10)
 
 	var (
 		//AI
 		ai = ai.NewAI()
 		//Storage
-		store = postgresstore.NewPostgresStorage(dbpool)
+		postgressStore = postgresstore.NewPostgresStorage(dbpool)
+		sqlStore       = sqlstore.NewSqlStorage(db)
+		store          = storage.Store{
+			User:              postgressStore.User,
+			Role:              postgressStore.Role,
+			Domain:            postgressStore.Domain,
+			Category:          postgressStore.Category,
+			Author:            postgressStore.Author,
+			Article:           postgressStore.Article,
+			CategoriesDomains: postgressStore.CategoriesDomains,
+			Scrapper:          sqlStore.Scrapper,
+		}
 		//Validator
 		validator = validator.NewValidator()
 		//Services
@@ -46,6 +72,7 @@ func main() {
 		articleService  = services.NewArticleService(store.Article, validator.Article, ai)
 		domainService   = services.NewDomainService(store.Domain)
 		categoryService = services.NewCategoryService(store.Category)
+		scrapperService = services.NewScrapperService(store.Scrapper)
 		//Tasks
 		tasks         = ts.NewTasks(articleService)
 		taskInspector = ts.NewTaskInspector()
@@ -66,6 +93,14 @@ func main() {
 			Auth: authService,
 		}
 	)
+
+	question, err := scrapperService.GetQuestion(354)
+
+	if err != nil {
+		logger.Err(err).Send()
+	}
+
+	logger.Info().Interface("question: ", question).Send()
 
 	//start a web server
 	log.Println("Starting application on port", os.Getenv("PORT"))

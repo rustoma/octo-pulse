@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"database/sql"
 	"os"
 	"path/filepath"
 
@@ -15,9 +16,12 @@ var logger *zerolog.Logger
 
 func Connect() (*pgxpool.Pool, error) {
 	dbpool, err := pgxpool.New(context.Background(), os.Getenv("DATABASE_URL"))
-	logger.Info().Msg("Connected to the DB")
-
 	return dbpool, err
+}
+
+func SqlConnect() (*sql.DB, error) {
+	db, err := sql.Open("mysql", os.Getenv("BOT_DATABASE_URL"))
+	return db, err
 }
 
 func init() {

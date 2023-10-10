@@ -10,8 +10,18 @@ import (
 
 var logger *zerolog.Logger
 
-func NewPostgresStorage(DB *pgxpool.Pool) *storage.Store {
-	return &storage.Store{
+type PostgressStore struct {
+	User              storage.UserStore
+	Role              storage.RoleStore
+	Domain            storage.DomainStore
+	Category          storage.CategoryStore
+	Author            storage.AuthorStore
+	Article           storage.ArticleStore
+	CategoriesDomains storage.CategoriesDomainsStore
+}
+
+func NewPostgresStorage(DB *pgxpool.Pool) *PostgressStore {
+	return &PostgressStore{
 		User:              NewUserStore(DB),
 		Role:              NewRoleStore(DB),
 		Domain:            NewDomainStore(DB),
