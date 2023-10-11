@@ -39,7 +39,7 @@ func main() {
 	srv := asynq.NewServer(
 		asynq.RedisClientOpt{Addr: os.Getenv("REDIS_ADDR"), Password: os.Getenv("REDIS_PASSWORD")},
 		asynq.Config{
-			Concurrency: 2,
+			Concurrency: 1,
 		},
 	)
 
