@@ -40,6 +40,7 @@ type CategoryStore interface {
 
 type CategoriesDomainsStore interface {
 	AsignCategoryToDomain(categoryId int, domainId int) error
+	GetDomainCategories(domainId int) ([]int, error)
 }
 
 type AuthorStore interface {
@@ -53,6 +54,12 @@ type ArticleStore interface {
 	UpdateArticle(id int, article *models.Article) (int, error)
 }
 
+type GetQuestionsFilters struct {
+	CategoryId int
+}
+
 type ScrapperStore interface {
 	GetQuestion(id int) (*models.Question, error)
+	GetQuestions(filters ...*GetQuestionsFilters) ([]*models.Question, error)
+	UpdateQuestion(id int, question *models.Question) error
 }
