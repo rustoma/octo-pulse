@@ -12,6 +12,7 @@ type ArticleService interface {
 	UpdateArticle(articleId int, article *models.Article) (int, error)
 	GetArticle(id int) (*models.Article, error)
 	GetArticles() ([]*models.Article, error)
+	CreateArticle(article *models.Article) (int, error)
 }
 
 type articleService struct {
@@ -22,6 +23,15 @@ type articleService struct {
 
 func NewArticleService(articleStore storage.ArticleStore, articleValidator validator.ArticleValidatorer, ai *a.AI) ArticleService {
 	return &articleService{articleStore: articleStore, articleValidator: articleValidator, ai: ai}
+}
+
+func (s *articleService) CreateArticle(article *models.Article) (int, error) {
+	err := s.articleValidator.Validate(article)
+	if err != nil {
+		return 0, err
+	}
+
+	return s.articleStore.InsertArticle(article)
 }
 
 func (s *articleService) GenerateDescription() (string, error) {
