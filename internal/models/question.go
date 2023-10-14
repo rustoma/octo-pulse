@@ -6,4 +6,6 @@ type Question struct {
 	Answear     string `json:"answear"`
 	Href        string `json:"href"`
 	PageContent string `json:"pageContent"`
+	Fetched     int    `json:"fetched"`
+	CategoryId  int    `json:"categoryId"`
 }
