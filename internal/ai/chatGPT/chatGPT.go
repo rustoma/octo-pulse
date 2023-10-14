@@ -2,10 +2,15 @@ package chatgpt
 
 import (
 	"context"
+	"encoding/json"
+	"errors"
 	"os"
+	"regexp"
+	"strconv"
 
 	"github.com/rs/zerolog"
 	lr "github.com/rustoma/octo-pulse/internal/logger"
+	"github.com/rustoma/octo-pulse/internal/models"
 	"github.com/sashabaranov/go-openai"
 )
 
@@ -13,6 +18,7 @@ var logger *zerolog.Logger
 
 type ChatGPTer interface {
 	GenerateArticleDescription() (string, error)
+	AssignToCategory(categories []*models.Category, question *models.Question) (int, error)
 }
 
 type chatGPT struct {
@@ -27,6 +33,55 @@ func NewChatGPT() ChatGPTer {
 		retriesLimit: 2,
 		Client:       client,
 	}
+}
+
+func (c *chatGPT) AssignToCategory(categories []*models.Category, question *models.Question) (int, error) {
+
+	categoriesJSON, err := json.Marshal(categories)
+	if err != nil {
+		return 0, err
+	}
+
+	messages := []openai.ChatCompletionMessage{
+		{
+			Role: openai.ChatMessageRoleUser,
+			Content: "Tytuł artykułu to: " + question.Question + "\n" +
+				"Opis artykułu: " + question.Answear + "\n\n" +
+
+				"Dostępne kategorie: " + string(categoriesJSON) + "\n\n" +
+
+				"Przypasuj tytuł artykułu do jednej z podanych kategorii. Zwróć jedynie id kategorii. \n\n" +
+
+				"Odpowiedź według zaleceń: \n\n" +
+
+				"- zwróć jedynie id kategorii do której pasuje tytuł \n" +
+				"- jeżeli tytuł nie pasuje do żadnej kategorii zwróć 0 \n" +
+				"- id kategorii zwróć pomiędzy trzema myślnikami \n\n" +
+
+				"Przykład poprawnej odpowiedzi: ---133---",
+		},
+	}
+
+	logger.Info().Interface("message: ", messages).Send()
+
+	resp, err := c.ask(messages)
+
+	logger.Info().Interface("respond: ", resp).Send()
+	if err != nil {
+		return 0, err
+	}
+
+	re := regexp.MustCompile(`---(\d+)---`)
+	match := re.FindStringSubmatch(resp)
+	if match == nil {
+		return 0, errors.New("No integer found in the respond from AssignToCategory")
+	}
+
+	categoryId, err := strconv.Atoi(match[1])
+	if err != nil {
+		return 0, err
+	}
+	return categoryId, nil
 }
 
 func (c *chatGPT) GenerateArticleDescription() (string, error) {
