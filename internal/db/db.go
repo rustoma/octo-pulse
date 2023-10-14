@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
@@ -21,6 +22,9 @@ func Connect() (*pgxpool.Pool, error) {
 
 func SqlConnect() (*sql.DB, error) {
 	db, err := sql.Open("mysql", os.Getenv("BOT_DATABASE_URL"))
+	db.SetConnMaxLifetime(time.Minute * 3)
+	db.SetMaxOpenConns(10)
+	db.SetMaxIdleConns(10)
 	return db, err
 }
 
