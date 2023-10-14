@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/rustoma/octo-pulse/internal/api"
+	"github.com/rustoma/octo-pulse/internal/dto"
 	"github.com/rustoma/octo-pulse/internal/models"
 	"github.com/rustoma/octo-pulse/internal/services"
 	"github.com/rustoma/octo-pulse/internal/tasks"
@@ -21,6 +22,22 @@ func NewArticleController(articleService services.ArticleService, articleTasks t
 		articleService: articleService,
 		articleTasks:   articleTasks,
 	}
+}
+
+func (c *ArticleController) HandleGenerateArticles(w http.ResponseWriter, r *http.Request) error {
+	var request *dto.GenerateArticlesRequest
+	err := api.ReadJSON(w, r, &request)
+	if err != nil {
+		return api.Error{Err: "bad request", Status: http.StatusBadRequest}
+	}
+
+	err = c.articleTasks.NewGenerateArticlesTask(request.DomainId, request.NumberOfArtilces, request.QuestionCategoryId)
+
+	if err != nil {
+		return api.Error{Err: err.Error(), Status: api.HandleErrorStatus(err)}
+	}
+
+	return api.WriteJSON(w, http.StatusOK, "Generate articles tasks created successfully")
 }
 
 func (c *ArticleController) HandleGenerateDescritption(w http.ResponseWriter, r *http.Request) error {
