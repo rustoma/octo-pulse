@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -40,4 +41,51 @@ func (s *PostgressCategoriesDomainsStore) AsignCategoryToDomain(categoryId int, 
 
 	err = s.DB.QueryRow(ctx, stmt, args...).Scan(&assingedDomainId, &assignedCategoryId)
 	return err
+}
+
+func (s *PostgressCategoriesDomainsStore) GetDomainCategories(domainId int) ([]int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), s.dbTimeout)
+	defer cancel()
+
+	stmt, args, err := pgQb().
+		Select("category_id").
+		From("public.categories_domains").
+		ToSql()
+
+	if err != nil {
+		logger.Err(err).Send()
+		return nil, err
+	}
+
+	rows, err := s.DB.Query(ctx, stmt, args...)
+	defer rows.Close()
+
+	if err != nil {
+		logger.Err(err).Send()
+		return nil, err
+	}
+
+	var categoriesId []int
+
+	for rows.Next() {
+		categoryIdFromScan, err := scanToCategoryId(rows)
+
+		if err != nil {
+			logger.Err(err).Send()
+			return nil, err
+		}
+
+		categoriesId = append(categoriesId, categoryIdFromScan)
+	}
+
+	return categoriesId, err
+}
+
+func scanToCategoryId(rows pgx.Rows) (int, error) {
+	var categoryId int
+	err := rows.Scan(
+		&categoryId,
+	)
+
+	return categoryId, err
 }
