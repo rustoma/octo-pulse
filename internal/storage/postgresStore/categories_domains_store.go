@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/Masterminds/squirrel"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -50,6 +51,7 @@ func (s *PostgressCategoriesDomainsStore) GetDomainCategories(domainId int) ([]i
 	stmt, args, err := pgQb().
 		Select("category_id").
 		From("public.categories_domains").
+		Where(squirrel.Eq{"domain_id": domainId}).
 		ToSql()
 
 	if err != nil {
