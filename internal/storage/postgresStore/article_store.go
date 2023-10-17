@@ -45,6 +45,26 @@ func (s *PostgressArticleStore) InsertArticle(article *models.Article) (int, err
 	return articleId, err
 }
 
+func (s *PostgressArticleStore) DeleteArticle(id int) (int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), s.dbTimeout)
+	defer cancel()
+
+	stmt, args, err := pgQb().
+		Delete("public.article").
+		Where(squirrel.Eq{"id": id}).
+		Suffix("RETURNING \"id\"").
+		ToSql()
+
+	if err != nil {
+		return 0, err
+	}
+
+	var articleId int
+
+	err = s.DB.QueryRow(ctx, stmt, args...).Scan(&articleId)
+	return articleId, err
+}
+
 func (s *PostgressArticleStore) GetArticles() ([]*models.Article, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), s.dbTimeout)
 	defer cancel()

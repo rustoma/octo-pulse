@@ -52,6 +52,7 @@ type ArticleStore interface {
 	GetArticle(id int) (*models.Article, error)
 	GetArticles() ([]*models.Article, error)
 	UpdateArticle(id int, article *models.Article) (int, error)
+	DeleteArticle(id int) (int, error)
 }
 
 type GetQuestionsFilters struct {
