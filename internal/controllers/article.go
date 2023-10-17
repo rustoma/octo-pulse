@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -109,4 +110,21 @@ func (c *ArticleController) HandleUpdateArticle(w http.ResponseWriter, r *http.R
 	}
 
 	return api.WriteJSON(w, http.StatusOK, updatedArticle)
+}
+
+func (c *ArticleController) HandleDeleteArticle(w http.ResponseWriter, r *http.Request) error {
+	articleIdParam := chi.URLParam(r, "id")
+	articleId, err := strconv.Atoi(articleIdParam)
+
+	if err != nil {
+		return api.Error{Err: "bad request", Status: http.StatusBadRequest}
+	}
+
+	article, err := c.articleService.DeleteArticle(articleId)
+
+	if err != nil {
+		return api.Error{Err: fmt.Sprintf("cannot delete article with ID: %d , err: %+v\n", articleId, err), Status: api.HandleErrorStatus(err)}
+	}
+
+	return api.WriteJSON(w, http.StatusOK, article)
 }

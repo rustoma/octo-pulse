@@ -13,6 +13,7 @@ type ArticleService interface {
 	GetArticle(id int) (*models.Article, error)
 	GetArticles() ([]*models.Article, error)
 	CreateArticle(article *models.Article) (int, error)
+	DeleteArticle(id int) (int, error)
 }
 
 type articleService struct {
@@ -32,6 +33,10 @@ func (s *articleService) CreateArticle(article *models.Article) (int, error) {
 	}
 
 	return s.articleStore.InsertArticle(article)
+}
+
+func (s *articleService) DeleteArticle(id int) (int, error) {
+	return s.articleStore.DeleteArticle(id)
 }
 
 func (s *articleService) GenerateDescription() (string, error) {
