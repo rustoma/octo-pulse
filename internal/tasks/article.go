@@ -48,7 +48,8 @@ func NewArticleTasks(
 }
 
 type DescriptionTaskPayload struct {
-	ArticleId int
+	ArticleId  int
+	QuestionId int
 }
 
 type GenerateArticlesTaskPayload struct {
@@ -82,11 +83,11 @@ func (t articleTasks) NewGenerateArticlesTask(domainId int, numberOfArticlesToCr
 	return nil
 }
 
-func (t articleTasks) NewGenerateDescriptionTask(articleId int) error {
+func (t articleTasks) NewGenerateDescriptionTask(articleId int, questionId int) error {
 	client := asynq.NewClient(asynq.RedisClientOpt{Addr: os.Getenv("REDIS_ADDR"), Password: os.Getenv("REDIS_PASSWORD")})
 	defer client.Close()
 
-	payload, err := json.Marshal(DescriptionTaskPayload{ArticleId: articleId})
+	payload, err := json.Marshal(DescriptionTaskPayload{ArticleId: articleId, QuestionId: questionId})
 	if err != nil {
 		return err
 	}
@@ -110,6 +111,7 @@ func (t articleTasks) HandleGenerateDescription(ctx context.Context, task *asynq
 	}
 
 	article, err := t.articleService.GetArticle(payload.ArticleId)
+	question, err := t.scrapperService.GetQuestion(payload.QuestionId)
 
 	if err != nil {
 		return err
@@ -119,7 +121,7 @@ func (t articleTasks) HandleGenerateDescription(ctx context.Context, task *asynq
 		return fmt.Errorf("article with %d not found", payload.ArticleId)
 	}
 
-	description, err := t.articleService.GenerateDescription()
+	description, err := t.articleService.GenerateDescription(question)
 
 	if err != nil {
 		return err
@@ -212,7 +214,7 @@ func (t articleTasks) HandleGenerateArticles(ctx context.Context, task *asynq.Ta
 		}
 
 		//Generate Description For article
-		_ = t.NewGenerateDescriptionTask(articleId)
+		_ = t.NewGenerateDescriptionTask(articleId, question.Id)
 	}
 
 	return nil

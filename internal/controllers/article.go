@@ -42,6 +42,12 @@ func (c *ArticleController) HandleGenerateArticles(w http.ResponseWriter, r *htt
 }
 
 func (c *ArticleController) HandleGenerateDescritption(w http.ResponseWriter, r *http.Request) error {
+	var request *dto.GenerateDescriptionRequest
+	err := api.ReadJSON(w, r, &request)
+	if err != nil {
+		return api.Error{Err: "bad request", Status: http.StatusBadRequest}
+	}
+
 	pageIdParam := chi.URLParam(r, "id")
 	pageId, err := strconv.Atoi(pageIdParam)
 
@@ -49,7 +55,7 @@ func (c *ArticleController) HandleGenerateDescritption(w http.ResponseWriter, r 
 		return api.Error{Err: "bad request", Status: http.StatusBadRequest}
 	}
 
-	err = c.articleTasks.NewGenerateDescriptionTask(pageId)
+	err = c.articleTasks.NewGenerateDescriptionTask(pageId, request.QuestionId)
 
 	if err != nil {
 		return api.Error{Err: err.Error(), Status: api.HandleErrorStatus(err)}

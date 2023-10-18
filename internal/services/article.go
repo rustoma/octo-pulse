@@ -8,7 +8,7 @@ import (
 )
 
 type ArticleService interface {
-	GenerateDescription() (string, error)
+	GenerateDescription(question *models.Question) (string, error)
 	UpdateArticle(articleId int, article *models.Article) (int, error)
 	GetArticle(id int) (*models.Article, error)
 	GetArticles() ([]*models.Article, error)
@@ -39,9 +39,9 @@ func (s *articleService) DeleteArticle(id int) (int, error) {
 	return s.articleStore.DeleteArticle(id)
 }
 
-func (s *articleService) GenerateDescription() (string, error) {
+func (s *articleService) GenerateDescription(question *models.Question) (string, error) {
 
-	description, err := s.ai.ChatGPT.GenerateArticleDescription()
+	description, err := s.ai.ChatGPT.GenerateArticleDescription(question)
 
 	if err != nil {
 		return "", err

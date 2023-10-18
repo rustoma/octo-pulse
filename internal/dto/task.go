@@ -10,3 +10,7 @@ type GenerateArticlesRequest struct {
 	NumberOfArtilces   int `json:"numberOfArtilces"`
 	QuestionCategoryId int `json:"questionCategoryId"`
 }
+
+type GenerateDescriptionRequest struct {
+	QuestionId int `json:"questionId"`
+}
