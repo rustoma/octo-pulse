@@ -1,9 +1,11 @@
 package chatgpt
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"os"
 	"regexp"
 	"strconv"
@@ -17,7 +19,7 @@ import (
 var logger *zerolog.Logger
 
 type ChatGPTer interface {
-	GenerateArticleDescription() (string, error)
+	GenerateArticleDescription(question *models.Question) (string, error)
 	AssignToCategory(categories []*models.Category, question *models.Question) (int, error)
 }
 
@@ -84,22 +86,166 @@ func (c *chatGPT) AssignToCategory(categories []*models.Category, question *mode
 	return categoryId, nil
 }
 
-func (c *chatGPT) GenerateArticleDescription() (string, error) {
+type Subtitle struct {
+	Title     string   `json:"title"`
+	Subtitles []string `json:"subtitles"`
+}
+
+type ArticleAgenda struct {
+	MainTitle string     `json:"mainTitle"`
+	Subtitles []Subtitle `json:"subtitles"`
+}
+
+func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string, error) {
+
+	var articleDescription bytes.Buffer
 
 	messages := []openai.ChatCompletionMessage{
 		{
-			Role:    openai.ChatMessageRoleUser,
-			Content: "Wygeneruj losowy tekst",
+			Role: openai.ChatMessageRoleUser,
+			Content: "Napisz streszczenie, które może posłużyć jako informację do napisania artykułu po polsku. \n" +
+				"Wypisz w punktach jakie tematy zostaną poruszone na podstawie poniższych danych: \n\n" +
+
+				"Temat główny: " + question.Question + "\n\n" +
+
+				question.Answear,
 		},
 	}
 
 	resp, err := c.ask(messages)
-
 	if err != nil {
 		return "", err
 	}
 
-	return resp, nil
+	messages = append(messages,
+		openai.ChatCompletionMessage{
+			Role:    openai.ChatMessageRoleSystem,
+			Content: resp,
+		},
+		openai.ChatCompletionMessage{
+			Role: openai.ChatMessageRoleUser,
+			Content: "Na podstawie streszczenia które podałeś zwróć obiekt z nagłówkami i podrzędnymi nagłówkami, które mogą posłużyć do napisania takiego artykułu.\n" +
+				"Zwróć poprawny json string na wzór: \n\n" +
+
+				`{"mainTitle": {{question.Question}}, "subtitles": [{"title": "Subtitle1", "subtitles": ["Subtitle1", "Subtitle2"]},{"title": "Subtitle2", "subtitles": ["Subtitle1", "Subtitle2"]}]}` + "\n\n" +
+				"Nie dodawaj znaczników '\n'. Wszystko zwróć w jedej linii",
+		})
+
+	resp, err = c.ask(messages)
+	if err != nil {
+		return "", err
+	}
+
+	logger.Info().Interface("resp: ", resp).Send()
+
+	var articleAgenda ArticleAgenda
+	err = json.Unmarshal([]byte(resp), &articleAgenda)
+	if err != nil {
+		return "", err
+	}
+
+	logger.Info().Interface("articleAgenda: ", articleAgenda).Send()
+
+	messages = []openai.ChatCompletionMessage{
+		{
+			Role: openai.ChatMessageRoleUser,
+			Content: "Styl odpowiedzi powinien być profesjonalny. Będzie to artykuł gdzie odbiorca będzie mógł zaczerpnąć informacji. \n\n" +
+				"Na podstawie zadanego tytułu zwróć krótki wstęp do artykułu. \n\n" +
+				"Podtytułami dla tego artykułu będą podtytuły jak w poniższej tablicy: \n\n" +
+				fmt.Sprintf("%+v", articleAgenda.Subtitles) + "\n\n" +
+
+				"Tytuł artykułu to: " + articleAgenda.MainTitle + "\n\n" +
+
+				"Stosuj się do poniższych wymagań: \n\n" +
+
+				"- Napisz tylko wstęp dla tego tytułu nie odpowiadaj na żadne podtytuły. \n" +
+				"- Długość wstępu powinina mieć minimum 1500 liter. \n" +
+				"- Możesz zdefiniować kilka paragrafów, aby osiągnąć wymaganą długość wstępu. \n" +
+				"- Długość wstępu jest wymagana! Powinna być bezwględnie przestrzegana! \n" +
+				"- Wstęp powinnien zaweirać co najmniej 5 paragrafów. Paragraf to tag <p> \n" +
+				"- Tekst zwróć jako HTML. Tytuł artykułu powinien być w tagu <h1> \n" +
+				"- Zwróć jedynie HTML z tekstem tak, aby dało się go dołączyć do już isntniejącego HTML. \n" +
+				"- Odpowiedz jedynie HTML, tak abym całą odpowiedź mógł to skopiować i wkleić. \n" +
+				"- Dozwolone tagi HTML to : <p>, <ul>, <li>, <ol>, <br>, <strong>, <h1> \n" +
+				"- Nie dodawaj żadnych instrukcji od siebie.",
+		},
+	}
+
+	resp, err = c.ask(messages)
+	if err != nil {
+		return "", err
+	}
+	articleDescription.WriteString(resp)
+
+	logger.Info().Interface("intro for article: ", resp).Send()
+
+	for _, subtitle := range articleAgenda.Subtitles {
+		messages = []openai.ChatCompletionMessage{
+			{
+				Role: openai.ChatMessageRoleUser,
+				Content: "Styl odpowiedzi powinien być profesjonalny. Będzie to artykuł gdzie odbiorca będzie mógł zaczerpnąć informacji. \n\n" +
+					"Na podstawie zadanego tytułu rozwiń tekst, tak aby był częścią artykułu. \n\n" +
+					"Podtytułami dla tego tematu będą podtytuły jak w poniższej tablicy: \n\n" +
+					fmt.Sprintf("%+v", subtitle.Subtitles) + "\n\n" +
+
+					"Tytuł artykułu to: " + subtitle.Title + "\n\n" +
+
+					"Stosuj się do poniższych wymagań: \n\n" +
+
+					"- Tekst zwróć jako HTML. Tytuł artykułu powinien być w tagu <h2> \n" +
+					"- Zwróć jedynie HTML z tekstem tak, aby dało się go dołączyć do już isntniejącego HTML. \n" +
+					"- Odpowiedz jedynie HTML, tak abym całą odpowiedź mógł to skopiować i wkleić. \n" +
+					"- Odpowiedz jedynie za pomocą HTML. Nie pisz mi nic co mam z nim zrobić, ani że jest to odpowiedź." +
+					"- Tekst powinnien zawierać co najmniej 5 paragrafów. Paragraf to tag <p> \n" +
+					"- Tekst powinnien być długi. \n" +
+					"- W tekście nie odpowiadaj na żadne podtytuły. \n" +
+					"- Dozwolone tagi HTML to : <p>, <ul>, <li>, <ol>, <br>, <strong>, <h2>",
+			},
+		}
+
+		resp, err = c.ask(messages)
+		if err != nil {
+			return "", err
+		}
+		articleDescription.WriteString(resp)
+
+		logger.Info().Interface("subtitle: ", resp).Send()
+
+		for _, subtitle3lvl := range subtitle.Subtitles {
+			messages = []openai.ChatCompletionMessage{
+				{
+					Role: openai.ChatMessageRoleUser,
+					Content: "Styl odpowiedzi powinien być profesjonalny. Będzie to artykuł gdzie odbiorca będzie mógł zaczerpnąć informacji. \n\n" +
+						"Na podstawie zadanego tytułu rozwiń tekst, tak aby był częścią artykułu. \n\n" +
+						"Zadany tytuł jest to podtytuł tytułu głównego jak poniżej: \n\n" +
+						subtitle.Title + "\n\n" +
+
+						"Zadany tytuł to: " + subtitle3lvl + "\n\n" +
+
+						"Stosuj się do poniższych wymagań: \n\n" +
+
+						"- Tekst zwróć jako HTML. Zadany Tytuł artykułu powinien być w tagu <h3> \n" +
+						"- Zwróć jedynie HTML z tekstem tak, aby dało się go dołączyć do już isntniejącego HTML. \n" +
+						"- Odpowiedz jedynie HTML, tak abym całą odpowiedź mógł to skopiować i wkleić. \n" +
+						"- Odpowiedz jedynie za pomocą HTML. Nie pisz mi nic co mam z nim zrobić, ani że jest to odpowiedź." +
+						"- Tekst powinnien być długi. \n" +
+						"- Tekst powinnien zawierać co najmniej 5 paragrafów. Paragraf to tag <p> \n" +
+						"- Dozwolone tagi HTML to : <p>, <ul>, <li>, <ol>, <br>, <strong>, <h3>",
+				},
+			}
+
+			resp, err = c.ask(messages)
+			if err != nil {
+				return "", err
+			}
+			articleDescription.WriteString(resp)
+
+			logger.Info().Interface("subtitle 3lvl: ", resp).Send()
+		}
+
+	}
+
+	return articleDescription.String(), nil
 }
 
 func (ai *chatGPT) newChatCompletion(messages []openai.ChatCompletionMessage) (openai.ChatCompletionResponse, error) {
