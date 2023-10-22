@@ -184,22 +184,27 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 			{
 				Role: openai.ChatMessageRoleUser,
 				Content: "Styl odpowiedzi powinien być profesjonalny. Będzie to artykuł gdzie odbiorca będzie mógł zaczerpnąć informacji. \n\n" +
-					"Na podstawie zadanego tytułu rozwiń tekst, tak aby był częścią artykułu. \n\n" +
-					"Podtytułami dla tego tematu będą podtytuły jak w poniższej tablicy: \n\n" +
+					"Rozwiń zadany podtytuł. \n\n" +
+					"Podtytułami dla zadanego podtytułu będą podtytuły jak w poniższej tablicy: \n\n" +
 					fmt.Sprintf("%+v", subtitle.Subtitles) + "\n\n" +
 
-					"Tytuł artykułu to: " + subtitle.Title + "\n\n" +
+					"Zadany podtytuł to: " + subtitle.Title + "\n\n" +
 
 					"Stosuj się do poniższych wymagań: \n\n" +
 
-					"- Tekst zwróć jako HTML. Tytuł artykułu powinien być w tagu <h2> \n" +
+					"- Tekst zwróć jako HTML. Zadany podtytuł powinien być w tagu <h2> \n" +
 					"- Zwróć jedynie HTML z tekstem tak, aby dało się go dołączyć do już isntniejącego HTML. \n" +
 					"- Odpowiedz jedynie HTML, tak abym całą odpowiedź mógł to skopiować i wkleić. \n" +
 					"- Odpowiedz jedynie za pomocą HTML. Nie pisz mi nic co mam z nim zrobić, ani że jest to odpowiedź." +
 					"- Tekst powinnien zawierać co najmniej 5 paragrafów. Paragraf to tag <p> \n" +
 					"- Tekst powinnien być długi. \n" +
 					"- W tekście nie odpowiadaj na żadne podtytuły. \n" +
-					"- Dozwolone tagi HTML to : <p>, <ul>, <li>, <ol>, <br>, <strong>, <h2>",
+					"- Dozwolone tagi HTML to : <p>, <ul>, <li>, <ol>, <br>, <strong>, <h2> \n" +
+					"- Tekst powinien być powiązany kontekstem z głównym tytułem artykułu. \n" +
+					"- Nie używaj w odpowiedzi tytułu nadrzędnego lub podtytułów dla zadanego podtytułu \n" +
+					"- kontekst: " + articleAgenda.MainTitle + "\n\n" +
+					"Przykład poprawnej struktury odpowiedzi: \n\n" +
+					"<h2>" + subtitle.Title + "</h2>" + "<p>Lorem ipsum dolor</p>",
 			},
 		}
 
@@ -216,21 +221,27 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 				{
 					Role: openai.ChatMessageRoleUser,
 					Content: "Styl odpowiedzi powinien być profesjonalny. Będzie to artykuł gdzie odbiorca będzie mógł zaczerpnąć informacji. \n\n" +
-						"Na podstawie zadanego tytułu rozwiń tekst, tak aby był częścią artykułu. \n\n" +
-						"Zadany tytuł jest to podtytuł tytułu głównego jak poniżej: \n\n" +
+						"Rozwiń zadany podtytuł. \n\n" +
+						"Zadany tytuł jest to podtytuł tytułu nadrzędnego jak poniżej: \n\n" +
 						subtitle.Title + "\n\n" +
 
-						"Zadany tytuł to: " + subtitle3lvl + "\n\n" +
+						"Zadany podtytuł to: " + subtitle3lvl + "\n\n" +
 
 						"Stosuj się do poniższych wymagań: \n\n" +
 
-						"- Tekst zwróć jako HTML. Zadany Tytuł artykułu powinien być w tagu <h3> \n" +
+						"- Tekst zwróć jako HTML. Zadany podtytuł powinien być w tagu <h3> \n" +
 						"- Zwróć jedynie HTML z tekstem tak, aby dało się go dołączyć do już isntniejącego HTML. \n" +
 						"- Odpowiedz jedynie HTML, tak abym całą odpowiedź mógł to skopiować i wkleić. \n" +
 						"- Odpowiedz jedynie za pomocą HTML. Nie pisz mi nic co mam z nim zrobić, ani że jest to odpowiedź." +
 						"- Tekst powinnien być długi. \n" +
 						"- Tekst powinnien zawierać co najmniej 5 paragrafów. Paragraf to tag <p> \n" +
-						"- Dozwolone tagi HTML to : <p>, <ul>, <li>, <ol>, <br>, <strong>, <h3>",
+						"- Dozwolone tagi HTML to : <p>, <ul>, <li>, <ol>, <br>, <strong>, <h3> \n" +
+						"- Tekst powinien być powiązany kontekstem z głównym tytułem artykułu. \n" +
+						"- Nie używaj w odpowiedzi tytułu nadrzędnego \n" +
+						"- kontekst: " + articleAgenda.MainTitle + "\n\n" +
+
+						"Przykład poprawnej struktury odpowiedzi: \n\n" +
+						"<h3>" + subtitle3lvl + "</h3>" + "<p>Lorem ipsum dolor</p>",
 				},
 			}
 
