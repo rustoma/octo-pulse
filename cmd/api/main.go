@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
@@ -45,9 +44,6 @@ func main() {
 		logger.Fatal().Err(err).Msg("")
 	}
 	logger.Info().Msg("Connected to the SQL DB")
-	db.SetConnMaxLifetime(time.Minute * 3)
-	db.SetMaxOpenConns(10)
-	db.SetMaxIdleConns(10)
 
 	var (
 		//AI
@@ -71,10 +67,10 @@ func main() {
 		authService     = services.NewAuthService(store.User)
 		articleService  = services.NewArticleService(store.Article, validator.Article, ai)
 		domainService   = services.NewDomainService(store.Domain)
-		categoryService = services.NewCategoryService(store.Category)
-		scrapperService = services.NewScrapperService(store.Scrapper)
+		categoryService = services.NewCategoryService(store.Category, store.CategoriesDomains)
+		scrapperService = services.NewScrapperService(store.Scrapper, validator.Scrapper)
 		//Tasks
-		tasks         = ts.NewTasks(articleService)
+		tasks         = ts.NewTasks(articleService, domainService, scrapperService, categoryService, ai)
 		taskInspector = ts.NewTaskInspector()
 		//Controllers
 		authController     = controllers.NewAuthController(authService)
@@ -93,14 +89,6 @@ func main() {
 			Auth: authService,
 		}
 	)
-
-	question, err := scrapperService.GetQuestion(354)
-
-	if err != nil {
-		logger.Err(err).Send()
-	}
-
-	logger.Info().Interface("question: ", question).Send()
 
 	//start a web server
 	log.Println("Starting application on port", os.Getenv("PORT"))
