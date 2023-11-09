@@ -149,7 +149,9 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 	messages = []openai.ChatCompletionMessage{
 		{
 			Role: openai.ChatMessageRoleUser,
-			Content: "Styl odpowiedzi powinien być profesjonalny. Będzie to artykuł gdzie odbiorca będzie mógł zaczerpnąć informacji. \n\n" +
+			Content: "Wyobraź sobie, że jesteś doświadczonym copywriterem z zaawansowaną wiedzą na temat SEO i perfekcyjną znajomością języka polskiego. " +
+				"Twoim celem jest stworzyć 100% oryginalny, zoptymalizowany pod względem SEO artykuł, który czyta się jak napisany przez człowieka. " +
+				"Styl odpowiedzi powinien być profesjonalny. Będzie to artykuł gdzie odbiorca będzie mógł zaczerpnąć informacji. \n\n" +
 				"Na podstawie zadanego tytułu zwróć krótki wstęp do artykułu. \n\n" +
 				"Podtytułami dla tego artykułu będą podtytuły jak w poniższej tablicy: \n\n" +
 				fmt.Sprintf("%+v", articleAgenda.Subtitles) + "\n\n" +
@@ -159,6 +161,7 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 				"Stosuj się do poniższych wymagań: \n\n" +
 
 				"- Napisz tylko wstęp dla tego tytułu nie odpowiadaj na żadne podtytuły. \n" +
+				"- Nie powtarzaj się. \n" +
 				"- Długość wstępu powinina mieć minimum 1500 liter. \n" +
 				"- Możesz zdefiniować kilka paragrafów, aby osiągnąć wymaganą długość wstępu. \n" +
 				"- Długość wstępu jest wymagana! Powinna być bezwględnie przestrzegana! \n" +
@@ -180,10 +183,17 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 	logger.Info().Interface("intro for article: ", resp).Send()
 
 	for _, subtitle := range articleAgenda.Subtitles {
-		messages = []openai.ChatCompletionMessage{
+		messagesLvl2 := []openai.ChatCompletionMessage{
+			messages[0],
+			{
+				Role:    openai.ChatMessageRoleSystem,
+				Content: resp,
+			},
 			{
 				Role: openai.ChatMessageRoleUser,
-				Content: "Styl odpowiedzi powinien być profesjonalny. Będzie to artykuł gdzie odbiorca będzie mógł zaczerpnąć informacji. \n\n" +
+				Content: "Wyobraź sobie, że jesteś doświadczonym copywriterem z zaawansowaną wiedzą na temat SEO i perfekcyjną znajomością języka polskiego. " +
+					"Twoim celem jest stworzyć 100% oryginalny, zoptymalizowany pod względem SEO artykuł, który czyta się jak napisany przez człowieka. " +
+					"Styl odpowiedzi powinien być profesjonalny. Będzie to artykuł gdzie odbiorca będzie mógł zaczerpnąć informacji. \n\n" +
 					"Rozwiń zadany podtytuł. \n\n" +
 					"Podtytułami dla zadanego podtytułu będą podtytuły jak w poniższej tablicy: \n\n" +
 					fmt.Sprintf("%+v", subtitle.Subtitles) + "\n\n" +
@@ -202,56 +212,101 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 					"- Dozwolone tagi HTML to : <p>, <ul>, <li>, <ol>, <br>, <strong>, <h2> \n" +
 					"- Tekst powinien być powiązany kontekstem z głównym tytułem artykułu. \n" +
 					"- Nie używaj w odpowiedzi tytułu nadrzędnego lub podtytułów dla zadanego podtytułu \n" +
-					"- kontekst: " + articleAgenda.MainTitle + "\n\n" +
+					"- Tekst powinien być powiązany kontekstem z poprzednimi odpowiedziami. \n" +
+					"- Nie używaj w odpowiedzi tytułu nadrzędnego \n" +
+					"- Nie powtarzaj się" +
+
 					"Przykład poprawnej struktury odpowiedzi: \n\n" +
-					"<h2>" + subtitle.Title + "</h2>" + "<p>Lorem ipsum dolor</p>",
+					"<h2>" + subtitle.Title + "</h2>" + "<p>...</p>",
 			},
 		}
 
-		resp, err = c.ask(messages)
+		respLvl2, err := c.ask(messagesLvl2)
 		if err != nil {
 			return "", err
 		}
-		articleDescription.WriteString(resp)
+		articleDescription.WriteString(respLvl2)
 
-		logger.Info().Interface("subtitle: ", resp).Send()
+		logger.Info().Interface("subtitle: ", respLvl2).Send()
 
-		for _, subtitle3lvl := range subtitle.Subtitles {
-			messages = []openai.ChatCompletionMessage{
-				{
-					Role: openai.ChatMessageRoleUser,
-					Content: "Styl odpowiedzi powinien być profesjonalny. Będzie to artykuł gdzie odbiorca będzie mógł zaczerpnąć informacji. \n\n" +
-						"Rozwiń zadany podtytuł. \n\n" +
-						"Zadany tytuł jest to podtytuł tytułu nadrzędnego jak poniżej: \n\n" +
-						subtitle.Title + "\n\n" +
+		var allMessagesLvl3 []openai.ChatCompletionMessage
+		for index, subtitle3lvl := range subtitle.Subtitles {
+			if index == 1 {
+				messagesLvl3 := []openai.ChatCompletionMessage{
+					messagesLvl2[1],
+					{
+						Role:    openai.ChatMessageRoleSystem,
+						Content: respLvl2,
+					},
+					{
+						Role: openai.ChatMessageRoleUser,
+						Content: "Wyobraź sobie, że jesteś doświadczonym copywriterem z zaawansowaną wiedzą na temat SEO i perfekcyjną znajomością języka polskiego. " +
+							"Twoim celem jest stworzyć 100% oryginalny, zoptymalizowany pod względem SEO artykuł, który czyta się jak napisany przez człowieka. " +
+							"Styl odpowiedzi powinien być profesjonalny. Będzie to artykuł gdzie odbiorca będzie mógł zaczerpnąć informacji. \n\n" +
+							"Rozwiń zadany podtytuł. \n\n" +
+							"Zadany tytuł jest to podtytuł tytułu nadrzędnego jak poniżej: \n\n" +
+							subtitle.Title + "\n\n" +
 
-						"Zadany podtytuł to: " + subtitle3lvl + "\n\n" +
+							"Zadany podtytuł to: " + subtitle3lvl + "\n\n" +
 
-						"Stosuj się do poniższych wymagań: \n\n" +
+							"Stosuj się do poniższych wymagań: \n\n" +
 
-						"- Tekst zwróć jako HTML. Zadany podtytuł powinien być w tagu <h3> \n" +
-						"- Zwróć jedynie HTML z tekstem tak, aby dało się go dołączyć do już isntniejącego HTML. \n" +
-						"- Odpowiedz jedynie HTML, tak abym całą odpowiedź mógł to skopiować i wkleić. \n" +
-						"- Odpowiedz jedynie za pomocą HTML. Nie pisz mi nic co mam z nim zrobić, ani że jest to odpowiedź." +
-						"- Tekst powinnien być długi. \n" +
-						"- Tekst powinnien zawierać co najmniej 5 paragrafów. Paragraf to tag <p> \n" +
-						"- Dozwolone tagi HTML to : <p>, <ul>, <li>, <ol>, <br>, <strong>, <h3> \n" +
-						"- Tekst powinien być powiązany kontekstem z głównym tytułem artykułu. \n" +
-						"- Nie używaj w odpowiedzi tytułu nadrzędnego \n" +
-						"- kontekst: " + articleAgenda.MainTitle + "\n\n" +
+							"- Tekst zwróć jako HTML. Zadany podtytuł powinien być w tagu <h3> \n" +
+							"- Zwróć jedynie HTML z tekstem tak, aby dało się go dołączyć do już isntniejącego HTML. \n" +
+							"- Odpowiedz jedynie HTML, tak abym całą odpowiedź mógł to skopiować i wkleić. \n" +
+							"- Odpowiedz jedynie za pomocą HTML. Nie pisz mi nic co mam z nim zrobić, ani że jest to odpowiedź." +
+							"- Tekst powinnien być długi. \n" +
+							"- Tekst powinnien zawierać co najmniej 5 paragrafów. Paragraf to tag <p> \n" +
+							"- Dozwolone tagi HTML to : <p>, <ul>, <li>, <ol>, <br>, <strong>, <h3> \n" +
+							"- Tekst powinien być powiązany kontekstem z poprzednimi odpowiedziami. \n" +
+							"- Nie używaj w odpowiedzi tytułu nadrzędnego \n" +
+							"- Nie powtarzaj się" +
 
-						"Przykład poprawnej struktury odpowiedzi: \n\n" +
-						"<h3>" + subtitle3lvl + "</h3>" + "<p>Lorem ipsum dolor</p>",
-				},
+							"Przykład poprawnej struktury odpowiedzi: \n\n" +
+							"<h3>" + subtitle3lvl + "</h3>" + "<p>...</p>",
+					},
+				}
+				allMessagesLvl3 = messagesLvl3
+			} else {
+				messagesLvl3 := []openai.ChatCompletionMessage{
+					{
+						Role: openai.ChatMessageRoleUser,
+						Content: "Wyobraź sobie, że jesteś doświadczonym copywriterem z zaawansowaną wiedzą na temat SEO i perfekcyjną znajomością języka polskiego. " +
+							"Twoim celem jest stworzyć 100% oryginalny, zoptymalizowany pod względem SEO artykuł, który czyta się jak napisany przez człowieka. " +
+							"Styl odpowiedzi powinien być profesjonalny. Będzie to artykuł gdzie odbiorca będzie mógł zaczerpnąć informacji. \n\n" +
+							"Rozwiń zadany podtytuł. \n\n" +
+							"Zadany tytuł jest to podtytuł tytułu nadrzędnego jak poniżej: \n\n" +
+							subtitle.Title + "\n\n" +
+
+							"Zadany podtytuł to: " + subtitle3lvl + "\n\n" +
+
+							"Stosuj się do poniższych wymagań: \n\n" +
+
+							"- Tekst zwróć jako HTML. Zadany podtytuł powinien być w tagu <h3> \n" +
+							"- Zwróć jedynie HTML z tekstem tak, aby dało się go dołączyć do już isntniejącego HTML. \n" +
+							"- Odpowiedz jedynie HTML, tak abym całą odpowiedź mógł to skopiować i wkleić. \n" +
+							"- Odpowiedz jedynie za pomocą HTML. Nie pisz mi nic co mam z nim zrobić, ani że jest to odpowiedź." +
+							"- Tekst powinnien być długi. \n" +
+							"- Tekst powinnien zawierać co najmniej 5 paragrafów. Paragraf to tag <p> \n" +
+							"- Dozwolone tagi HTML to : <p>, <ul>, <li>, <ol>, <br>, <strong>, <h3> \n" +
+							"- Tekst powinien być powiązany kontekstem z poprzednimi odpowiedziami. \n" +
+							"- Nie używaj w odpowiedzi tytułu nadrzędnego \n" +
+							"- Nie powtarzaj się" +
+
+							"Przykład poprawnej struktury odpowiedzi: \n\n" +
+							"<h3>" + subtitle3lvl + "</h3>" + "<p>...</p>",
+					},
+				}
+				allMessagesLvl3 = append(allMessagesLvl3, messagesLvl3...)
 			}
 
-			resp, err = c.ask(messages)
+			respLvl3, err := c.ask(allMessagesLvl3)
 			if err != nil {
 				return "", err
 			}
-			articleDescription.WriteString(resp)
+			articleDescription.WriteString(respLvl3)
 
-			logger.Info().Interface("subtitle 3lvl: ", resp).Send()
+			logger.Info().Interface("subtitle 3lvl: ", respLvl3).Send()
 		}
 
 	}
