@@ -24,7 +24,7 @@ func NewScrapperStore(DB *sql.DB) *SqlScrapperStore {
 func (s *SqlScrapperStore) GetQuestion(id int) (*models.Question, error) {
 
 	stmt, args, err := sqlQb().
-		Select("id_phrase_result, question,COALESCE(answer, '') AS answer, href, COALESCE(page_content_processed, '') AS page_content_processed, octopulse_phrase_results.fetched, id_category").
+		Select("id_phrase_result, question,COALESCE(answer, '') AS answer, href, COALESCE(page_content, '') AS page_content, octopulse_phrase_results.fetched, id_category").
 		From("octopulse_phrase_results").
 		Join("octopulse_phrases USING (id_phrase)").
 		Where(squirrel.Eq{"id_phrase_result": id}).
@@ -62,10 +62,10 @@ func (s *SqlScrapperStore) GetQuestion(id int) (*models.Question, error) {
 func (s *SqlScrapperStore) GetQuestions(filters ...*storage.GetQuestionsFilters) ([]*models.Question, error) {
 
 	questionsStatement := sqlQb().
-		Select("id_phrase_result, question,COALESCE(answer, '') AS answer, href, COALESCE(page_content_processed, '') AS page_content_processed, octopulse_phrase_results.fetched, id_category").
+		Select("id_phrase_result, question,COALESCE(answer, '') AS answer, href, COALESCE(page_content, '') AS page_content, octopulse_phrase_results.fetched, id_category").
 		From("octopulse_phrase_results").
 		Join("octopulse_phrases USING (id_phrase)").
-		Limit(30)
+		Limit(100)
 
 	if len(filters) > 0 && filters[0].CategoryId != 0 {
 		questionsStatement = questionsStatement.Where(squirrel.Eq{"id_category": filters[0].CategoryId, "octopulse_phrase_results.fetched": 0})
@@ -138,11 +138,11 @@ func scanToQuestion(rows *sql.Rows) (*models.Question, error) {
 
 func convertQuestionToQuestionMap(question *models.Question) map[string]interface{} {
 	return map[string]interface{}{
-		"id_phrase_result":       question.Id,
-		"question":               question.Question,
-		"answer":                 question.Answear,
-		"href":                   question.Href,
-		"page_content_processed": question.PageContent,
-		"fetched":                question.Fetched,
+		"id_phrase_result": question.Id,
+		"question":         question.Question,
+		"answer":           question.Answear,
+		"href":             question.Href,
+		"page_content":     question.PageContent,
+		"fetched":          question.Fetched,
 	}
 }
