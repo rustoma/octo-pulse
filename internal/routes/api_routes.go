@@ -18,6 +18,7 @@ type ApiControllers struct {
 	Task     *controllers.TaskController
 	Domain   *controllers.DomainController
 	Category *controllers.CategoryController
+	File     *controllers.FileController
 }
 
 type ApiServices struct {
@@ -54,6 +55,8 @@ func NewApiRoutes(controllers ApiControllers, services ApiServices, tasks *tasks
 
 		r.Get("/categories", api.MakeHTTPHandler(controllers.Category.HandleGetCategories))
 		r.Get("/categories/{id}", api.MakeHTTPHandler(controllers.Category.HandleGetCategory))
+
+		r.Post("/files/articles", api.MakeHTTPHandler(controllers.File.HandleCreateArticles))
 
 		r.Post("/tasks", api.MakeHTTPHandler(controllers.Task.HandleGetTasksInfo))
 	})
