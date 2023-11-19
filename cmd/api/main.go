@@ -31,7 +31,7 @@ func main() {
 	//Init DB
 	dbpool, err := db.Connect()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+		_, _ = fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		logger.Fatal().Err(err).Msg("")
 	}
 	logger.Info().Msg("Connected to the Postgress DB")
@@ -40,7 +40,7 @@ func main() {
 	//Init SQL DB
 	db, err := db.SqlConnect()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to connect to SQL database: %v\n", err)
+		_, _ = fmt.Fprintf(os.Stderr, "Unable to connect to SQL database: %v\n", err)
 		logger.Fatal().Err(err).Msg("")
 	}
 	logger.Info().Msg("Connected to the SQL DB")
@@ -69,6 +69,7 @@ func main() {
 		domainService   = services.NewDomainService(store.Domain)
 		categoryService = services.NewCategoryService(store.Category, store.CategoriesDomains)
 		scrapperService = services.NewScrapperService(store.Scrapper, validator.Scrapper)
+		fileService     = services.NewFileService(store.Article, store.Domain, store.Category)
 		//Tasks
 		tasks         = ts.NewTasks(articleService, domainService, scrapperService, categoryService, ai)
 		taskInspector = ts.NewTaskInspector()
@@ -78,12 +79,14 @@ func main() {
 		taskController     = controllers.NewTaskController(taskInspector)
 		domainController   = controllers.NewDomainController(domainService)
 		categoryController = controllers.NewCategoryController(categoryService)
+		fileController     = controllers.NewFileController(fileService)
 		apiControllers     = routes.ApiControllers{
 			Auth:     authController,
 			Article:  articleController,
 			Task:     taskController,
 			Domain:   domainController,
 			Category: categoryController,
+			File:     fileController,
 		}
 		apiServices = routes.ApiServices{
 			Auth: authService,
