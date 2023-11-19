@@ -72,7 +72,7 @@ func (t articleTasks) NewGenerateArticlesTask(domainId int, numberOfArticlesToCr
 	}
 
 	task := asynq.NewTask(TypeArticleGenerateArticles, payload)
-	info, err := client.Enqueue(task, asynq.MaxRetry(5))
+	info, err := client.Enqueue(task, asynq.MaxRetry(2), asynq.Timeout(2*time.Hour))
 
 	logger.Info().Msgf("enqueued task: id=%s queue=%s", info.ID, info.Queue)
 
@@ -93,7 +93,7 @@ func (t articleTasks) NewGenerateDescriptionTask(articleId int, questionId int) 
 	}
 
 	task := asynq.NewTask(TypeArticleGenerateDescription, payload)
-	info, err := client.Enqueue(task, asynq.MaxRetry(5))
+	info, err := client.Enqueue(task, asynq.MaxRetry(2), asynq.Timeout(2*time.Hour))
 
 	logger.Info().Msgf("enqueued task: id=%s queue=%s", info.ID, info.Queue)
 
@@ -121,6 +121,10 @@ func (t articleTasks) HandleGenerateDescription(ctx context.Context, task *asynq
 		return fmt.Errorf("article with %d not found", payload.ArticleId)
 	}
 
+	if question == nil {
+		return fmt.Errorf("question with %d not found", payload.QuestionId)
+	}
+
 	description, err := t.articleService.GenerateDescription(question)
 
 	if err != nil {
@@ -138,14 +142,6 @@ func (t articleTasks) HandleGenerateDescription(ctx context.Context, task *asynq
 	return nil
 }
 
-// Tasks
-// Get questions from main category
-// Get questions that fit dmain categories(limit to number of articles to create)
-// Create articles
-// Create description for each article
-// - take question, answear and generate object with subtitles
-// - create answear to each subtitle
-// - save descriptions
 func (t articleTasks) HandleGenerateArticles(ctx context.Context, task *asynq.Task) error {
 	var payload GenerateArticlesTaskPayload
 	if err := json.Unmarshal(task.Payload(), &payload); err != nil {
@@ -174,6 +170,8 @@ func (t articleTasks) HandleGenerateArticles(ctx context.Context, task *asynq.Ta
 		if createdArticles == payload.NumberOfArticlesToCreate {
 			break
 		}
+
+		//TODO: add validation for question source total length
 
 		catgoryId, err := t.ai.ChatGPT.AssignToCategory(domainCategories, question)
 		if err != nil {
@@ -209,7 +207,7 @@ func (t articleTasks) HandleGenerateArticles(ctx context.Context, task *asynq.Ta
 
 		err = t.scrapperTasks.NewUpdateQuestionTask(question.Id, question)
 		if err != nil {
-			t.articleService.DeleteArticle(articleId)
+			_, _ = t.articleService.DeleteArticle(articleId)
 			return err
 		}
 
