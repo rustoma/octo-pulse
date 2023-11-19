@@ -26,7 +26,7 @@ type ScrapperValidation struct {
 func (v *scrapperValidator) Validate(question *models.Question) error {
 	propertiesToValidate := ScrapperValidation{
 		Question:    question.Question,
-		Answear:     question.Answear,
+		Answear:     question.Answer,
 		Href:        question.Href,
 		PageContent: question.PageContent,
 	}
