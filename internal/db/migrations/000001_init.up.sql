@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS public.article (
     "id" SERIAL NOT NULL,
     "title" TEXT NOT NULL,
     "description" TEXT,
-    "image_url" TEXT,
+    "thumbnail" INTEGER,
     "publication_date" TIMESTAMP(3),
     "is_published" BOOLEAN NOT NULL DEFAULT false,
     "author_id" INTEGER,
@@ -79,6 +79,29 @@ CREATE TABLE IF NOT EXISTS public.article (
     "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "article_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE public.image_storage (
+    "id" SERIAL NOT NULL,
+    "name" TEXT NOT NULL,
+    "path" TEXT NOT NULL,
+    "size" BIGINT NOT NULL,
+    "upload_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "type" TEXT,
+    "width" INTEGER,
+    "height" INTEGER,
+    "category_id" INTEGER,
+
+    CONSTRAINT "ImageStorage_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE public.image_category (
+     "category_id" SERIAL NOT NULL,
+     "category_name" TEXT NOT NULL,
+
+     CONSTRAINT "ImageCategory_pkey" PRIMARY KEY ("category_id")
 );
 
 -- CreateIndex
@@ -103,7 +126,14 @@ ALTER TABLE public.article ADD CONSTRAINT "article_category_id_fkey" FOREIGN KEY
 ALTER TABLE public.article ADD CONSTRAINT "article_domain_id_fkey" FOREIGN KEY ("domain_id") REFERENCES public.domain("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE public.article ADD CONSTRAINT "article_thumbnail_fkey" FOREIGN KEY ("thumbnail") REFERENCES public.image_storage("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE public.categories_domains ADD CONSTRAINT "categories_domains_domain_id_fkey" FOREIGN KEY ("domain_id") REFERENCES public.domain("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE public.categories_domains ADD CONSTRAINT "categories_domains_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES public.category("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE public.image_storage ADD CONSTRAINT "image_storage_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES public.image_category("category_id") ON DELETE SET NULL ON UPDATE CASCADE;
+
