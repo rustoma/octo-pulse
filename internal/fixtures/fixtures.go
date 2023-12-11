@@ -68,11 +68,11 @@ func (f *fixtures) CreateAuthor(fn, ln, desc, imageUrl string) *models.Author {
 	}
 }
 
-func (f *fixtures) CreateArticle(title, desc, imageUrl string, isPub bool, authorId, categoryId, domainId int) *models.Article {
+func (f *fixtures) CreateArticle(title, desc string, thumbnail int, isPub bool, authorId, categoryId, domainId int) *models.Article {
 	return &models.Article{
 		Title:           title,
 		Description:     desc,
-		ImageUrl:        imageUrl,
+		Thumbnail:       thumbnail,
 		PublicationDate: time.Now().UTC(),
 		IsPublished:     isPub,
 		AuthorId:        authorId,

@@ -29,7 +29,7 @@ func (s *PostgressArticleStore) InsertArticle(article *models.Article) (int, err
 	stmt, args, err := pgQb().
 		Insert("public.article").
 		Columns("title, description, image_url, publication_date, is_published, author_id, category_id, domain_id, created_at, updated_at").
-		Values(article.Title, article.Description, article.ImageUrl, article.PublicationDate, article.IsPublished,
+		Values(article.Title, article.Description, article.Thumbnail, article.PublicationDate, article.IsPublished,
 			article.AuthorId, article.CategoryId, article.DomainId, time.Now().UTC(), time.Now().UTC()).
 		Suffix("RETURNING \"id\"").
 		ToSql()
@@ -174,7 +174,7 @@ func scanToArticle(rows pgx.Rows) (*models.Article, error) {
 		&article.ID,
 		&article.Title,
 		&article.Description,
-		&article.ImageUrl,
+		&article.Thumbnail,
 		&article.PublicationDate,
 		&article.IsPublished,
 		&article.AuthorId,
@@ -191,7 +191,7 @@ func convertArticleToArticleMap(article *models.Article) map[string]interface{} 
 	return map[string]interface{}{
 		"title":            article.Title,
 		"description":      article.Description,
-		"image_url":        article.ImageUrl,
+		"thumbnail":        article.Thumbnail,
 		"publication_date": article.PublicationDate,
 		"is_published":     article.IsPublished,
 		"author_id":        article.AuthorId,

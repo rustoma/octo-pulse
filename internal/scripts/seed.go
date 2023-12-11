@@ -146,12 +146,12 @@ func main() {
 	for i := 0; i < 10; i++ {
 		title := fmt.Sprintf("Home Article %d", i+1)
 		desc := "Lorem ipsum dolor"
-		imageUrl := ""
+		thumbnail := 1
 		isPubished := true
 		authorId := janeId
 		categoryId := homeCategoryId
 		domainId := homeDesignDomainId
-		article := fixtures.CreateArticle(title, desc, imageUrl, isPubished, authorId, categoryId, domainId)
+		article := fixtures.CreateArticle(title, desc, thumbnail, isPubished, authorId, categoryId, domainId)
 
 		_, err = store.Article.InsertArticle(article)
 
@@ -163,12 +163,12 @@ func main() {
 	for i := 0; i < 20; i++ {
 		title := fmt.Sprintf("General Article %d", i+1)
 		desc := "Lorem ipsum dolor"
-		imageUrl := ""
+		thumbnail := 1
 		isPubished := true
 		authorId := johnId
 		categoryId := generalCategoryId
 		domainId := homeDesignDomainId
-		article := fixtures.CreateArticle(title, desc, imageUrl, isPubished, authorId, categoryId, domainId)
+		article := fixtures.CreateArticle(title, desc, thumbnail, isPubished, authorId, categoryId, domainId)
 
 		_, err = store.Article.InsertArticle(article)
 
@@ -180,12 +180,12 @@ func main() {
 	for i := 0; i < 15; i++ {
 		title := fmt.Sprintf("Clean Home Article %d", i+1)
 		desc := "Lorem ipsum dolor"
-		imageUrl := ""
+		thumbnail := 1
 		isPubished := true
 		authorId := johnId
 		categoryId := homeCategoryId
 		domainId := homeDesignDomainId
-		article := fixtures.CreateArticle(title, desc, imageUrl, isPubished, authorId, categoryId, domainId)
+		article := fixtures.CreateArticle(title, desc, thumbnail, isPubished, authorId, categoryId, domainId)
 
 		_, err = store.Article.InsertArticle(article)
 
@@ -197,12 +197,12 @@ func main() {
 	for i := 0; i < 15; i++ {
 		title := fmt.Sprintf("News Article %d", i+1)
 		desc := "Lorem ipsum dolor"
-		imageUrl := ""
+		thumbnail := 1
 		isPubished := true
 		authorId := johnId
 		categoryId := newsCategoryId
 		domainId := newsDomainId
-		article := fixtures.CreateArticle(title, desc, imageUrl, isPubished, authorId, categoryId, domainId)
+		article := fixtures.CreateArticle(title, desc, thumbnail, isPubished, authorId, categoryId, domainId)
 
 		_, err = store.Article.InsertArticle(article)
 
