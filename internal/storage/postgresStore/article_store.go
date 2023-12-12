@@ -28,7 +28,7 @@ func (s *PostgressArticleStore) InsertArticle(article *models.Article) (int, err
 
 	stmt, args, err := pgQb().
 		Insert("public.article").
-		Columns("title, description, image_url, publication_date, is_published, author_id, category_id, domain_id, created_at, updated_at").
+		Columns("title, description, thumbnail, publication_date, is_published, author_id, category_id, domain_id, created_at, updated_at").
 		Values(article.Title, article.Description, article.Thumbnail, article.PublicationDate, article.IsPublished,
 			article.AuthorId, article.CategoryId, article.DomainId, time.Now().UTC(), time.Now().UTC()).
 		Suffix("RETURNING \"id\"").
