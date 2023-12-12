@@ -47,7 +47,7 @@ func (c *chatGPT) GenerateImage() (openai.ImageResponse, error) {
 
 	resp, err := c.Client.CreateImage(context.Background(), openai.ImageRequest{
 		Model:          openai.CreateImageModelDallE3,
-		Prompt:         "Create a coherent living room visualization in an industrial style, consistent with a small kitchen project of approximately 15m² featuring concrete ceilings and black furniture fronts. Include elements such as a television and a sofa to complement the ambiance. Ensure that the overall aesthetic matches the industrial theme with attention to detail in textures, colors, and furnishings.",
+		Prompt:         "Generate a person applying eye drops in the bathroom in a pleasant atmosphere. The person should have his eyes open and hit the eye drops.",
 		Size:           "1024x1024",
 		Quality:        "standard",
 		N:              1,
@@ -185,8 +185,8 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 
 	var sourceText string
 
-	for _, source := range question.Sources {
-		text := c.RemoveMultipleSpaces(source.PageContent)
+	for _, pageContent := range question.PageContents {
+		text := c.RemoveMultipleSpaces(pageContent.PageContent)
 		sourceText = fmt.Sprintf("%s \n\n %s", sourceText, text)
 	}
 
@@ -235,14 +235,14 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 
 	var summary string
 
-	for index, source := range question.Sources {
-		if len(sourceText) < 1000 {
+	for index, pageContent := range question.PageContents {
+		if len(c.RemoveMultipleSpaces(pageContent.PageContent)) < 1000 {
 			continue
 		}
 
 		summaryPromp := []openai.ChatCompletionMessage{{
 			Role:    openai.ChatMessageRoleSystem,
-			Content: source.PageContent,
+			Content: pageContent.PageContent,
 		},
 			{
 				Role: openai.ChatMessageRoleUser,
