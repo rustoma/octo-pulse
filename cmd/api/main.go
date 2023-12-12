@@ -82,6 +82,7 @@ func main() {
 		domainController   = controllers.NewDomainController(domainService)
 		categoryController = controllers.NewCategoryController(categoryService)
 		fileController     = controllers.NewFileController(fileService)
+		imageController    = controllers.NewImageController()
 		apiControllers     = routes.ApiControllers{
 			Auth:     authController,
 			Article:  articleController,
@@ -89,6 +90,7 @@ func main() {
 			Domain:   domainController,
 			Category: categoryController,
 			File:     fileController,
+			Image:    imageController,
 		}
 		apiServices = routes.ApiServices{
 			Auth: authService,
