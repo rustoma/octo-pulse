@@ -7,10 +7,10 @@ type Image struct {
 	Name       string    `json:"name"`
 	Path       string    `json:"path"`
 	Size       int       `json:"size"`
-	Type       bool      `json:"type"`
+	Type       string    `json:"type"`
 	Width      int       `json:"width"`
 	Height     int       `json:"height"`
-	Alt        int       `json:"alt"`
+	Alt        string    `json:"alt"`
 	CategoryId int       `json:"categoryId"`
 	CreatedAt  time.Time `json:"createdAt"`
 	UpdatedAt  time.Time `json:"updatedAt"`
