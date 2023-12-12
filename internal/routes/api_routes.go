@@ -19,6 +19,7 @@ type ApiControllers struct {
 	Domain   *controllers.DomainController
 	Category *controllers.CategoryController
 	File     *controllers.FileController
+	Image    *controllers.ImageController
 }
 
 type ApiServices struct {
@@ -36,7 +37,7 @@ func NewApiRoutes(controllers ApiControllers, services ApiServices, tasks *tasks
 		r.Post("/login", api.MakeHTTPHandler(controllers.Auth.HandleLogin))
 		r.Post("/logout", api.MakeHTTPHandler(controllers.Auth.HandleLogout))
 		r.Post("/refresh", api.MakeHTTPHandler(controllers.Auth.HandleRefreshToken))
-		//r.Get("/assets/images/*", api.MakeHTTPHandler(controllers.HandleGetImage))
+		r.Get("/assets/images/*", api.MakeHTTPHandler(controllers.Image.HandleGetImage))
 	})
 
 	r.Route("/api/v1/dashboard", func(r chi.Router) {
