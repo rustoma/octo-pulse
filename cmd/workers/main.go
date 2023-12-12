@@ -54,6 +54,8 @@ func main() {
 			Author:            postgressStore.Author,
 			Article:           postgressStore.Article,
 			CategoriesDomains: postgressStore.CategoriesDomains,
+			Image:             postgressStore.Image,
+			ImageCategory:     postgressStore.ImageCategory,
 			Scrapper:          sqlStore.Scrapper,
 		}
 		articleService  = services.NewArticleService(store.Article, validator.Article, ai)

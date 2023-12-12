@@ -18,6 +18,8 @@ type PostgressStore struct {
 	Author            storage.AuthorStore
 	Article           storage.ArticleStore
 	CategoriesDomains storage.CategoriesDomainsStore
+	Image             storage.ImageStorageStore
+	ImageCategory     storage.ImageCategoryStore
 }
 
 func NewPostgresStorage(DB *pgxpool.Pool) *PostgressStore {
@@ -29,6 +31,8 @@ func NewPostgresStorage(DB *pgxpool.Pool) *PostgressStore {
 		Author:            NewAuthorStore(DB),
 		Article:           NewArticleStore(DB),
 		CategoriesDomains: NewCategoriesDomainsStore(DB),
+		Image:             NewImageStorageStore(DB),
+		ImageCategory:     NewImageCategoryStore(DB),
 	}
 }
 
