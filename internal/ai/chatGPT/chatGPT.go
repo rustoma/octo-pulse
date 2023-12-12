@@ -235,6 +235,7 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 
 	var summary string
 
+	logger.Info().Msg("Generating summary...")
 	for index, pageContent := range question.PageContents {
 		if len(c.RemoveMultipleSpaces(pageContent.PageContent)) < 1000 {
 			continue
@@ -262,6 +263,7 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 			summary = fmt.Sprintf("%s \n\n %s", summary, summaryResponse)
 		}
 	}
+	logger.Info().Msg("Generating summary COMPLETED!")
 
 	messages[0] = openai.ChatCompletionMessage{
 		Role:    openai.ChatMessageRoleSystem,

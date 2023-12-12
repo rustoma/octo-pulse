@@ -21,7 +21,7 @@ func newArticleValidator(validate *validator.Validate) *articleValidator {
 type ArticleValidation struct {
 	Title           string `validate:"required,min=4" json:"title"`
 	Description     string
-	Thumbnail       int
+	Thumbnail       *int
 	PublicationDate time.Time
 	IsPublished     bool
 	AuthorId        int       `validate:"required"`

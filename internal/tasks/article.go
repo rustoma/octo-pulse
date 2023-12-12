@@ -188,6 +188,7 @@ func (t articleTasks) HandleGenerateArticles(ctx context.Context, task *asynq.Ta
 		article := &models.Article{
 			Title:       question.Question,
 			Description: "",
+			Thumbnail:   nil,
 			CategoryId:  catgoryId,
 			AuthorId:    1,
 			DomainId:    payload.DomainId,

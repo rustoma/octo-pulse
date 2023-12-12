@@ -6,7 +6,7 @@ type Article struct {
 	ID              int       `json:"id"`
 	Title           string    `json:"title"`
 	Description     string    `json:"description"`
-	Thumbnail       int       `json:"thumbnail"`
+	Thumbnail       *int      `json:"thumbnail"`
 	PublicationDate time.Time `json:"publicationDate"`
 	IsPublished     bool      `json:"isPublished"`
 	AuthorId        int       `json:"authorId"`
