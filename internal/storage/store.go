@@ -13,6 +13,8 @@ type Store struct {
 	Article           ArticleStore
 	CategoriesDomains CategoriesDomainsStore
 	Scrapper          ScrapperStore
+	Image             ImageStorageStore
+	ImageCategory     ImageCategoryStore
 }
 
 type UserStore interface {
@@ -63,4 +65,12 @@ type ScrapperStore interface {
 	GetQuestion(id int) (*models.Question, error)
 	GetQuestions(filters ...*GetQuestionsFilters) ([]*models.Question, error)
 	UpdateQuestion(id int, question *models.Question) error
+}
+
+type ImageStorageStore interface {
+	InsertImage(image *models.Image) (int, error)
+}
+
+type ImageCategoryStore interface {
+	InsertCategory(category *models.ImageCategory) (int, error)
 }
