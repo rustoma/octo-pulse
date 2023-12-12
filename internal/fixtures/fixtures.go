@@ -82,3 +82,26 @@ func (f *fixtures) CreateArticle(title, desc string, thumbnail int, isPub bool, 
 		UpdatedAt:       time.Now().UTC(),
 	}
 }
+
+func (f *fixtures) CreateImage(name string, path string, size int, t string, width int, height int, alt string, categoryId int) *models.Image {
+	return &models.Image{
+		Name:       name,
+		Path:       path,
+		Size:       size,
+		Type:       t,
+		Width:      width,
+		Height:     height,
+		Alt:        alt,
+		CategoryId: categoryId,
+		CreatedAt:  time.Now().UTC(),
+		UpdatedAt:  time.Now().UTC(),
+	}
+}
+
+func (f *fixtures) CreateImageCategory(name string) *models.ImageCategory {
+	return &models.ImageCategory{
+		Name:      name,
+		CreatedAt: time.Now().UTC(),
+		UpdatedAt: time.Now().UTC(),
+	}
+}
