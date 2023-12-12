@@ -87,21 +87,25 @@ CREATE TABLE public.image_storage (
     "name" TEXT NOT NULL,
     "path" TEXT NOT NULL,
     "size" BIGINT NOT NULL,
-    "upload_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "type" TEXT,
     "width" INTEGER,
     "height" INTEGER,
+    "alt" TEXT,
     "category_id" INTEGER,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "ImageStorage_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE public.image_category (
-     "category_id" SERIAL NOT NULL,
-     "category_name" TEXT NOT NULL,
-
-     CONSTRAINT "ImageCategory_pkey" PRIMARY KEY ("category_id")
+     "id" SERIAL NOT NULL,
+     "name" TEXT NOT NULL,
+     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+     "updated_at" TIMESTAMP(3) NOT NULL,
+     
+     CONSTRAINT "ImageCategory_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -135,5 +139,5 @@ ALTER TABLE public.categories_domains ADD CONSTRAINT "categories_domains_domain_
 ALTER TABLE public.categories_domains ADD CONSTRAINT "categories_domains_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES public.category("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE public.image_storage ADD CONSTRAINT "image_storage_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES public.image_category("category_id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE public.image_storage ADD CONSTRAINT "image_storage_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES public.image_category("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
