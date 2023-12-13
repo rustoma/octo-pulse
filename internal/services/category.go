@@ -6,7 +6,7 @@ import (
 )
 
 type CategoryService interface {
-	GetCategories() ([]*models.Category, error)
+	GetCategories(filters ...*storage.GetCategoriesFilters) ([]*models.Category, error)
 	GetCategory(id int) (*models.Category, error)
 	GetDomainCategories(domainId int) ([]*models.Category, error)
 }
@@ -20,8 +20,8 @@ func NewCategoryService(categoryStore storage.CategoryStore, categoriesDomainsSt
 	return &categoryService{categoryStore: categoryStore, categoriesDomainsStore: categoriesDomainsStore}
 }
 
-func (s *categoryService) GetCategories() ([]*models.Category, error) {
-	return s.categoryStore.GetCategories()
+func (s *categoryService) GetCategories(filters ...*storage.GetCategoriesFilters) ([]*models.Category, error) {
+	return s.categoryStore.GetCategories(filters...)
 }
 
 func (s *categoryService) GetCategory(id int) (*models.Category, error) {

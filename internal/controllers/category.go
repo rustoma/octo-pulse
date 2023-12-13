@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"github.com/rustoma/octo-pulse/internal/storage"
 	"net/http"
 	"strconv"
 
@@ -20,7 +21,15 @@ func NewCategoryController(categoryService services.CategoryService) *CategoryCo
 }
 
 func (c *CategoryController) HandleGetCategories(w http.ResponseWriter, r *http.Request) error {
-	categories, err := c.categoryService.GetCategories()
+	slug := r.URL.Query().Get("slug")
+
+	var filters storage.GetCategoriesFilters
+
+	if slug != "" {
+		filters.Slug = slug
+	}
+
+	categories, err := c.categoryService.GetCategories(&filters)
 
 	if err != nil {
 		return api.Error{Err: "cannot get categories", Status: api.HandleErrorStatus(err)}

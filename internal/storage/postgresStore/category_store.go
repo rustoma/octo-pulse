@@ -2,6 +2,7 @@ package postgresstore
 
 import (
 	"context"
+	"github.com/rustoma/octo-pulse/internal/storage"
 	"time"
 
 	"github.com/Masterminds/squirrel"
@@ -28,8 +29,8 @@ func (c *PostgressCategoryStore) InsertCategory(category *models.Category) (int,
 
 	stmt, args, err := pgQb().
 		Insert("public.category").
-		Columns("name, created_at, updated_at").
-		Values(category.Name, time.Now().UTC(), time.Now().UTC()).
+		Columns("name, slug, created_at, updated_at").
+		Values(category.Name, category.Slug, time.Now().UTC(), time.Now().UTC()).
 		Suffix("RETURNING \"id\"").
 		ToSql()
 
@@ -44,14 +45,23 @@ func (c *PostgressCategoryStore) InsertCategory(category *models.Category) (int,
 	return categoryId, err
 }
 
-func (s *PostgressCategoryStore) GetCategories() ([]*models.Category, error) {
+func (s *PostgressCategoryStore) GetCategories(filters ...*storage.GetCategoriesFilters) ([]*models.Category, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), s.dbTimeout)
 	defer cancel()
 
-	stmt, args, err := pgQb().
+	categoriesStmt := pgQb().
 		Select("*").
-		From("public.category").
-		ToSql()
+		OrderBy("name").
+		From("public.category")
+
+	if len(filters) > 0 && filters[0].Slug != "" {
+		categoriesStmt = categoriesStmt.Where(
+			squirrel.And{
+				squirrel.Eq{"slug": filters[0].Slug},
+			})
+	}
+
+	stmt, args, err := categoriesStmt.ToSql()
 
 	if err != nil {
 		logger.Err(err).Send()
@@ -126,6 +136,7 @@ func scanToCategory(rows pgx.Rows) (*models.Category, error) {
 	err := rows.Scan(
 		&category.ID,
 		&category.Name,
+		&category.Slug,
 		&category.CreatedAt,
 		&category.UpdatedAt,
 	)
