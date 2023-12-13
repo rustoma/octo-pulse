@@ -34,9 +34,13 @@ type DomainStore interface {
 	GetDomain(id int) (*models.Domain, error)
 }
 
+type GetCategoriesFilters struct {
+	Slug string
+}
+
 type CategoryStore interface {
 	InsertCategory(category *models.Category) (int, error)
-	GetCategories() ([]*models.Category, error)
+	GetCategories(filters ...*GetCategoriesFilters) ([]*models.Category, error)
 	GetCategory(id int) (*models.Category, error)
 }
 
@@ -49,10 +53,16 @@ type AuthorStore interface {
 	InsertAuthor(author *models.Author) (int, error)
 }
 
+type GetArticlesFilters struct {
+	CategoryId int
+	Limit      int
+	Featured   string
+}
+
 type ArticleStore interface {
 	InsertArticle(article *models.Article) (int, error)
 	GetArticle(id int) (*models.Article, error)
-	GetArticles() ([]*models.Article, error)
+	GetArticles(filters ...*GetArticlesFilters) ([]*models.Article, error)
 	UpdateArticle(id int, article *models.Article) (int, error)
 	DeleteArticle(id int) (int, error)
 }
