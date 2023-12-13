@@ -211,7 +211,8 @@ func main() {
 		authorId := janeId
 		categoryId := homeCategoryId
 		domainId := homeDesignDomainId
-		article := fixtures.CreateArticle(title, desc, thumbnail, isPubished, authorId, categoryId, domainId)
+		featured := false
+		article := fixtures.CreateArticle(title, desc, thumbnail, isPubished, authorId, categoryId, domainId, featured)
 
 		_, err = store.Article.InsertArticle(article)
 
@@ -231,7 +232,8 @@ func main() {
 		authorId := johnId
 		categoryId := generalCategoryId
 		domainId := homeDesignDomainId
-		article := fixtures.CreateArticle(title, desc, thumbnail, isPubished, authorId, categoryId, domainId)
+		featured := false
+		article := fixtures.CreateArticle(title, desc, thumbnail, isPubished, authorId, categoryId, domainId, featured)
 
 		_, err = store.Article.InsertArticle(article)
 
@@ -251,7 +253,8 @@ func main() {
 		authorId := johnId
 		categoryId := homeCategoryId
 		domainId := homeDesignDomainId
-		article := fixtures.CreateArticle(title, desc, thumbnail, isPubished, authorId, categoryId, domainId)
+		featured := false
+		article := fixtures.CreateArticle(title, desc, thumbnail, isPubished, authorId, categoryId, domainId, featured)
 
 		_, err = store.Article.InsertArticle(article)
 
@@ -271,7 +274,8 @@ func main() {
 		authorId := johnId
 		categoryId := newsCategoryId
 		domainId := newsDomainId
-		article := fixtures.CreateArticle(title, desc, thumbnail, isPubished, authorId, categoryId, domainId)
+		featured := false
+		article := fixtures.CreateArticle(title, desc, thumbnail, isPubished, authorId, categoryId, domainId, featured)
 
 		_, err = store.Article.InsertArticle(article)
 

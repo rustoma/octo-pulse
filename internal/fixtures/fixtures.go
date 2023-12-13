@@ -1,6 +1,7 @@
 package fixtures
 
 import (
+	"github.com/gosimple/slug"
 	"time"
 
 	"github.com/rustoma/octo-pulse/internal/models"
@@ -52,6 +53,7 @@ func (f *fixtures) CreateDomain(name string) *models.Domain {
 func (f *fixtures) CreateCategory(name string) *models.Category {
 	return &models.Category{
 		Name:      name,
+		Slug:      slug.Make(name),
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
 	}
@@ -68,16 +70,18 @@ func (f *fixtures) CreateAuthor(fn, ln, desc, imageUrl string) *models.Author {
 	}
 }
 
-func (f *fixtures) CreateArticle(title, desc string, thumbnail int, isPub bool, authorId, categoryId, domainId int) *models.Article {
+func (f *fixtures) CreateArticle(title, desc string, thumbnail int, isPub bool, authorId, categoryId, domainId int, featured bool) *models.Article {
 	return &models.Article{
 		Title:           title,
+		Slug:            slug.Make(title),
 		Description:     desc,
-		Thumbnail:       thumbnail,
+		Thumbnail:       &thumbnail,
 		PublicationDate: time.Now().UTC(),
 		IsPublished:     isPub,
 		AuthorId:        authorId,
 		CategoryId:      categoryId,
 		DomainId:        domainId,
+		Featured:        featured,
 		CreatedAt:       time.Now().UTC(),
 		UpdatedAt:       time.Now().UTC(),
 	}
