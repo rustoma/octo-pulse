@@ -2,6 +2,7 @@ package postgresstore
 
 import (
 	"context"
+	"github.com/rustoma/octo-pulse/internal/storage"
 	"time"
 
 	"github.com/Masterminds/squirrel"
@@ -28,9 +29,9 @@ func (s *PostgressArticleStore) InsertArticle(article *models.Article) (int, err
 
 	stmt, args, err := pgQb().
 		Insert("public.article").
-		Columns("title, description, thumbnail, publication_date, is_published, author_id, category_id, domain_id, created_at, updated_at").
-		Values(article.Title, article.Description, article.Thumbnail, article.PublicationDate, article.IsPublished,
-			article.AuthorId, article.CategoryId, article.DomainId, time.Now().UTC(), time.Now().UTC()).
+		Columns("title, slug, description, thumbnail, publication_date, is_published, author_id, category_id, domain_id, featured, created_at, updated_at").
+		Values(article.Title, article.Slug, article.Description, article.Thumbnail, article.PublicationDate, article.IsPublished,
+			article.AuthorId, article.CategoryId, article.DomainId, article.Featured, time.Now().UTC(), time.Now().UTC()).
 		Suffix("RETURNING \"id\"").
 		ToSql()
 
@@ -65,14 +66,40 @@ func (s *PostgressArticleStore) DeleteArticle(id int) (int, error) {
 	return articleId, err
 }
 
-func (s *PostgressArticleStore) GetArticles() ([]*models.Article, error) {
+func (s *PostgressArticleStore) GetArticles(filters ...*storage.GetArticlesFilters) ([]*models.Article, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), s.dbTimeout)
 	defer cancel()
 
-	stmt, args, err := pgQb().
+	articlesStmt := pgQb().
 		Select("*").
-		From("public.article").
-		ToSql()
+		OrderBy("created_at DESC").
+		From("public.article")
+
+	if len(filters) > 0 && filters[0].Limit != 0 {
+		articlesStmt = articlesStmt.Limit(uint64(filters[0].Limit))
+	}
+
+	if len(filters) > 0 && filters[0].CategoryId != 0 {
+		articlesStmt = articlesStmt.Where(
+			squirrel.And{
+				squirrel.Eq{"category_id": filters[0].CategoryId},
+			})
+	}
+
+	if len(filters) > 0 && (filters[0].Featured == "true" || filters[0].Featured == "false") {
+		featured := false
+
+		if filters[0].Featured == "true" {
+			featured = true
+		}
+
+		articlesStmt = articlesStmt.Where(
+			squirrel.And{
+				squirrel.Eq{"featured": featured},
+			})
+	}
+
+	stmt, args, err := articlesStmt.ToSql()
 
 	if err != nil {
 		logger.Err(err).Send()
@@ -173,6 +200,7 @@ func scanToArticle(rows pgx.Rows) (*models.Article, error) {
 	err := rows.Scan(
 		&article.ID,
 		&article.Title,
+		&article.Slug,
 		&article.Description,
 		&article.Thumbnail,
 		&article.PublicationDate,
@@ -180,6 +208,7 @@ func scanToArticle(rows pgx.Rows) (*models.Article, error) {
 		&article.AuthorId,
 		&article.CategoryId,
 		&article.DomainId,
+		&article.Featured,
 		&article.CreatedAt,
 		&article.UpdatedAt,
 	)

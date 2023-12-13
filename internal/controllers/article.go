@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"github.com/rustoma/octo-pulse/internal/storage"
 	"net/http"
 	"strconv"
 
@@ -65,8 +66,35 @@ func (c *ArticleController) HandleGenerateDescritption(w http.ResponseWriter, r 
 }
 
 func (c *ArticleController) HandleGetArticles(w http.ResponseWriter, r *http.Request) error {
+	categoryIdParam := r.URL.Query().Get("categoryId")
+	limitParam := r.URL.Query().Get("limit")
+	featuredParam := r.URL.Query().Get("featured")
 
-	articles, err := c.articleService.GetArticles()
+	var filters storage.GetArticlesFilters
+
+	if categoryIdParam != "" {
+		categoryId, err := strconv.Atoi(categoryIdParam)
+		if err != nil {
+			return api.Error{Err: "bad request - categoryId wrong format", Status: http.StatusBadRequest}
+		}
+
+		filters.CategoryId = categoryId
+	}
+
+	if limitParam != "" {
+		limit, err := strconv.Atoi(limitParam)
+		if err != nil {
+			return api.Error{Err: "bad request - limit wrong format", Status: http.StatusBadRequest}
+		}
+
+		filters.Limit = limit
+	}
+
+	if featuredParam == "true" || featuredParam == "false" {
+		filters.Featured = featuredParam
+	}
+
+	articles, err := c.articleService.GetArticles(&filters)
 
 	if err != nil {
 		return api.Error{Err: "Cannot get articles", Status: api.HandleErrorStatus(err)}

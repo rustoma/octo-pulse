@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/gosimple/slug"
 	"os"
 	"time"
 
@@ -187,11 +188,13 @@ func (t articleTasks) HandleGenerateArticles(ctx context.Context, task *asynq.Ta
 
 		article := &models.Article{
 			Title:       question.Question,
+			Slug:        slug.Make(question.Question),
 			Description: "",
 			Thumbnail:   nil,
 			CategoryId:  catgoryId,
 			AuthorId:    1,
 			DomainId:    payload.DomainId,
+			Featured:    false,
 			CreatedAt:   time.Now().UTC(),
 			UpdatedAt:   time.Now().UTC(),
 		}

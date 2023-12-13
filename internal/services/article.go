@@ -11,7 +11,7 @@ type ArticleService interface {
 	GenerateDescription(question *models.Question) (string, error)
 	UpdateArticle(articleId int, article *models.Article) (int, error)
 	GetArticle(id int) (*models.Article, error)
-	GetArticles() ([]*models.Article, error)
+	GetArticles(filters ...*storage.GetArticlesFilters) ([]*models.Article, error)
 	CreateArticle(article *models.Article) (int, error)
 	DeleteArticle(id int) (int, error)
 }
@@ -64,6 +64,6 @@ func (s *articleService) GetArticle(id int) (*models.Article, error) {
 	return s.articleStore.GetArticle(id)
 }
 
-func (s *articleService) GetArticles() ([]*models.Article, error) {
-	return s.articleStore.GetArticles()
+func (s *articleService) GetArticles(filters ...*storage.GetArticlesFilters) ([]*models.Article, error) {
+	return s.articleStore.GetArticles(filters...)
 }
