@@ -57,6 +57,7 @@ type GetArticlesFilters struct {
 	CategoryId int
 	Limit      int
 	Featured   string
+	Slug       string
 }
 
 type ArticleStore interface {

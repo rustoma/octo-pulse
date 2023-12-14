@@ -86,6 +86,13 @@ func (s *PostgressArticleStore) GetArticles(filters ...*storage.GetArticlesFilte
 			})
 	}
 
+	if len(filters) > 0 && filters[0].Slug != "" {
+		articlesStmt = articlesStmt.Where(
+			squirrel.And{
+				squirrel.Eq{"slug": filters[0].Slug},
+			})
+	}
+
 	if len(filters) > 0 && (filters[0].Featured == "true" || filters[0].Featured == "false") {
 		featured := false
 

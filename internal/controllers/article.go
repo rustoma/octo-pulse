@@ -69,6 +69,7 @@ func (c *ArticleController) HandleGetArticles(w http.ResponseWriter, r *http.Req
 	categoryIdParam := r.URL.Query().Get("categoryId")
 	limitParam := r.URL.Query().Get("limit")
 	featuredParam := r.URL.Query().Get("featured")
+	slug := r.URL.Query().Get("slug")
 
 	var filters storage.GetArticlesFilters
 
@@ -92,6 +93,10 @@ func (c *ArticleController) HandleGetArticles(w http.ResponseWriter, r *http.Req
 
 	if featuredParam == "true" || featuredParam == "false" {
 		filters.Featured = featuredParam
+	}
+
+	if slug != "" {
+		filters.Slug = slug
 	}
 
 	articles, err := c.articleService.GetArticles(&filters)
