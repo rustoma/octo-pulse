@@ -5,6 +5,7 @@ import "time"
 type Article struct {
 	ID              int       `json:"id"`
 	Title           string    `json:"title"`
+	Slug            string    `json:"slug"`
 	Description     string    `json:"description"`
 	Thumbnail       *int      `json:"thumbnail"`
 	PublicationDate time.Time `json:"publicationDate"`
@@ -12,6 +13,7 @@ type Article struct {
 	AuthorId        int       `json:"authorId"`
 	CategoryId      int       `json:"categoryId"`
 	DomainId        int       `json:"domainId"`
+	Featured        bool      `json:"featured"`
 	CreatedAt       time.Time `json:"createdAt"`
 	UpdatedAt       time.Time `json:"UpdatedAt"`
 }
