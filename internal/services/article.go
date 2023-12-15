@@ -2,6 +2,7 @@ package services
 
 import (
 	a "github.com/rustoma/octo-pulse/internal/ai"
+	"github.com/rustoma/octo-pulse/internal/dto"
 	"github.com/rustoma/octo-pulse/internal/models"
 	"github.com/rustoma/octo-pulse/internal/storage"
 	"github.com/rustoma/octo-pulse/internal/validator"
@@ -11,7 +12,7 @@ type ArticleService interface {
 	GenerateDescription(question *models.Question) (string, error)
 	UpdateArticle(articleId int, article *models.Article) (int, error)
 	GetArticle(id int) (*models.Article, error)
-	GetArticles(filters ...*storage.GetArticlesFilters) ([]*models.Article, error)
+	GetArticles(filters ...*storage.GetArticlesFilters) ([]*dto.Article, error)
 	CreateArticle(article *models.Article) (int, error)
 	DeleteArticle(id int) (int, error)
 }
@@ -64,6 +65,6 @@ func (s *articleService) GetArticle(id int) (*models.Article, error) {
 	return s.articleStore.GetArticle(id)
 }
 
-func (s *articleService) GetArticles(filters ...*storage.GetArticlesFilters) ([]*models.Article, error) {
+func (s *articleService) GetArticles(filters ...*storage.GetArticlesFilters) ([]*dto.Article, error) {
 	return s.articleStore.GetArticles(filters...)
 }

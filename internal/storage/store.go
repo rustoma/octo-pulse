@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"github.com/rustoma/octo-pulse/internal/dto"
 	"github.com/rustoma/octo-pulse/internal/models"
 )
 
@@ -51,6 +52,7 @@ type CategoriesDomainsStore interface {
 
 type AuthorStore interface {
 	InsertAuthor(author *models.Author) (int, error)
+	GetAuthor(id int) (*models.Author, error)
 }
 
 type GetArticlesFilters struct {
@@ -63,7 +65,7 @@ type GetArticlesFilters struct {
 type ArticleStore interface {
 	InsertArticle(article *models.Article) (int, error)
 	GetArticle(id int) (*models.Article, error)
-	GetArticles(filters ...*GetArticlesFilters) ([]*models.Article, error)
+	GetArticles(filters ...*GetArticlesFilters) ([]*dto.Article, error)
 	UpdateArticle(id int, article *models.Article) (int, error)
 	DeleteArticle(id int) (int, error)
 }
@@ -80,6 +82,7 @@ type ScrapperStore interface {
 
 type ImageStorageStore interface {
 	InsertImage(image *models.Image) (int, error)
+	GetImage(id int) (*models.Image, error)
 }
 
 type ImageCategoryStore interface {

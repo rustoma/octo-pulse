@@ -2,6 +2,7 @@ package postgresstore
 
 import (
 	"context"
+	"github.com/rustoma/octo-pulse/internal/dto"
 	"github.com/rustoma/octo-pulse/internal/storage"
 	"time"
 
@@ -12,14 +13,20 @@ import (
 )
 
 type PostgressArticleStore struct {
-	DB        *pgxpool.Pool
-	dbTimeout time.Duration
+	DB                *pgxpool.Pool
+	categoryStore     storage.CategoryStore
+	imageStorageStore storage.ImageStorageStore
+	authorStore       storage.AuthorStore
+	dbTimeout         time.Duration
 }
 
-func NewArticleStore(DB *pgxpool.Pool) *PostgressArticleStore {
+func NewArticleStore(DB *pgxpool.Pool, categoryStore storage.CategoryStore, imageStorageStore storage.ImageStorageStore, authorStore storage.AuthorStore) *PostgressArticleStore {
 	return &PostgressArticleStore{
-		DB:        DB,
-		dbTimeout: time.Second * 3,
+		DB:                DB,
+		categoryStore:     categoryStore,
+		imageStorageStore: imageStorageStore,
+		authorStore:       authorStore,
+		dbTimeout:         time.Second * 3,
 	}
 }
 
@@ -66,7 +73,7 @@ func (s *PostgressArticleStore) DeleteArticle(id int) (int, error) {
 	return articleId, err
 }
 
-func (s *PostgressArticleStore) GetArticles(filters ...*storage.GetArticlesFilters) ([]*models.Article, error) {
+func (s *PostgressArticleStore) GetArticles(filters ...*storage.GetArticlesFilters) ([]*dto.Article, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), s.dbTimeout)
 	defer cancel()
 
@@ -121,17 +128,55 @@ func (s *PostgressArticleStore) GetArticles(filters ...*storage.GetArticlesFilte
 		return nil, err
 	}
 
-	var articles []*models.Article
+	var articles []*dto.Article
 
 	for rows.Next() {
 		articleFromScan, err := scanToArticle(rows)
+
+		dtoArticle := dto.Article{
+			ID:              articleFromScan.ID,
+			Title:           articleFromScan.Title,
+			Slug:            articleFromScan.Slug,
+			Description:     articleFromScan.Description,
+			PublicationDate: articleFromScan.PublicationDate,
+			IsPublished:     articleFromScan.IsPublished,
+			DomainId:        articleFromScan.DomainId,
+			Featured:        articleFromScan.Featured,
+			CreatedAt:       articleFromScan.CreatedAt,
+			UpdatedAt:       articleFromScan.UpdatedAt,
+		}
+
+		if articleFromScan.Thumbnail != nil {
+			thumbnail, err := s.imageStorageStore.GetImage(*articleFromScan.Thumbnail)
+			if err != nil {
+				logger.Err(err).Send()
+				return nil, err
+			}
+			dtoArticle.Thumbnail = thumbnail
+		}
+
+		category, err := s.categoryStore.GetCategory(articleFromScan.CategoryId)
+		if err != nil {
+			logger.Err(err).Send()
+			return nil, err
+		}
+
+		dtoArticle.Category = *category
+
+		author, err := s.authorStore.GetAuthor(articleFromScan.AuthorId)
+		if err != nil {
+			logger.Err(err).Send()
+			return nil, err
+		}
+
+		dtoArticle.Author = *author
 
 		if err != nil {
 			logger.Err(err).Send()
 			return nil, err
 		}
 
-		articles = append(articles, articleFromScan)
+		articles = append(articles, &dtoArticle)
 	}
 
 	return articles, err

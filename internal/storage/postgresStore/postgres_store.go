@@ -29,7 +29,7 @@ func NewPostgresStorage(DB *pgxpool.Pool) *PostgressStore {
 		Domain:            NewDomainStore(DB),
 		Category:          NewCategoryStore(DB),
 		Author:            NewAuthorStore(DB),
-		Article:           NewArticleStore(DB),
+		Article:           NewArticleStore(DB, NewCategoryStore(DB), NewImageStorageStore(DB), NewAuthorStore(DB)),
 		CategoriesDomains: NewCategoriesDomainsStore(DB),
 		Image:             NewImageStorageStore(DB),
 		ImageCategory:     NewImageCategoryStore(DB),
