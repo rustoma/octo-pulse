@@ -2,6 +2,8 @@ package postgresstore
 
 import (
 	"context"
+	"github.com/Masterminds/squirrel"
+	"github.com/jackc/pgx/v5"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -20,8 +22,8 @@ func NewImageStorageStore(DB *pgxpool.Pool) *PostgresImageStorageStore {
 	}
 }
 
-func (a *PostgresImageStorageStore) InsertImage(image *models.Image) (int, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), a.dbTimeout)
+func (s *PostgresImageStorageStore) InsertImage(image *models.Image) (int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), s.dbTimeout)
 	defer cancel()
 
 	stmt, args, err := pgQb().
@@ -38,6 +40,65 @@ func (a *PostgresImageStorageStore) InsertImage(image *models.Image) (int, error
 
 	var imageId int
 
-	err = a.DB.QueryRow(ctx, stmt, args...).Scan(&imageId)
+	err = s.DB.QueryRow(ctx, stmt, args...).Scan(&imageId)
 	return imageId, err
+}
+
+func (s *PostgresImageStorageStore) GetImage(id int) (*models.Image, error) {
+
+	ctx, cancel := context.WithTimeout(context.Background(), s.dbTimeout)
+	defer cancel()
+
+	stmt, args, err := pgQb().
+		Select("*").
+		From("public.image_storage").
+		Where(squirrel.Eq{"id": id}).
+		ToSql()
+
+	if err != nil {
+		logger.Err(err).Send()
+		return nil, err
+	}
+
+	rows, err := s.DB.Query(ctx, stmt, args...)
+	defer rows.Close()
+
+	if err != nil {
+		logger.Err(err).Send()
+		return nil, err
+	}
+
+	var image *models.Image
+
+	for rows.Next() {
+		imageFromScan, err := scanToImage(rows)
+
+		if err != nil {
+			logger.Err(err).Send()
+			return nil, err
+		}
+
+		image = imageFromScan
+	}
+
+	return image, err
+}
+
+func scanToImage(rows pgx.Rows) (*models.Image, error) {
+	var image models.Image
+	err := rows.Scan(
+		&image.ID,
+		&image.Name,
+		&image.Path,
+		&image.Size,
+		&image.Type,
+		&image.Width,
+		&image.Height,
+		&image.Alt,
+		&image.CategoryId,
+		&image.CreatedAt,
+		&image.UpdatedAt,
+	)
+
+	return &image, err
 }
