@@ -156,7 +156,7 @@ func main() {
 	imageThirdName := "puste-krzeslo-drewniane-w-salonie"
 	imageFirst := fixtures.CreateImage(
 		imageFirstName,
-		"/assets/image/mezczyzna-siedzacy-na-zewnatrz-i-glaszczacy-swojego-kota.jpg",
+		"/assets/images/mezczyzna-siedzacy-na-zewnatrz-i-glaszczacy-swojego-kota.jpg",
 		184551,
 		".jpg",
 		1500,
@@ -166,7 +166,7 @@ func main() {
 	)
 	imageSecond := fixtures.CreateImage(
 		imageSecondName,
-		"/assets/image/odkryty-patio-z-krzeslem-i-stolem.jpg",
+		"/assets/images/odkryty-patio-z-krzeslem-i-stolem.jpg",
 		371302,
 		".jpg",
 		1500,
@@ -176,7 +176,7 @@ func main() {
 	)
 	imageThird := fixtures.CreateImage(
 		imageThirdName,
-		"/assets/image/puste-krzeslo-drewniane-w-salonie.jpg",
+		"/assets/images/puste-krzeslo-drewniane-w-salonie.jpg",
 		296332,
 		".jpg",
 		1500,
