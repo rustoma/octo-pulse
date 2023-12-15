@@ -2,6 +2,8 @@ package postgresstore
 
 import (
 	"context"
+	"github.com/Masterminds/squirrel"
+	"github.com/jackc/pgx/v5"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -40,4 +42,59 @@ func (a *PostgressAuthorStore) InsertAuthor(author *models.Author) (int, error) 
 
 	err = a.DB.QueryRow(ctx, stmt, args...).Scan(&authorId)
 	return authorId, err
+}
+
+func (s *PostgressAuthorStore) GetAuthor(id int) (*models.Author, error) {
+
+	ctx, cancel := context.WithTimeout(context.Background(), s.dbTimeout)
+	defer cancel()
+
+	stmt, args, err := pgQb().
+		Select("*").
+		From("public.author").
+		Where(squirrel.Eq{"id": id}).
+		ToSql()
+
+	if err != nil {
+		logger.Err(err).Send()
+		return nil, err
+	}
+
+	rows, err := s.DB.Query(ctx, stmt, args...)
+	defer rows.Close()
+
+	if err != nil {
+		logger.Err(err).Send()
+		return nil, err
+	}
+
+	var author *models.Author
+
+	for rows.Next() {
+		authorFromScan, err := scanToAuthor(rows)
+
+		if err != nil {
+			logger.Err(err).Send()
+			return nil, err
+		}
+
+		author = authorFromScan
+	}
+
+	return author, err
+}
+
+func scanToAuthor(rows pgx.Rows) (*models.Author, error) {
+	var author models.Author
+	err := rows.Scan(
+		&author.ID,
+		&author.FirstName,
+		&author.LastName,
+		&author.Description,
+		&author.ImageUrl,
+		&author.CreatedAt,
+		&author.UpdatedAt,
+	)
+
+	return &author, err
 }
