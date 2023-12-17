@@ -457,7 +457,10 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 
 	c.Usage = &openai.Usage{PromptTokens: 0, CompletionTokens: 0, TotalTokens: 0}
 
-	return articleDescription.String(), nil
+	re := regexp.MustCompile("<h1[^>]*>(.*?)</h1>")
+	articleDescriptionWithoutH1 := re.ReplaceAllString(articleDescription.String(), "")
+
+	return articleDescriptionWithoutH1, nil
 }
 
 func (c *chatGPT) newChatCompletion(messages []openai.ChatCompletionMessage, model string) (openai.ChatCompletionResponse, error) {
