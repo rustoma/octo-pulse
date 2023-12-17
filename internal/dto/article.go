@@ -18,7 +18,7 @@ type Article struct {
 	DomainId        int             `json:"domainId" validate:"required,min=4"`
 	Featured        bool            `json:"featured"`
 	CreatedAt       time.Time       `json:"createdAt" validate:"required,min=4"`
-	UpdatedAt       time.Time       `json:"UpdatedAt" validate:"required,min=4"`
+	UpdatedAt       time.Time       `json:"updatedAt" validate:"required,min=4"`
 }
 
 type ArticleValidationErrors struct {
@@ -32,5 +32,5 @@ type ArticleValidationErrors struct {
 	Category        string `json:"category"`
 	DomainId        string `json:"domainId"`
 	CreatedAt       string `json:"createdAt"`
-	UpdatedAt       string `json:"UpdatedAt"`
+	UpdatedAt       string `json:"updatedAt"`
 }

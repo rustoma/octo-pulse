@@ -7,5 +7,5 @@ type Category struct {
 	Name      string    `json:"name"`
 	Slug      string    `json:"slug"`
 	CreatedAt time.Time `json:"createdAt"`
-	UpdatedAt time.Time `json:"UpdatedAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
 }

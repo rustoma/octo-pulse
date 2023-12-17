@@ -9,5 +9,5 @@ type Author struct {
 	Description string    `json:"description"`
 	ImageUrl    string    `json:"imageUrl"`
 	CreatedAt   time.Time `json:"createdAt"`
-	UpdatedAt   time.Time `json:"UpdatedAt"`
+	UpdatedAt   time.Time `json:"updatedAt"`
 }

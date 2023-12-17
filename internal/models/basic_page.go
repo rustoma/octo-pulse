@@ -9,5 +9,5 @@ type BasicPage struct {
 	Body      string    `json:"body"`
 	Domain    int       `json:"domain"`
 	CreatedAt time.Time `json:"createdAt"`
-	UpdatedAt time.Time `json:"UpdatedAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
 }

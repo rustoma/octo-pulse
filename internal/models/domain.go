@@ -7,5 +7,5 @@ type Domain struct {
 	Name      string    `json:"name"`
 	Email     string    `json:"email"`
 	CreatedAt time.Time `json:"createdAt"`
-	UpdatedAt time.Time `json:"UpdatedAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
 }
