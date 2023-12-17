@@ -72,14 +72,14 @@ func main() {
 		logger.Fatal().Err(err).Send()
 	}
 
-	homeDesignDomain := fixtures.CreateDomain("homedesign.com")
+	homeDesignDomain := fixtures.CreateDomain("homedesign.com", "homedesign@gmail.com")
 	homeDesignDomainId, err := store.Domain.InsertDomain(homeDesignDomain)
 
 	if err != nil {
 		logger.Fatal().Err(err).Send()
 	}
 
-	newsDomain := fixtures.CreateDomain("hotnews.com")
+	newsDomain := fixtures.CreateDomain("hotnews.com", "hotnews@gmail.com")
 	newsDomainId, err := store.Domain.InsertDomain(newsDomain)
 
 	if err != nil {

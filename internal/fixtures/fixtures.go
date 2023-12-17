@@ -43,9 +43,10 @@ func (f *fixtures) CreateRole(name string) *models.Role {
 	}
 }
 
-func (f *fixtures) CreateDomain(name string) *models.Domain {
+func (f *fixtures) CreateDomain(name, email string) *models.Domain {
 	return &models.Domain{
 		Name:      name,
+		Email:     email,
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
 	}

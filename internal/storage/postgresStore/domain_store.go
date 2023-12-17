@@ -28,8 +28,8 @@ func (d *PostgressDomainStore) InsertDomain(domain *models.Domain) (int, error) 
 
 	stmt, args, err := pgQb().
 		Insert("public.domain").
-		Columns("name, created_at, updated_at").
-		Values(domain.Name, time.Now().UTC(), time.Now().UTC()).
+		Columns("name,email created_at, updated_at").
+		Values(domain.Name, domain.Email, time.Now().UTC(), time.Now().UTC()).
 		Suffix("RETURNING \"id\"").
 		ToSql()
 
@@ -126,6 +126,7 @@ func scanToDomain(rows pgx.Rows) (*models.Domain, error) {
 	err := rows.Scan(
 		&domain.ID,
 		&domain.Name,
+		&domain.Email,
 		&domain.CreatedAt,
 		&domain.UpdatedAt,
 	)
