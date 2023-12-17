@@ -44,10 +44,12 @@ func NewApiRoutes(controllers ApiControllers, services ApiServices, tasks *tasks
 		r.Get("/articles", api.MakeHTTPHandler(controllers.Article.HandleGetArticles))
 		r.Get("/articles/{id}", api.MakeHTTPHandler(controllers.Article.HandleGetArticle))
 
+		r.Get("/domains/{id}", api.MakeHTTPHandler(controllers.Domain.HandleGetDomainPublicData))
+
 		r.Get("/categories", api.MakeHTTPHandler(controllers.Category.HandleGetCategories))
 		r.Get("/domain-categories/{id}", api.MakeHTTPHandler(controllers.Category.HandleGetDomainCategories))
 
-		r.Get("/basic-page/slug/{slug}", api.MakeHTTPHandler(controllers.BasicPage.HandleGetBasicPageBySlug))
+		r.Get("/basic-pages/slug/{slug}", api.MakeHTTPHandler(controllers.BasicPage.HandleGetBasicPageBySlug))
 	})
 
 	r.Get("/assets/images/*", api.MakeHTTPHandler(controllers.Image.HandleGetImage))
