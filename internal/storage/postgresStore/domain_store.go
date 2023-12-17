@@ -2,6 +2,7 @@ package postgresstore
 
 import (
 	"context"
+	"github.com/rustoma/octo-pulse/internal/dto"
 	"time"
 
 	"github.com/Masterminds/squirrel"
@@ -119,6 +120,49 @@ func (s *PostgressDomainStore) GetDomain(id int) (*models.Domain, error) {
 	}
 
 	return domain, err
+}
+
+func (s *PostgressDomainStore) GetDomainPublicData(id int) (*dto.DomainPublicData, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), s.dbTimeout)
+	defer cancel()
+
+	stmt, args, err := pgQb().
+		Select("email").
+		From("public.domain").
+		Where(squirrel.Eq{"id": id}).
+		ToSql()
+
+	if err != nil {
+		logger.Err(err).Send()
+		return nil, err
+	}
+
+	rows, err := s.DB.Query(ctx, stmt, args...)
+	defer rows.Close()
+
+	if err != nil {
+		logger.Err(err).Send()
+		return nil, err
+	}
+
+	var domainPublicData *dto.DomainPublicData
+
+	for rows.Next() {
+		var domainPublicDataFromScan dto.DomainPublicData
+
+		err := rows.Scan(
+			&domainPublicDataFromScan.Email,
+		)
+
+		if err != nil {
+			logger.Err(err).Send()
+			return nil, err
+		}
+
+		domainPublicData = &domainPublicDataFromScan
+	}
+
+	return domainPublicData, err
 }
 
 func scanToDomain(rows pgx.Rows) (*models.Domain, error) {

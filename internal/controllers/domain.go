@@ -45,3 +45,20 @@ func (c *DomainController) HandleGetDomain(w http.ResponseWriter, r *http.Reques
 
 	return api.WriteJSON(w, http.StatusOK, domains)
 }
+
+func (c *DomainController) HandleGetDomainPublicData(w http.ResponseWriter, r *http.Request) error {
+	domainIdParam := chi.URLParam(r, "id")
+	domainId, err := strconv.Atoi(domainIdParam)
+
+	if err != nil {
+		return api.Error{Err: "bad request", Status: http.StatusBadRequest}
+	}
+
+	domains, err := c.domainService.GetDomainPublicData(domainId)
+
+	if err != nil {
+		return api.Error{Err: "cannot get domain data", Status: api.HandleErrorStatus(err)}
+	}
+
+	return api.WriteJSON(w, http.StatusOK, domains)
+}

@@ -1,6 +1,7 @@
 package services
 
 import (
+	"github.com/rustoma/octo-pulse/internal/dto"
 	"github.com/rustoma/octo-pulse/internal/models"
 	"github.com/rustoma/octo-pulse/internal/storage"
 )
@@ -8,6 +9,7 @@ import (
 type DomainService interface {
 	GetDomains() ([]*models.Domain, error)
 	GetDomain(id int) (*models.Domain, error)
+	GetDomainPublicData(id int) (*dto.DomainPublicData, error)
 }
 
 type domainService struct {
@@ -24,4 +26,8 @@ func (s *domainService) GetDomains() ([]*models.Domain, error) {
 
 func (s *domainService) GetDomain(id int) (*models.Domain, error) {
 	return s.domainStore.GetDomain(id)
+}
+
+func (s *domainService) GetDomainPublicData(id int) (*dto.DomainPublicData, error) {
+	return s.domainStore.GetDomainPublicData(id)
 }

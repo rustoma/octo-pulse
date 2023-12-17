@@ -34,6 +34,7 @@ type DomainStore interface {
 	InsertDomain(domain *models.Domain) (int, error)
 	GetDomains() ([]*models.Domain, error)
 	GetDomain(id int) (*models.Domain, error)
+	GetDomainPublicData(id int) (*dto.DomainPublicData, error)
 }
 
 type GetCategoriesFilters struct {
