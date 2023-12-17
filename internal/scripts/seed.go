@@ -315,7 +315,7 @@ func main() {
 		n := 1 + rand.Intn(3-1+1)
 
 		title := fmt.Sprintf("News Article %d", i+1)
-		body := "Lorem ipsum dolor"
+		body := generateArticleDescription()
 		thumbnail := n
 		isPubished := true
 		authorId := johnId
