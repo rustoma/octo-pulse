@@ -15,5 +15,5 @@ type Article struct {
 	DomainId        int       `json:"domainId"`
 	Featured        bool      `json:"featured"`
 	CreatedAt       time.Time `json:"createdAt"`
-	UpdatedAt       time.Time `json:"UpdatedAt"`
+	UpdatedAt       time.Time `json:"updatedAt"`
 }
