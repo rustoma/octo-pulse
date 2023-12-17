@@ -314,7 +314,7 @@ func main() {
 		rand.NewSource(time.Now().UnixNano())
 		n := 1 + rand.Intn(3-1+1)
 
-		title := fmt.Sprintf("General Article %d", i+1)
+		title := fmt.Sprintf("News Article %d", i+1)
 		body := "Lorem ipsum dolor"
 		thumbnail := n
 		isPubished := true
@@ -356,7 +356,7 @@ func main() {
 		rand.NewSource(time.Now().UnixNano())
 		n := 1 + rand.Intn(3-1+1)
 
-		title := fmt.Sprintf("News Article %d", i+1)
+		title := fmt.Sprintf("General Article %d", i+1)
 		body := generateArticleDescription()
 		thumbnail := n
 		isPubished := true
