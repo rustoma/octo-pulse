@@ -119,6 +119,8 @@ CREATE TABLE public.basic_page (
      "slug" TEXT NOT NULL,
      "body" TEXT,
      "domain" INTEGER NOT NULL,
+     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+     "updated_at" TIMESTAMP(3) NOT NULL,
 
      CONSTRAINT "basic_page_pkey" PRIMARY KEY ("id")
 );
