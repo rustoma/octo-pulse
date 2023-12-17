@@ -139,9 +139,6 @@ CREATE UNIQUE INDEX "category_category_name_key" ON public.category("name");
 CREATE UNIQUE INDEX "category_category_slug_key" ON public.category("slug");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "basic_page_slug_key" ON public.basic_page("slug");
-
--- CreateIndex
 CREATE UNIQUE INDEX "basic_page_slug_domain_key" ON public.basic_page("slug", "domain");
 
 -- AddForeignKey
