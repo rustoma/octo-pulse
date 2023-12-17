@@ -2,6 +2,7 @@ package fixtures
 
 import (
 	"github.com/gosimple/slug"
+	"math/rand"
 	"time"
 
 	"github.com/rustoma/octo-pulse/internal/models"
@@ -70,11 +71,16 @@ func (f *fixtures) CreateAuthor(fn, ln, desc, imageUrl string) *models.Author {
 	}
 }
 
-func (f *fixtures) CreateArticle(title, desc string, thumbnail int, isPub bool, authorId, categoryId, domainId int, featured bool) *models.Article {
+func (f *fixtures) CreateArticle(title, body string, thumbnail int, isPub bool, authorId, categoryId, domainId int, featured bool) *models.Article {
+	source := rand.NewSource(time.Now().UnixNano())
+	rng := rand.New(source)
+
+	n := rng.Intn(10) // n will be between 0 and 10
+
 	return &models.Article{
 		Title:           title,
 		Slug:            slug.Make(title),
-		Description:     desc,
+		Body:            body,
 		Thumbnail:       &thumbnail,
 		PublicationDate: time.Now().UTC(),
 		IsPublished:     isPub,
@@ -82,8 +88,8 @@ func (f *fixtures) CreateArticle(title, desc string, thumbnail int, isPub bool, 
 		CategoryId:      categoryId,
 		DomainId:        domainId,
 		Featured:        featured,
-		CreatedAt:       time.Now().UTC(),
-		UpdatedAt:       time.Now().UTC(),
+		CreatedAt:       time.Now().Add(time.Duration(n) * time.Second).UTC(),
+		UpdatedAt:       time.Now().Add(time.Duration(n) * time.Second).UTC(),
 	}
 }
 
