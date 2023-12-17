@@ -13,13 +13,14 @@ import (
 )
 
 type ApiControllers struct {
-	Auth     *controllers.AuthController
-	Article  *controllers.ArticleController
-	Task     *controllers.TaskController
-	Domain   *controllers.DomainController
-	Category *controllers.CategoryController
-	File     *controllers.FileController
-	Image    *controllers.ImageController
+	Auth      *controllers.AuthController
+	Article   *controllers.ArticleController
+	Task      *controllers.TaskController
+	Domain    *controllers.DomainController
+	Category  *controllers.CategoryController
+	File      *controllers.FileController
+	Image     *controllers.ImageController
+	BasicPage *controllers.BasicPageController
 }
 
 type ApiServices struct {
@@ -45,6 +46,8 @@ func NewApiRoutes(controllers ApiControllers, services ApiServices, tasks *tasks
 
 		r.Get("/categories", api.MakeHTTPHandler(controllers.Category.HandleGetCategories))
 		r.Get("/domain-categories/{id}", api.MakeHTTPHandler(controllers.Category.HandleGetDomainCategories))
+
+		r.Get("/basic-page/slug/{slug}", api.MakeHTTPHandler(controllers.BasicPage.HandleGetBasicPageBySlug))
 	})
 
 	r.Get("/assets/images/*", api.MakeHTTPHandler(controllers.Image.HandleGetImage))

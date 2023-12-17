@@ -20,6 +20,7 @@ type PostgressStore struct {
 	CategoriesDomains storage.CategoriesDomainsStore
 	Image             storage.ImageStorageStore
 	ImageCategory     storage.ImageCategoryStore
+	BasicPage         storage.BasicPageStore
 }
 
 func NewPostgresStorage(DB *pgxpool.Pool) *PostgressStore {
@@ -33,6 +34,7 @@ func NewPostgresStorage(DB *pgxpool.Pool) *PostgressStore {
 		CategoriesDomains: NewCategoriesDomainsStore(DB),
 		Image:             NewImageStorageStore(DB),
 		ImageCategory:     NewImageCategoryStore(DB),
+		BasicPage:         NewBasicPageStore(DB),
 	}
 }
 

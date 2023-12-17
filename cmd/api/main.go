@@ -61,36 +61,40 @@ func main() {
 			CategoriesDomains: postgressStore.CategoriesDomains,
 			Image:             postgressStore.Image,
 			ImageCategory:     postgressStore.ImageCategory,
+			BasicPage:         postgressStore.BasicPage,
 			Scrapper:          sqlStore.Scrapper,
 		}
 		//Validator
 		validator = validator.NewValidator()
 		//Services
-		authService     = services.NewAuthService(store.User)
-		articleService  = services.NewArticleService(store.Article, validator.Article, ai)
-		domainService   = services.NewDomainService(store.Domain)
-		categoryService = services.NewCategoryService(store.Category, store.CategoriesDomains)
-		scrapperService = services.NewScrapperService(store.Scrapper, validator.Scrapper)
-		fileService     = services.NewFileService(store.Article, store.Domain, store.Category)
+		authService      = services.NewAuthService(store.User)
+		articleService   = services.NewArticleService(store.Article, validator.Article, ai)
+		domainService    = services.NewDomainService(store.Domain)
+		categoryService  = services.NewCategoryService(store.Category, store.CategoriesDomains)
+		scrapperService  = services.NewScrapperService(store.Scrapper, validator.Scrapper)
+		fileService      = services.NewFileService(store.Article, store.Domain, store.Category)
+		basicPageService = services.NewBasicPageService(store.BasicPage)
 		//Tasks
 		tasks         = ts.NewTasks(articleService, domainService, scrapperService, categoryService, ai)
 		taskInspector = ts.NewTaskInspector()
 		//Controllers
-		authController     = controllers.NewAuthController(authService)
-		articleController  = controllers.NewArticleController(articleService, tasks.Article)
-		taskController     = controllers.NewTaskController(taskInspector)
-		domainController   = controllers.NewDomainController(domainService)
-		categoryController = controllers.NewCategoryController(categoryService)
-		fileController     = controllers.NewFileController(fileService)
-		imageController    = controllers.NewImageController()
-		apiControllers     = routes.ApiControllers{
-			Auth:     authController,
-			Article:  articleController,
-			Task:     taskController,
-			Domain:   domainController,
-			Category: categoryController,
-			File:     fileController,
-			Image:    imageController,
+		authController      = controllers.NewAuthController(authService)
+		articleController   = controllers.NewArticleController(articleService, tasks.Article)
+		taskController      = controllers.NewTaskController(taskInspector)
+		domainController    = controllers.NewDomainController(domainService)
+		categoryController  = controllers.NewCategoryController(categoryService)
+		fileController      = controllers.NewFileController(fileService)
+		imageController     = controllers.NewImageController()
+		basicPageController = controllers.NewBasicPageController(basicPageService)
+		apiControllers      = routes.ApiControllers{
+			Auth:      authController,
+			Article:   articleController,
+			Task:      taskController,
+			Domain:    domainController,
+			Category:  categoryController,
+			File:      fileController,
+			Image:     imageController,
+			BasicPage: basicPageController,
 		}
 		apiServices = routes.ApiServices{
 			Auth: authService,

@@ -16,6 +16,7 @@ type Store struct {
 	Scrapper          ScrapperStore
 	Image             ImageStorageStore
 	ImageCategory     ImageCategoryStore
+	BasicPage         BasicPageStore
 }
 
 type UserStore interface {
@@ -89,4 +90,14 @@ type ImageStorageStore interface {
 
 type ImageCategoryStore interface {
 	InsertCategory(category *models.ImageCategory) (int, error)
+}
+
+type GetBasicPageBySlugFilters struct {
+	DomainId int
+}
+
+type BasicPageStore interface {
+	InsertBasicPage(page *models.BasicPage) (int, error)
+	GetBasicPage(id int) (*models.BasicPage, error)
+	GetBasicPageBySlug(slug string, filters ...*GetBasicPageBySlugFilters) (*models.BasicPage, error)
 }
