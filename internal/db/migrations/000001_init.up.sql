@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS public.article (
     "id" SERIAL NOT NULL,
     "title" TEXT NOT NULL,
     "slug" TEXT NOT NULL,
-    "description" TEXT,
+    "body" TEXT,
     "thumbnail" INTEGER,
     "publication_date" TIMESTAMP(3),
     "is_published" BOOLEAN NOT NULL DEFAULT false,
@@ -112,7 +112,7 @@ CREATE TABLE public.image_category (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "article_slug_key" ON public.article("slug");
+CREATE UNIQUE INDEX "article_slug_domain_id_key" ON public.article("slug", "domain_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "user_email_key" ON public.user("email");
