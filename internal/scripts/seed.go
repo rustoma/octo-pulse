@@ -200,6 +200,95 @@ func main() {
 		logger.Fatal().Err(err).Send()
 	}
 
+	contactBody := `<h2>Say Hello!</h2><p>Donec cursus dolor vitae congue consectetur. Morbi mattis viverra felis. Etiam dapibus id
+    turpis at sagittis. Cras mollis mi vel ante ultricies, id ullamcorper mi pulvinar. Proin bibendum ornare risus,
+    lacinia cursus quam condimentum id. Curabitur auctor massa eget porttitor molestie. Aliquam imperdiet dolor nec
+    metus pulvinar sollicitudin.</p><p><strong>Aliquam iaculis at odio ut tempus</strong>. Suspendisse blandit luctus
+    dui, a consequat mauris mollis id. Sed in ante at tortor malesuada imperdiet. Vestibulum sed gravida nibh. Nulla
+    suscipit congue lorem, id tempor ipsum molestie sit amet. Nulla ultricies vitae erat in tincidunt. Maecenas tempus
+    quam et ipsum elementum, a efficitur lectus tincidunt. Praesent diam elit, tincidunt ac tempus vulputate, aliquet
+    viverra mauris. Etiam eu nunc efficitur, sagittis est ut, fringilla neque. Ut interdum eget lorem eget congue. Ut
+    nec arcu placerat, mattis urna vel, consequat diam. Sed in leo in dolor suscipit molestie.</p>`
+
+	aboutUsBody := `<h3>The Professional Publishing Platform</h3><p>Aenean consectetur massa quis sem volutpat, a
+                  condimentum tortor pretium. Cras id ligula consequat, sagittis nulla at, sollicitudin lorem. Orci
+                  varius natoque penatibus et magnis dis parturient montes.</p><p>Cras id ligula consequat, sagittis
+                  nulla at, sollicitudin lorem. Orci varius natoque penatibus et magnis dis parturient montes, nascetur
+                  ridiculus mus. Phasellus eleifend, dolor vel condimentum imperdiet.</p><p>In a professional context it
+                  often happens that private or corporate clients corder a publication to be made and presented with the
+                  actual content still not being ready. Think of a news blog that’s filled with content hourly on the
+                  day of going live. However, reviewers tend to be distracted by comprehensible content, say, a random
+                  text copied from a newspaper or the internet. The are likely to focus on the text, disregarding the
+                  layout and its elements.</p>`
+
+	privacyPolicyContent := `<h3>GDPR compliance</h3><p>Sed nec ex vitae justo molestie maximus. Sed ut neque sit
+    amet libero rhoncus tempor. Fusce tempor quam libero, varius congue magna tempus vitae. Donec a justo nec elit
+    sagittis sagittis eu a ante. Vivamus rutrum elit odio. Donec gravida id ligula ut faucibus. Aenean convallis ligula
+    orci, ut congue nunc sodales ut. In ultrices elit malesuada velit ornare, eget dictum velit hendrerit. Praesent
+    bibendum blandit lectus, eu congue neque mollis in. Pellentesque metus diam, hendrerit in purus fringilla, accumsan
+    bibendum sapien. Nunc non facilisis sem.</p>`
+
+	contactPageForFirstDomain := fixtures.CreateBasicPage(
+		"Kontakt",
+		contactBody,
+		1,
+	)
+
+	contactPageForSecondDomain := fixtures.CreateBasicPage(
+		"Kontakt",
+		contactBody,
+		2,
+	)
+
+	_, err = store.BasicPage.InsertBasicPage(contactPageForFirstDomain)
+	if err != nil {
+		logger.Fatal().Err(err).Send()
+	}
+	_, err = store.BasicPage.InsertBasicPage(contactPageForSecondDomain)
+	if err != nil {
+		logger.Fatal().Err(err).Send()
+	}
+
+	aboutUsPageForFirstDomain := fixtures.CreateBasicPage(
+		"About us",
+		aboutUsBody,
+		1,
+	)
+	aboutUsPageForSecondDomain := fixtures.CreateBasicPage(
+		"About us",
+		aboutUsBody,
+		2,
+	)
+
+	_, err = store.BasicPage.InsertBasicPage(aboutUsPageForFirstDomain)
+	if err != nil {
+		logger.Fatal().Err(err).Send()
+	}
+	_, err = store.BasicPage.InsertBasicPage(aboutUsPageForSecondDomain)
+	if err != nil {
+		logger.Fatal().Err(err).Send()
+	}
+
+	privacypolicyPageForFirstDomain := fixtures.CreateBasicPage(
+		"Privacy policy",
+		privacyPolicyContent,
+		1,
+	)
+	privacyPolicyForSecondDomain := fixtures.CreateBasicPage(
+		"Privacy policy",
+		privacyPolicyContent,
+		2,
+	)
+
+	_, err = store.BasicPage.InsertBasicPage(privacypolicyPageForFirstDomain)
+	if err != nil {
+		logger.Fatal().Err(err).Send()
+	}
+	_, err = store.BasicPage.InsertBasicPage(privacyPolicyForSecondDomain)
+	if err != nil {
+		logger.Fatal().Err(err).Send()
+	}
+
 	for i := 0; i < 10; i++ {
 		rand.NewSource(time.Now().UnixNano())
 		n := 1 + rand.Intn(3-1+1)

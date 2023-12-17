@@ -116,3 +116,14 @@ func (f *fixtures) CreateImageCategory(name string) *models.ImageCategory {
 		UpdatedAt: time.Now().UTC(),
 	}
 }
+
+func (f *fixtures) CreateBasicPage(title, body string, domain int) *models.BasicPage {
+	return &models.BasicPage{
+		Title:     title,
+		Slug:      slug.Make(title),
+		Body:      body,
+		Domain:    domain,
+		CreatedAt: time.Now().UTC(),
+		UpdatedAt: time.Now().UTC(),
+	}
+}
