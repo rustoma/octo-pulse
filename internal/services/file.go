@@ -78,7 +78,7 @@ func (s *fileService) CreateArticles(ids []int) error {
 		htmlFilePath := "temp.html"
 		docxFilePath := filepath.Join("assets", "articles", slug.Make(domain.Name), slug.Make(category.Name), fmt.Sprintf("%s.docx", slug.Make(article.Title)))
 
-		err = s.CreateHtmlFile(htmlFilePath, article.Description)
+		err = s.CreateHtmlFile(htmlFilePath, article.Body)
 		if err != nil {
 			logger.Err(err).Send()
 			return err

@@ -36,8 +36,8 @@ func (s *PostgressArticleStore) InsertArticle(article *models.Article) (int, err
 
 	stmt, args, err := pgQb().
 		Insert("public.article").
-		Columns("title, slug, description, thumbnail, publication_date, is_published, author_id, category_id, domain_id, featured, created_at, updated_at").
-		Values(article.Title, article.Slug, article.Description, article.Thumbnail, article.PublicationDate, article.IsPublished,
+		Columns("title, slug, body, thumbnail, publication_date, is_published, author_id, category_id, domain_id, featured, created_at, updated_at").
+		Values(article.Title, article.Slug, article.Body, article.Thumbnail, article.PublicationDate, article.IsPublished,
 			article.AuthorId, article.CategoryId, article.DomainId, article.Featured, time.Now().UTC(), time.Now().UTC()).
 		Suffix("RETURNING \"id\"").
 		ToSql()
@@ -86,10 +86,21 @@ func (s *PostgressArticleStore) GetArticles(filters ...*storage.GetArticlesFilte
 		articlesStmt = articlesStmt.Limit(uint64(filters[0].Limit))
 	}
 
+	if len(filters) > 0 && filters[0].Offset != 0 {
+		articlesStmt = articlesStmt.Offset(uint64(filters[0].Offset))
+	}
+
 	if len(filters) > 0 && filters[0].CategoryId != 0 {
 		articlesStmt = articlesStmt.Where(
 			squirrel.And{
 				squirrel.Eq{"category_id": filters[0].CategoryId},
+			})
+	}
+
+	if len(filters) > 0 && filters[0].DomainId != 0 {
+		articlesStmt = articlesStmt.Where(
+			squirrel.And{
+				squirrel.Eq{"domain_id": filters[0].DomainId},
 			})
 	}
 
@@ -137,7 +148,7 @@ func (s *PostgressArticleStore) GetArticles(filters ...*storage.GetArticlesFilte
 			ID:              articleFromScan.ID,
 			Title:           articleFromScan.Title,
 			Slug:            articleFromScan.Slug,
-			Description:     articleFromScan.Description,
+			Body:            articleFromScan.Body,
 			PublicationDate: articleFromScan.PublicationDate,
 			IsPublished:     articleFromScan.IsPublished,
 			DomainId:        articleFromScan.DomainId,
@@ -253,7 +264,7 @@ func scanToArticle(rows pgx.Rows) (*models.Article, error) {
 		&article.ID,
 		&article.Title,
 		&article.Slug,
-		&article.Description,
+		&article.Body,
 		&article.Thumbnail,
 		&article.PublicationDate,
 		&article.IsPublished,
@@ -271,7 +282,7 @@ func scanToArticle(rows pgx.Rows) (*models.Article, error) {
 func convertArticleToArticleMap(article *models.Article) map[string]interface{} {
 	return map[string]interface{}{
 		"title":            article.Title,
-		"description":      article.Description,
+		"body":             article.Body,
 		"thumbnail":        article.Thumbnail,
 		"publication_date": article.PublicationDate,
 		"is_published":     article.IsPublished,

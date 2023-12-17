@@ -9,7 +9,7 @@ type Article struct {
 	ID              int             `json:"id"`
 	Title           string          `json:"title" validate:"required,min=4"`
 	Slug            string          `json:"slug" validate:"required"`
-	Description     string          `json:"description" validate:"required,min=4"`
+	Body            string          `json:"body" validate:"required,min=4"`
 	Thumbnail       *models.Image   `json:"thumbnail" validate:"required"`
 	PublicationDate time.Time       `json:"publicationDate" validate:"required,min=4"`
 	IsPublished     bool            `json:"isPublished" validate:"required,min=4"`
@@ -24,7 +24,7 @@ type Article struct {
 type ArticleValidationErrors struct {
 	Title           string `json:"title"`
 	Slug            string `json:"slug"`
-	Description     string `json:"description"`
+	Body            string `json:"body"`
 	Thumbnail       string `json:"thumbnail"`
 	PublicationDate string `json:"publicationDate"`
 	IsPublished     string `json:"isPublished"`

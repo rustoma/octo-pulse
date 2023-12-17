@@ -20,7 +20,7 @@ func newArticleValidator(validate *validator.Validate) *articleValidator {
 
 type ArticleValidation struct {
 	Title           string `validate:"required,min=4" json:"title"`
-	Description     string
+	Body            string
 	Thumbnail       *int
 	PublicationDate time.Time
 	IsPublished     bool
@@ -34,7 +34,7 @@ type ArticleValidation struct {
 func (v *articleValidator) Validate(article *models.Article) error {
 	propertiesToValidate := ArticleValidation{
 		Title:           article.Title,
-		Description:     article.Description,
+		Body:            article.Body,
 		Thumbnail:       article.Thumbnail,
 		PublicationDate: article.PublicationDate,
 		IsPublished:     article.IsPublished,

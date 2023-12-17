@@ -57,7 +57,9 @@ type AuthorStore interface {
 
 type GetArticlesFilters struct {
 	CategoryId int
+	DomainId   int
 	Limit      int
+	Offset     int
 	Featured   string
 	Slug       string
 }

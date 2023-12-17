@@ -68,6 +68,7 @@ func (c *ArticleController) HandleGenerateDescritption(w http.ResponseWriter, r 
 func (c *ArticleController) HandleGetArticles(w http.ResponseWriter, r *http.Request) error {
 	categoryIdParam := r.URL.Query().Get("categoryId")
 	limitParam := r.URL.Query().Get("limit")
+	offsetParam := r.URL.Query().Get("offset")
 	featuredParam := r.URL.Query().Get("featured")
 	slug := r.URL.Query().Get("slug")
 
@@ -89,6 +90,15 @@ func (c *ArticleController) HandleGetArticles(w http.ResponseWriter, r *http.Req
 		}
 
 		filters.Limit = limit
+	}
+
+	if offsetParam != "" {
+		offset, err := strconv.Atoi(offsetParam)
+		if err != nil {
+			return api.Error{Err: "bad request - offset wrong format", Status: http.StatusBadRequest}
+		}
+
+		filters.Offset = offset
 	}
 
 	if featuredParam == "true" || featuredParam == "false" {

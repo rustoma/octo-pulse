@@ -132,7 +132,7 @@ func (t articleTasks) HandleGenerateDescription(ctx context.Context, task *asynq
 		return err
 	}
 
-	article.Description = description
+	article.Body = description
 
 	_, err = t.articleService.UpdateArticle(payload.ArticleId, article)
 
@@ -187,16 +187,16 @@ func (t articleTasks) HandleGenerateArticles(ctx context.Context, task *asynq.Ta
 		logger.Info().Interface("Assigned to category", catgoryId).Send()
 
 		article := &models.Article{
-			Title:       question.Question,
-			Slug:        slug.Make(question.Question),
-			Description: "",
-			Thumbnail:   nil,
-			CategoryId:  catgoryId,
-			AuthorId:    1,
-			DomainId:    payload.DomainId,
-			Featured:    false,
-			CreatedAt:   time.Now().UTC(),
-			UpdatedAt:   time.Now().UTC(),
+			Title:      question.Question,
+			Slug:       slug.Make(question.Question),
+			Body:       "",
+			Thumbnail:  nil,
+			CategoryId: catgoryId,
+			AuthorId:   1,
+			DomainId:   payload.DomainId,
+			Featured:   false,
+			CreatedAt:  time.Now().UTC(),
+			UpdatedAt:  time.Now().UTC(),
 		}
 
 		articleId, err := t.articleService.CreateArticle(article)
