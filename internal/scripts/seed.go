@@ -229,13 +229,13 @@ func main() {
     bibendum sapien. Nunc non facilisis sem.</p>`
 
 	contactPageForFirstDomain := fixtures.CreateBasicPage(
-		"Kontakt",
+		"Contact",
 		contactBody,
 		1,
 	)
 
 	contactPageForSecondDomain := fixtures.CreateBasicPage(
-		"Kontakt",
+		"Contact",
 		contactBody,
 		2,
 	)
