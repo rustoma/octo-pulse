@@ -9,6 +9,7 @@ type BasicPageService interface {
 	InsertBasicPage(page *models.BasicPage) (int, error)
 	GetBasicPage(id int) (*models.BasicPage, error)
 	GetBasicPageBySlug(slug string, filters ...*storage.GetBasicPageBySlugFilters) (*models.BasicPage, error)
+	GetBasicPages(filters ...*storage.GetBasicPagesFilters) ([]*models.BasicPage, error)
 }
 
 type basicPageService struct {
@@ -17,6 +18,10 @@ type basicPageService struct {
 
 func NewBasicPageService(basicPageStore storage.BasicPageStore) BasicPageService {
 	return &basicPageService{basicPageStore: basicPageStore}
+}
+
+func (s *basicPageService) GetBasicPages(filters ...*storage.GetBasicPagesFilters) ([]*models.BasicPage, error) {
+	return s.basicPageStore.GetBasicPages(filters...)
 }
 
 func (s *basicPageService) GetBasicPage(id int) (*models.BasicPage, error) {

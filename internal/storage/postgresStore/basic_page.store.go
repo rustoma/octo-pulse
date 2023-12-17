@@ -45,6 +45,53 @@ func (s *PostgresBasicPageStore) InsertBasicPage(page *models.BasicPage) (int, e
 	return pageId, err
 }
 
+func (s *PostgresBasicPageStore) GetBasicPages(filters ...*storage.GetBasicPagesFilters) ([]*models.BasicPage, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), s.dbTimeout)
+	defer cancel()
+
+	basicPagesStmt := pgQb().
+		Select("*").
+		OrderBy("created_at DESC").
+		From("public.basic_page")
+
+	if len(filters) > 0 && filters[0].DomainId != 0 {
+		basicPagesStmt = basicPagesStmt.Where(
+			squirrel.And{
+				squirrel.Eq{"domain": filters[0].DomainId},
+			})
+	}
+
+	stmt, args, err := basicPagesStmt.ToSql()
+
+	if err != nil {
+		logger.Err(err).Send()
+		return nil, err
+	}
+
+	rows, err := s.DB.Query(ctx, stmt, args...)
+	defer rows.Close()
+
+	if err != nil {
+		logger.Err(err).Send()
+		return nil, err
+	}
+
+	var basicPages []*models.BasicPage
+
+	for rows.Next() {
+		basicPagesFromScan, err := scanToBasicPage(rows)
+
+		if err != nil {
+			logger.Err(err).Send()
+			return nil, err
+		}
+
+		basicPages = append(basicPages, basicPagesFromScan)
+	}
+
+	return basicPages, err
+}
+
 func (s *PostgresBasicPageStore) GetBasicPage(id int) (*models.BasicPage, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), s.dbTimeout)

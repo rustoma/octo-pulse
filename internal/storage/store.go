@@ -93,12 +93,17 @@ type ImageCategoryStore interface {
 	InsertCategory(category *models.ImageCategory) (int, error)
 }
 
+type GetBasicPagesFilters struct {
+	DomainId int
+}
+
 type GetBasicPageBySlugFilters struct {
 	DomainId int
 }
 
 type BasicPageStore interface {
 	InsertBasicPage(page *models.BasicPage) (int, error)
+	GetBasicPages(filters ...*GetBasicPagesFilters) ([]*models.BasicPage, error)
 	GetBasicPage(id int) (*models.BasicPage, error)
 	GetBasicPageBySlug(slug string, filters ...*GetBasicPageBySlugFilters) (*models.BasicPage, error)
 }
