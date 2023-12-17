@@ -54,3 +54,20 @@ func (c *CategoryController) HandleGetCategory(w http.ResponseWriter, r *http.Re
 
 	return api.WriteJSON(w, http.StatusOK, category)
 }
+
+func (c *CategoryController) HandleGetDomainCategories(w http.ResponseWriter, r *http.Request) error {
+	domainIdParam := chi.URLParam(r, "id")
+	domainId, err := strconv.Atoi(domainIdParam)
+
+	if err != nil {
+		return api.Error{Err: "bad request", Status: http.StatusBadRequest}
+	}
+
+	domainCategories, err := c.categoryService.GetDomainCategories(domainId)
+
+	if err != nil {
+		return api.Error{Err: "cannot get domain categories", Status: api.HandleErrorStatus(err)}
+	}
+
+	return api.WriteJSON(w, http.StatusOK, domainCategories)
+}
