@@ -98,7 +98,7 @@ CREATE TABLE public.image_storage (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "ImageStorage_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "image_storage_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -108,7 +108,18 @@ CREATE TABLE public.image_category (
      "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
      "updated_at" TIMESTAMP(3) NOT NULL,
      
-     CONSTRAINT "ImageCategory_pkey" PRIMARY KEY ("id")
+     CONSTRAINT "image_category_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE public.basic_page (
+     "id" SERIAL NOT NULL,
+     "title" TEXT NOT NULL,
+     "slug" TEXT NOT NULL,
+     "body" TEXT,
+     "domain" INTEGER NOT NULL,
+
+     CONSTRAINT "basic_page_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -123,6 +134,12 @@ CREATE UNIQUE INDEX "domain_domain_name_key" ON public.domain("name");
 -- CreateIndex
 CREATE UNIQUE INDEX "category_category_name_key" ON public.category("name");
 CREATE UNIQUE INDEX "category_category_slug_key" ON public.category("slug");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "basic_page_slug_key" ON public.basic_page("slug");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "basic_page_slug_domain_key" ON public.basic_page("slug", "domain");
 
 -- AddForeignKey
 ALTER TABLE public.user ADD CONSTRAINT "user_role_id_fkey" FOREIGN KEY ("role_id") REFERENCES public.role("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -147,4 +164,7 @@ ALTER TABLE public.categories_domains ADD CONSTRAINT "categories_domains_categor
 
 -- AddForeignKey
 ALTER TABLE public.image_storage ADD CONSTRAINT "image_storage_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES public.image_category("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE public.basic_page ADD CONSTRAINT "basic_page_domain_fkey" FOREIGN KEY ("domain") REFERENCES public.domain("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
