@@ -66,6 +66,7 @@ func (c *ArticleController) HandleGenerateDescritption(w http.ResponseWriter, r 
 }
 
 func (c *ArticleController) HandleGetArticles(w http.ResponseWriter, r *http.Request) error {
+	domainIdParam := r.URL.Query().Get("domainId")
 	categoryIdParam := r.URL.Query().Get("categoryId")
 	limitParam := r.URL.Query().Get("limit")
 	offsetParam := r.URL.Query().Get("offset")
@@ -73,6 +74,15 @@ func (c *ArticleController) HandleGetArticles(w http.ResponseWriter, r *http.Req
 	slug := r.URL.Query().Get("slug")
 
 	var filters storage.GetArticlesFilters
+
+	if domainIdParam != "" {
+		domainId, err := strconv.Atoi(domainIdParam)
+		if err != nil {
+			return api.Error{Err: "bad request - domainId wrong format", Status: http.StatusBadRequest}
+		}
+
+		filters.DomainId = domainId
+	}
 
 	if categoryIdParam != "" {
 		categoryId, err := strconv.Atoi(categoryIdParam)
