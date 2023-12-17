@@ -319,7 +319,7 @@ func main() {
 		thumbnail := n
 		isPubished := true
 		authorId := johnId
-		categoryId := generalCategoryId
+		categoryId := newsCategoryId
 		domainId := homeDesignDomainId
 		featured := false
 		article := fixtures.CreateArticle(title, body, thumbnail, isPubished, authorId, categoryId, domainId, featured)
@@ -361,7 +361,7 @@ func main() {
 		thumbnail := n
 		isPubished := true
 		authorId := johnId
-		categoryId := newsCategoryId
+		categoryId := generalCategoryId
 		domainId := newsDomainId
 		featured := false
 		article := fixtures.CreateArticle(title, body, thumbnail, isPubished, authorId, categoryId, domainId, featured)
