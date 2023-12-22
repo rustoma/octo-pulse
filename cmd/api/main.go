@@ -2,11 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
-	"net/http"
-	"os"
-	"path/filepath"
-
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
 	"github.com/rs/zerolog"
@@ -21,6 +16,10 @@ import (
 	sqlstore "github.com/rustoma/octo-pulse/internal/storage/sqlStore"
 	ts "github.com/rustoma/octo-pulse/internal/tasks"
 	"github.com/rustoma/octo-pulse/internal/validator"
+	"log"
+	"net/http"
+	"os"
+	"path/filepath"
 )
 
 var logger *zerolog.Logger
@@ -118,7 +117,12 @@ func init() {
 	logFile = lFile
 
 	//Init .env
-	if err := godotenv.Load(filepath.Join(".", ".env")); err != nil {
+	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	if err != nil {
+		logger.Fatal().Msg("Error loading .env file")
+	}
+
+	if err := godotenv.Load(filepath.Join(dir, ".env")); err != nil {
 		logger.Fatal().Msg("Error loading .env file")
 	}
 }

@@ -9,7 +9,8 @@ var logger *zerolog.Logger
 
 func init() {
 	//Init logger
-	l, logFile := lr.NewLogger()
-	defer logFile.Close()
+	l, lF := lr.NewLogger()
+
 	logger = l
+	defer lF.Close()
 }

@@ -1,6 +1,7 @@
 package ai
 
 import (
+	"os"
 	"path/filepath"
 
 	"github.com/joho/godotenv"
@@ -27,8 +28,13 @@ func init() {
 	defer logFile.Close()
 	logger = l
 
-	//Init .env
-	if err := godotenv.Load(filepath.Join(".", ".env")); err != nil {
+	//ENV init
+	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	if err != nil {
+		logger.Fatal().Msg("Error loading .env file")
+	}
+
+	if err := godotenv.Load(filepath.Join(dir, ".env")); err != nil {
 		logger.Fatal().Msg("Error loading .env file")
 	}
 }
