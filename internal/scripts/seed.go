@@ -3,14 +3,19 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/gosimple/slug"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
 	"github.com/rustoma/octo-pulse/internal/fixtures"
 	lr "github.com/rustoma/octo-pulse/internal/logger"
+	"github.com/rustoma/octo-pulse/internal/models"
 	"github.com/rustoma/octo-pulse/internal/services"
+	"github.com/rustoma/octo-pulse/internal/storage"
 	postgresstore "github.com/rustoma/octo-pulse/internal/storage/postgresStore"
+	"image/jpeg"
 	"math/rand"
 	"os"
+	"path/filepath"
 	"time"
 )
 
@@ -20,8 +25,12 @@ func main() {
 	defer logFile.Close()
 
 	//Init .env
-	err := godotenv.Load()
+	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 	if err != nil {
+		logger.Fatal().Msg("Error loading .env file")
+	}
+
+	if err := godotenv.Load(filepath.Join(dir, ".env")); err != nil {
 		logger.Fatal().Msg("Error loading .env file")
 	}
 
@@ -121,81 +130,33 @@ func main() {
 	jane := fixtures.CreateAuthor("Jane", "Doe", "Lorem ipsum dolor", "https://thispersondoesnotexist.com/")
 
 	janeId, err := store.Author.InsertAuthor(jane)
-
 	if err != nil {
 		logger.Fatal().Err(err).Send()
 	}
 
 	err = store.CategoriesDomains.AsignCategoryToDomain(homeCategoryId, homeDesignDomainId)
-
 	if err != nil {
 		logger.Fatal().Err(err).Send()
 	}
 
 	err = store.CategoriesDomains.AsignCategoryToDomain(newsCategoryId, homeDesignDomainId)
-
 	if err != nil {
 		logger.Fatal().Err(err).Send()
 	}
 
 	err = store.CategoriesDomains.AsignCategoryToDomain(newsCategoryId, newsDomainId)
+	if err != nil {
+		logger.Fatal().Err(err).Send()
+	}
+
+	panelsCategory := fixtures.CreateImageCategory("Panele")
+	panelsImageCategoryId, err := store.ImageCategory.InsertCategory(panelsCategory)
 
 	if err != nil {
 		logger.Fatal().Err(err).Send()
 	}
 
-	constructionCategory := fixtures.CreateImageCategory("Construction")
-	_, err = store.ImageCategory.InsertCategory(constructionCategory)
-
-	if err != nil {
-		logger.Fatal().Err(err).Send()
-	}
-
-	imageFirstName := "mezczyzna-siedzacy-na-zewnatrz-i-glaszczacy-swojego-kota"
-	imageSecondName := "odkryty-patio-z-krzeslem-i-stolem"
-	imageThirdName := "puste-krzeslo-drewniane-w-salonie"
-	imageFirst := fixtures.CreateImage(
-		imageFirstName,
-		"/assets/images/mezczyzna-siedzacy-na-zewnatrz-i-glaszczacy-swojego-kota.jpg",
-		184551,
-		".jpg",
-		1500,
-		998,
-		"",
-		1,
-	)
-	imageSecond := fixtures.CreateImage(
-		imageSecondName,
-		"/assets/images/odkryty-patio-z-krzeslem-i-stolem.jpg",
-		371302,
-		".jpg",
-		1500,
-		1000,
-		"",
-		1,
-	)
-	imageThird := fixtures.CreateImage(
-		imageThirdName,
-		"/assets/images/puste-krzeslo-drewniane-w-salonie.jpg",
-		296332,
-		".jpg",
-		1500,
-		1203,
-		"",
-		1,
-	)
-
-	_, err = store.Image.InsertImage(imageFirst)
-	if err != nil {
-		logger.Fatal().Err(err).Send()
-	}
-
-	_, err = store.Image.InsertImage(imageSecond)
-	if err != nil {
-		logger.Fatal().Err(err).Send()
-	}
-
-	_, err = store.Image.InsertImage(imageThird)
+	err = scanImageFromDir(store.Image, "./assets/images/panels", panelsImageCategoryId)
 	if err != nil {
 		logger.Fatal().Err(err).Send()
 	}
@@ -291,7 +252,7 @@ func main() {
 
 	for i := 0; i < 10; i++ {
 		rand.NewSource(time.Now().UnixNano())
-		n := 1 + rand.Intn(3-1+1)
+		n := 1 + rand.Intn(50-1+1)
 
 		title := fmt.Sprintf("Home Article %d", i+1)
 		body := "Lorem ipsum dolor"
@@ -312,7 +273,7 @@ func main() {
 
 	for i := 0; i < 20; i++ {
 		rand.NewSource(time.Now().UnixNano())
-		n := 1 + rand.Intn(3-1+1)
+		n := 1 + rand.Intn(50-1+1)
 
 		title := fmt.Sprintf("News Article %d", i+1)
 		body := generateArticleDescription()
@@ -333,7 +294,7 @@ func main() {
 
 	for i := 0; i < 15; i++ {
 		rand.NewSource(time.Now().UnixNano())
-		n := 1 + rand.Intn(3-1+1)
+		n := 1 + rand.Intn(50-1+1)
 
 		title := fmt.Sprintf("Clean Home Article %d", i+1)
 		body := "Lorem ipsum dolor"
@@ -354,7 +315,7 @@ func main() {
 
 	for i := 0; i < 15; i++ {
 		rand.NewSource(time.Now().UnixNano())
-		n := 1 + rand.Intn(3-1+1)
+		n := 1 + rand.Intn(50-1+1)
 
 		title := fmt.Sprintf("General Article %d", i+1)
 		body := generateArticleDescription()
@@ -373,6 +334,53 @@ func main() {
 		}
 	}
 
+}
+
+func scanImageFromDir(imageStore storage.ImageStorageStore, dirPath string, imageCategoryId int) error {
+	files, _ := os.ReadDir(dirPath)
+	for _, imgFile := range files {
+
+		if imgFile.Name() == ".DS_Store" {
+			continue
+		}
+
+		if reader, err := os.Open(filepath.Join(dirPath, imgFile.Name())); err == nil {
+			defer reader.Close()
+			im, err := jpeg.DecodeConfig(reader)
+
+			if err != nil {
+				return err
+			}
+
+			fileInfo, err := os.Stat(filepath.Join(dirPath, imgFile.Name()))
+			if err != nil {
+				return err
+			}
+
+			img := models.Image{
+				Name:       slug.Make(imgFile.Name()),
+				Path:       filepath.Join("/", dirPath, imgFile.Name()),
+				Size:       int(fileInfo.Size()),
+				Type:       ".jpg",
+				Width:      im.Width,
+				Height:     im.Height,
+				Alt:        slug.Make(imgFile.Name()),
+				CategoryId: imageCategoryId,
+				CreatedAt:  time.Now().UTC(),
+				UpdatedAt:  time.Now().UTC(),
+			}
+
+			_, err = imageStore.InsertImage(&img)
+			if err != nil {
+				return err
+			}
+
+		} else {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func generateArticleDescription() string {
