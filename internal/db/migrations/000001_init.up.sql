@@ -79,6 +79,7 @@ CREATE TABLE IF NOT EXISTS public.article (
     "category_id" INTEGER NOT NULL,
     "domain_id" INTEGER NOT NULL,
     "featured" BOOLEAN NOT NULL DEFAULT false,
+    "reading_time" INTEGER,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
