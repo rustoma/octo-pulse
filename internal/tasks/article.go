@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gosimple/slug"
+	"github.com/rustoma/octo-pulse/internal/utils"
 	"os"
 	"time"
 
@@ -133,6 +134,9 @@ func (t articleTasks) HandleGenerateDescription(ctx context.Context, task *asynq
 	}
 
 	article.Body = description
+
+	readingTime := utils.CalculateReadTime(description)
+	article.ReadingTime = &readingTime
 
 	_, err = t.articleService.UpdateArticle(payload.ArticleId, article)
 

@@ -17,6 +17,7 @@ type Article struct {
 	Category        models.Category `json:"category" validate:"required"`
 	DomainId        int             `json:"domainId" validate:"required,min=4"`
 	Featured        bool            `json:"featured"`
+	ReadingTime     *int            `json:"readingTime"`
 	CreatedAt       time.Time       `json:"createdAt" validate:"required,min=4"`
 	UpdatedAt       time.Time       `json:"updatedAt" validate:"required,min=4"`
 }

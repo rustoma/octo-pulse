@@ -14,6 +14,7 @@ type Article struct {
 	CategoryId      int       `json:"categoryId"`
 	DomainId        int       `json:"domainId"`
 	Featured        bool      `json:"featured"`
+	ReadingTime     *int      `json:"readingTime"`
 	CreatedAt       time.Time `json:"createdAt"`
 	UpdatedAt       time.Time `json:"updatedAt"`
 }

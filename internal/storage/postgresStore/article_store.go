@@ -36,9 +36,9 @@ func (s *PostgressArticleStore) InsertArticle(article *models.Article) (int, err
 
 	stmt, args, err := pgQb().
 		Insert("public.article").
-		Columns("title, slug, body, thumbnail, publication_date, is_published, author_id, category_id, domain_id, featured, created_at, updated_at").
+		Columns("title, slug, body, thumbnail, publication_date, is_published, author_id, category_id, domain_id, featured, reading_time, created_at, updated_at").
 		Values(article.Title, article.Slug, article.Body, article.Thumbnail, article.PublicationDate, article.IsPublished,
-			article.AuthorId, article.CategoryId, article.DomainId, article.Featured, time.Now().UTC(), time.Now().UTC()).
+			article.AuthorId, article.CategoryId, article.DomainId, article.Featured, article.ReadingTime, time.Now().UTC(), time.Now().UTC()).
 		Suffix("RETURNING \"id\"").
 		ToSql()
 
@@ -153,6 +153,7 @@ func (s *PostgressArticleStore) GetArticles(filters ...*storage.GetArticlesFilte
 			IsPublished:     articleFromScan.IsPublished,
 			DomainId:        articleFromScan.DomainId,
 			Featured:        articleFromScan.Featured,
+			ReadingTime:     articleFromScan.ReadingTime,
 			CreatedAt:       articleFromScan.CreatedAt,
 			UpdatedAt:       articleFromScan.UpdatedAt,
 		}
@@ -272,6 +273,7 @@ func scanToArticle(rows pgx.Rows) (*models.Article, error) {
 		&article.CategoryId,
 		&article.DomainId,
 		&article.Featured,
+		&article.ReadingTime,
 		&article.CreatedAt,
 		&article.UpdatedAt,
 	)
