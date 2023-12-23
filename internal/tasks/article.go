@@ -198,7 +198,7 @@ func (t articleTasks) HandleGenerateArticles(ctx context.Context, task *asynq.Ta
 		logger.Info().Interface("Assigned to category", catgoryId).Send()
 
 		//Get random thumbnail
-		thumbnailId := 0
+		var thumbnailId *int
 		if payload.ImagesCategory != 0 {
 			imagesFilter := &storage.GetImagesFilters{
 				CategoryId: payload.ImagesCategory,
@@ -206,23 +206,21 @@ func (t articleTasks) HandleGenerateArticles(ctx context.Context, task *asynq.Ta
 			thumbnails, err := t.imageService.GetImages(imagesFilter)
 			if err != nil {
 				logger.Err(err).Send()
-				thumbnailId = 0
 			}
 
 			if len(thumbnails) > 0 {
 				source := rand.NewSource(time.Now().UnixNano())
 				random := rand.New(source)
 				thumbnail := thumbnails[random.Intn(len(thumbnails))]
-				thumbnailId = thumbnail.ID
+				thumbnailId = &thumbnail.ID
 			}
-
 		}
 
 		article := &models.Article{
 			Title:      question.Question,
 			Slug:       slug.Make(question.Question),
 			Body:       "",
-			Thumbnail:  &thumbnailId,
+			Thumbnail:  thumbnailId,
 			CategoryId: catgoryId,
 			AuthorId:   1,
 			DomainId:   payload.DomainId,
