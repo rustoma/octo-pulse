@@ -62,7 +62,8 @@ func main() {
 		domainService   = services.NewDomainService(store.Domain)
 		categoryService = services.NewCategoryService(store.Category, store.CategoriesDomains)
 		scrapperService = services.NewScrapperService(store.Scrapper, validator.Scrapper)
-		tasks           = ts.NewTasks(articleService, domainService, scrapperService, categoryService, ai)
+		imageService    = services.NewImageService(store.Image)
+		tasks           = ts.NewTasks(articleService, domainService, scrapperService, categoryService, imageService, ai)
 	)
 
 	srv := asynq.NewServer(

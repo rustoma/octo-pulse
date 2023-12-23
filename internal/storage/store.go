@@ -84,9 +84,14 @@ type ScrapperStore interface {
 	UpdateQuestion(id int, question *models.Question) error
 }
 
+type GetImagesFilters struct {
+	CategoryId int
+}
+
 type ImageStorageStore interface {
 	InsertImage(image *models.Image) (int, error)
 	GetImage(id int) (*models.Image, error)
+	GetImages(filters ...*GetImagesFilters) ([]*models.Image, error)
 }
 
 type ImageCategoryStore interface {

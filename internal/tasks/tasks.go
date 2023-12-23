@@ -24,11 +24,12 @@ func NewTasks(
 	domainService services.DomainService,
 	scrapperService services.ScrapperService,
 	categoryService services.CategoryService,
+	imageService services.ImageService,
 	ai *ai.AI) *Tasks {
 	scrapperTasks := NewScrapperTasks(scrapperService)
 
 	return &Tasks{
-		Article:  NewArticleTasks(articleService, domainService, scrapperService, categoryService, ai, scrapperTasks),
+		Article:  NewArticleTasks(articleService, domainService, scrapperService, categoryService, imageService, ai, scrapperTasks),
 		Scrapper: scrapperTasks,
 	}
 }
@@ -36,7 +37,7 @@ func NewTasks(
 type ArticleTasker interface {
 	NewGenerateDescriptionTask(pageId int, questionId int) error
 	HandleGenerateDescription(ctx context.Context, task *asynq.Task) error
-	NewGenerateArticlesTask(domainId int, numberOfArticlesToCreate int, questionCategoryId int) error
+	NewGenerateArticlesTask(domainId int, numberOfArticlesToCreate int, questionCategoryId int, imagesCategory int) error
 	HandleGenerateArticles(ctx context.Context, task *asynq.Task) error
 }
 

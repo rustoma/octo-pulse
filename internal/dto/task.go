@@ -9,6 +9,7 @@ type GenerateArticlesRequest struct {
 	DomainId           int `json:"domainId"`
 	NumberOfArtilces   int `json:"numberOfArtilces"`
 	QuestionCategoryId int `json:"questionCategoryId"`
+	ImagesCategory     int `json:"imagesCategory"`
 }
 
 type GenerateDescriptionRequest struct {

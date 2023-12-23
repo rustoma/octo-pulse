@@ -17,9 +17,11 @@ import (
 	ts "github.com/rustoma/octo-pulse/internal/tasks"
 	"github.com/rustoma/octo-pulse/internal/validator"
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
 	"path/filepath"
+	"time"
 )
 
 var logger *zerolog.Logger
@@ -73,8 +75,9 @@ func main() {
 		scrapperService  = services.NewScrapperService(store.Scrapper, validator.Scrapper)
 		fileService      = services.NewFileService(store.Article, store.Domain, store.Category)
 		basicPageService = services.NewBasicPageService(store.BasicPage)
+		imageService     = services.NewImageService(store.Image)
 		//Tasks
-		tasks         = ts.NewTasks(articleService, domainService, scrapperService, categoryService, ai)
+		tasks         = ts.NewTasks(articleService, domainService, scrapperService, categoryService, imageService, ai)
 		taskInspector = ts.NewTaskInspector()
 		//Controllers
 		authController      = controllers.NewAuthController(authService)
@@ -99,6 +102,26 @@ func main() {
 			Auth: authService,
 		}
 	)
+
+	//-------------------
+
+	imagesFilter := &storage.GetImagesFilters{
+		CategoryId: 1,
+	}
+	thumbnails, err := imageService.GetImages(imagesFilter)
+	if err != nil {
+		logger.Err(err).Send()
+	}
+
+	if len(thumbnails) > 0 {
+		source := rand.NewSource(time.Now().UnixNano())
+		random := rand.New(source)
+		thumbnail := thumbnails[random.Intn(len(thumbnails))]
+
+		logger.Info().Interface("thumbnail: ", thumbnail).Send()
+	}
+
+	//-------------------
 
 	//start a web server
 	log.Println("Starting application on port", os.Getenv("PORT"))

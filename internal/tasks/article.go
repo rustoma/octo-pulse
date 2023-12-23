@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/gosimple/slug"
 	"github.com/rustoma/octo-pulse/internal/utils"
+	"math/rand"
 	"os"
 	"time"
 
@@ -26,6 +27,7 @@ type articleTasks struct {
 	domainService   services.DomainService
 	scrapperService services.ScrapperService
 	categoryService services.CategoryService
+	imageService    services.ImageService
 	ai              *ai.AI
 	inspector       *asynq.Inspector
 	scrapperTasks   scrapperTasks
@@ -36,6 +38,7 @@ func NewArticleTasks(
 	domainService services.DomainService,
 	scrapperService services.ScrapperService,
 	categoryService services.CategoryService,
+	imageService services.ImageService,
 	ai *ai.AI,
 	scrapperTasks scrapperTasks,
 ) articleTasks {
@@ -44,6 +47,7 @@ func NewArticleTasks(
 		domainService:   domainService,
 		scrapperService: scrapperService,
 		categoryService: categoryService,
+		imageService:    imageService,
 		ai:              ai,
 		scrapperTasks:   scrapperTasks,
 	}
@@ -58,16 +62,19 @@ type GenerateArticlesTaskPayload struct {
 	DomainId                 int
 	NumberOfArticlesToCreate int
 	QuestionCategoryId       int
+	ImagesCategory           int
 }
 
-func (t articleTasks) NewGenerateArticlesTask(domainId int, numberOfArticlesToCreate int, questionCategoryId int) error {
+func (t articleTasks) NewGenerateArticlesTask(domainId int, numberOfArticlesToCreate int, questionCategoryId int, imagesCategory int) error {
 	client := asynq.NewClient(asynq.RedisClientOpt{Addr: os.Getenv("REDIS_ADDR"), Password: os.Getenv("REDIS_PASSWORD")})
 	defer client.Close()
 
 	payload, err := json.Marshal(GenerateArticlesTaskPayload{
 		DomainId:                 domainId,
 		NumberOfArticlesToCreate: numberOfArticlesToCreate,
-		QuestionCategoryId:       questionCategoryId})
+		QuestionCategoryId:       questionCategoryId,
+		ImagesCategory:           imagesCategory,
+	})
 
 	if err != nil {
 		return err
@@ -190,11 +197,32 @@ func (t articleTasks) HandleGenerateArticles(ctx context.Context, task *asynq.Ta
 
 		logger.Info().Interface("Assigned to category", catgoryId).Send()
 
+		//Get random thumbnail
+		thumbnailId := 0
+		if payload.ImagesCategory != 0 {
+			imagesFilter := &storage.GetImagesFilters{
+				CategoryId: payload.ImagesCategory,
+			}
+			thumbnails, err := t.imageService.GetImages(imagesFilter)
+			if err != nil {
+				logger.Err(err).Send()
+				thumbnailId = 0
+			}
+
+			if len(thumbnails) > 0 {
+				source := rand.NewSource(time.Now().UnixNano())
+				random := rand.New(source)
+				thumbnail := thumbnails[random.Intn(len(thumbnails))]
+				thumbnailId = thumbnail.ID
+			}
+
+		}
+
 		article := &models.Article{
 			Title:      question.Question,
 			Slug:       slug.Make(question.Question),
 			Body:       "",
-			Thumbnail:  nil,
+			Thumbnail:  &thumbnailId,
 			CategoryId: catgoryId,
 			AuthorId:   1,
 			DomainId:   payload.DomainId,
