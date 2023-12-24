@@ -34,8 +34,14 @@ build_workers:
 build_seed:
 	@cd ./internal/scripts && go build -o ../../bin/seed
 
+build_insert_images_script:
+	@cd ./internal/scripts/insertImages && go build -o ../../../bin/insert_images
+
 run_workers: build_workers
 	@./bin/workers
 
 seed: build_seed
 	@./bin/seed
+
+insert_images: build_insert_images_script
+	@./bin/insert_images ./assets/images/dachy
