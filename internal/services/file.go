@@ -3,25 +3,32 @@ package services
 import (
 	"fmt"
 	"github.com/gosimple/slug"
+	"github.com/rustoma/octo-pulse/internal/models"
 	"github.com/rustoma/octo-pulse/internal/storage"
+	"image/jpeg"
 	"os"
 	"os/exec"
+	"path"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 type FileService interface {
 	CreateArticles(ids []int) error
+	InsertJPGImagesFromDir(dirPath string, imageCategoryId int) error
+	RenameFilesUsingSlug(dirPath string)
 }
 
 type fileService struct {
 	articleStore  storage.ArticleStore
 	domainStore   storage.DomainStore
 	categoryStore storage.CategoryStore
+	imageStore    storage.ImageStorageStore
 }
 
-func NewFileService(articleStore storage.ArticleStore, domainStore storage.DomainStore, categoryStore storage.CategoryStore) FileService {
-	return &fileService{articleStore: articleStore, domainStore: domainStore, categoryStore: categoryStore}
+func NewFileService(articleStore storage.ArticleStore, domainStore storage.DomainStore, categoryStore storage.CategoryStore, imageStore storage.ImageStorageStore) FileService {
+	return &fileService{articleStore: articleStore, domainStore: domainStore, categoryStore: categoryStore, imageStore: imageStore}
 }
 
 func (s *fileService) ConvertHTMLToDocx(htmlPath, docxPath string) error {
@@ -97,4 +104,86 @@ func (s *fileService) CreateArticles(ids []int) error {
 	}
 
 	return nil
+}
+
+func (s *fileService) InsertJPGImagesFromDir(dirPath string, imageCategoryId int) error {
+	files, _ := os.ReadDir(dirPath)
+	for _, imgFile := range files {
+
+		imagesWithTheSamePath, err := s.imageStore.GetImages(&storage.GetImagesFilters{Path: filepath.Join("/", dirPath, imgFile.Name())})
+		if err != nil {
+			logger.Err(err).Msg("File name: " + imgFile.Name())
+		}
+
+		if len(imagesWithTheSamePath) > 0 {
+			logger.Info().Msg("Image already exist on path: " + filepath.Join("/", dirPath, imgFile.Name()) + " File name: " + imgFile.Name())
+			continue
+		}
+
+		if reader, err := os.Open(filepath.Join(dirPath, imgFile.Name())); err == nil {
+			defer reader.Close()
+			im, err := jpeg.DecodeConfig(reader)
+
+			if err != nil {
+				logger.Err(err).Msg("File name: " + imgFile.Name())
+				continue
+			}
+
+			fileInfo, err := os.Stat(filepath.Join(dirPath, imgFile.Name()))
+			if err != nil {
+				return err
+			}
+
+			img := models.Image{
+				Name:       slug.Make(imgFile.Name()),
+				Path:       filepath.Join("/", dirPath, imgFile.Name()),
+				Size:       int(fileInfo.Size()),
+				Type:       ".jpg",
+				Width:      im.Width,
+				Height:     im.Height,
+				Alt:        slug.Make(imgFile.Name()),
+				CategoryId: imageCategoryId,
+				CreatedAt:  time.Now().UTC(),
+				UpdatedAt:  time.Now().UTC(),
+			}
+
+			_, err = s.imageStore.InsertImage(&img)
+			if err != nil {
+				return err
+			}
+
+		} else {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (s *fileService) RenameFilesUsingSlug(dirPath string) {
+
+	list, err := os.ReadDir(dirPath)
+	if err != nil {
+		panic(err)
+	}
+	for _, file := range list {
+
+		if file.Name() == ".DS_Store" {
+			continue
+		}
+
+		name := file.Name()
+
+		filename := path.Base(name)
+		extension := path.Ext(name)
+		filenameWithoutExt := filename[:len(filename)-len(extension)]
+
+		newName := slug.Make(filenameWithoutExt) + extension
+
+		err := os.Rename(filepath.Join(dirPath, name), filepath.Join(dirPath, newName))
+
+		if err != nil {
+			logger.Err(err).Send()
+		}
+	}
 }
