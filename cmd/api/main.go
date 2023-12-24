@@ -71,7 +71,7 @@ func main() {
 		domainService    = services.NewDomainService(store.Domain)
 		categoryService  = services.NewCategoryService(store.Category, store.CategoriesDomains)
 		scrapperService  = services.NewScrapperService(store.Scrapper, validator.Scrapper)
-		fileService      = services.NewFileService(store.Article, store.Domain, store.Category)
+		fileService      = services.NewFileService(store.Article, store.Domain, store.Category, store.Image)
 		basicPageService = services.NewBasicPageService(store.BasicPage)
 		imageService     = services.NewImageService(store.Image)
 		//Tasks
