@@ -100,6 +100,13 @@ func (s *PostgresImageStorageStore) GetImages(filters ...*storage.GetImagesFilte
 			})
 	}
 
+	if len(filters) > 0 && filters[0].Path != "" {
+		imagesStmt = imagesStmt.Where(
+			squirrel.And{
+				squirrel.Eq{"path": filters[0].Path},
+			})
+	}
+
 	stmt, args, err := imagesStmt.ToSql()
 
 	if err != nil {

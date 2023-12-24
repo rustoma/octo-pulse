@@ -86,6 +86,7 @@ type ScrapperStore interface {
 
 type GetImagesFilters struct {
 	CategoryId int
+	Path       string
 }
 
 type ImageStorageStore interface {
