@@ -3,16 +3,12 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/gosimple/slug"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
 	"github.com/rustoma/octo-pulse/internal/fixtures"
 	lr "github.com/rustoma/octo-pulse/internal/logger"
-	"github.com/rustoma/octo-pulse/internal/models"
 	"github.com/rustoma/octo-pulse/internal/services"
-	"github.com/rustoma/octo-pulse/internal/storage"
 	postgresstore "github.com/rustoma/octo-pulse/internal/storage/postgresStore"
-	"image/jpeg"
 	"math/rand"
 	"os"
 	"path/filepath"
@@ -49,6 +45,7 @@ func main() {
 		store       = postgresstore.NewPostgresStorage(dbpool)
 		authService = services.NewAuthService(store.User)
 		fixtures    = fixtures.NewFixtures(authService)
+		fileService = services.NewFileService(store.Article, store.Domain, store.Category, store.Image)
 	)
 
 	adminRole := fixtures.CreateRole("Admin")
@@ -161,10 +158,17 @@ func main() {
 		logger.Fatal().Err(err).Send()
 	}
 
-	err = scanImageFromDir(store.Image, "./assets/images/panels", panelsImageCategoryId)
+	imagesPath := "./assets/images/panels"
+	logger.Info().Msg("Renaming files from the directory: " + imagesPath)
+	fileService.RenameFilesUsingSlug(imagesPath)
+	logger.Info().Msg("Files renamed successfully: " + imagesPath)
+
+	logger.Info().Msg("Scanning images from the directory: " + imagesPath)
+	err = fileService.InsertJPGImagesFromDir(imagesPath, panelsImageCategoryId)
 	if err != nil {
 		logger.Fatal().Err(err).Send()
 	}
+	logger.Info().Msg("Images added successfully")
 
 	contactBody := `<h2>Say Hello!</h2><p>Donec cursus dolor vitae congue consectetur. Morbi mattis viverra felis. Etiam dapibus id
     turpis at sagittis. Cras mollis mi vel ante ultricies, id ullamcorper mi pulvinar. Proin bibendum ornare risus,
@@ -339,53 +343,6 @@ func main() {
 		}
 	}
 
-}
-
-func scanImageFromDir(imageStore storage.ImageStorageStore, dirPath string, imageCategoryId int) error {
-	files, _ := os.ReadDir(dirPath)
-	for _, imgFile := range files {
-
-		if imgFile.Name() == ".DS_Store" {
-			continue
-		}
-
-		if reader, err := os.Open(filepath.Join(dirPath, imgFile.Name())); err == nil {
-			defer reader.Close()
-			im, err := jpeg.DecodeConfig(reader)
-
-			if err != nil {
-				return err
-			}
-
-			fileInfo, err := os.Stat(filepath.Join(dirPath, imgFile.Name()))
-			if err != nil {
-				return err
-			}
-
-			img := models.Image{
-				Name:       slug.Make(imgFile.Name()),
-				Path:       filepath.Join("/", dirPath, imgFile.Name()),
-				Size:       int(fileInfo.Size()),
-				Type:       ".jpg",
-				Width:      im.Width,
-				Height:     im.Height,
-				Alt:        slug.Make(imgFile.Name()),
-				CategoryId: imageCategoryId,
-				CreatedAt:  time.Now().UTC(),
-				UpdatedAt:  time.Now().UTC(),
-			}
-
-			_, err = imageStore.InsertImage(&img)
-			if err != nil {
-				return err
-			}
-
-		} else {
-			return err
-		}
-	}
-
-	return nil
 }
 
 func generateArticleDescription() string {
