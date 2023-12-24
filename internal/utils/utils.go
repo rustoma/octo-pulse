@@ -1,11 +1,8 @@
 package utils
 
 import (
-	"github.com/gosimple/slug"
 	"math"
 	"os"
-	"path"
-	"path/filepath"
 	"strings"
 )
 
@@ -44,28 +41,4 @@ func CalculateReadTime(text string) int {
 	}
 
 	return minutes
-}
-
-func RenameFilesUsingSlug(dirPath string) {
-
-	list, err := os.ReadDir(dirPath)
-	if err != nil {
-		panic(err)
-	}
-	for _, file := range list {
-
-		if file.Name() == ".DS_Store" {
-			continue
-		}
-
-		name := file.Name()
-
-		filename := path.Base(name)
-		extension := path.Ext(name)
-		filenameWithoutExt := filename[:len(filename)-len(extension)]
-
-		newName := slug.Make(filenameWithoutExt) + extension
-
-		os.Rename(filepath.Join(dirPath, name), filepath.Join(dirPath, newName))
-	}
 }
