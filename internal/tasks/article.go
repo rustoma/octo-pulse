@@ -169,12 +169,31 @@ func (t articleTasks) HandleGenerateArticles(ctx context.Context, task *asynq.Ta
 	}
 
 	domainCategories, err := t.categoryService.GetDomainCategories(payload.DomainId)
-
 	if err != nil {
 		return err
 	}
 
 	logger.Info().Interface("Domain categories", domainCategories).Send()
+
+	//ensures equal distribution of articles for categories
+	categoriesMap := make(map[string]int, len(domainCategories))
+
+	for _, category := range domainCategories {
+		articlesFromCategory, err := t.articleService.GetArticles(&storage.GetArticlesFilters{CategoryId: category.ID, DomainId: payload.DomainId})
+		if err != nil {
+			logger.Err(err).Send()
+		}
+
+		categoriesMap[category.Slug] = len(articlesFromCategory)
+	}
+
+	filteredCategories, err := filterCategoriesByEqualDistribution(domainCategories, categoriesMap)
+	if err != nil {
+		logger.Err(err).Send()
+	}
+
+	logger.Info().Interface("Filtered categories to which an article can be assigned: ", domainCategories).Send()
+	//---------------------
 
 	createdArticles := 0
 	for _, question := range questions {
@@ -183,9 +202,9 @@ func (t articleTasks) HandleGenerateArticles(ctx context.Context, task *asynq.Ta
 			break
 		}
 
-		//TODO: add validation for question source total length
+		//TODO: Remove categories if there is an unequal distribution
 
-		catgoryId, err := t.ai.ChatGPT.AssignToCategory(domainCategories, question)
+		catgoryId, err := t.ai.ChatGPT.AssignToCategory(filteredCategories, question)
 		if err != nil {
 			return err
 		}
@@ -250,4 +269,51 @@ func (t articleTasks) HandleGenerateArticles(ctx context.Context, task *asynq.Ta
 	}
 
 	return nil
+}
+
+func filterCategoriesByEqualDistribution(categories []*models.Category, categoriesMap map[string]int) ([]*models.Category, error) {
+
+	filteredCategoriesMap := findMaxMin(categoriesMap)
+
+	filteredCategories := filterCategoriesByMap(categories, filteredCategoriesMap)
+
+	return filteredCategories, nil
+}
+
+func filterCategoriesByMap(categories []*models.Category, categoriesMap map[string]int) []*models.Category {
+	var filtered []*models.Category
+
+	for _, cat := range categories {
+		if _, ok := categoriesMap[cat.Slug]; ok {
+			filtered = append(filtered, cat)
+		}
+	}
+
+	return filtered
+}
+func findMaxMin(categoriesMap map[string]int) map[string]int {
+	for {
+		// Find categories with min and max number of articles
+		maxCat := ""
+		minArticles := int(^uint(0) >> 1) // Set to max possible int value initially
+		maxArticles := 0
+
+		for cat, numArticles := range categoriesMap {
+			if numArticles < minArticles {
+				minArticles = numArticles
+			}
+			if numArticles > maxArticles {
+				maxArticles = numArticles
+				maxCat = cat
+			}
+		}
+
+		// Check the condition and remove if the difference is more than 10
+		if maxArticles-minArticles > 10 {
+			delete(categoriesMap, maxCat)
+			findMaxMin(categoriesMap)
+		} else {
+			return categoriesMap
+		}
+	}
 }
