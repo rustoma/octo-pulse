@@ -142,6 +142,9 @@ CREATE UNIQUE INDEX "category_category_slug_key" ON public.category("slug");
 -- CreateIndex
 CREATE UNIQUE INDEX "basic_page_slug_domain_key" ON public.basic_page("slug", "domain");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "imageStorage_path_key" ON public.image_storage("path");
+
 -- AddForeignKey
 ALTER TABLE public.user ADD CONSTRAINT "user_role_id_fkey" FOREIGN KEY ("role_id") REFERENCES public.role("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
