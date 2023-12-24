@@ -6,9 +6,6 @@ build:
 run: build
 	@./bin/api
 
-seed:
-	@go run internal/scripts/seed.go
-
 test:
 	@go test -v ./...
 
@@ -34,5 +31,11 @@ task_monit:
 build_workers:
 	@cd ./cmd/workers && go build -o ../../bin/workers 
 
+build_seed:
+	@cd ./internal/scripts && go build -o ../../bin/seed
+
 run_workers: build_workers
 	@./bin/workers
+
+seed: build_seed
+	@./bin/seed

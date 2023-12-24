@@ -144,6 +144,11 @@ func main() {
 		logger.Fatal().Err(err).Send()
 	}
 
+	err = store.CategoriesDomains.AsignCategoryToDomain(generalCategoryId, homeDesignDomainId)
+	if err != nil {
+		logger.Fatal().Err(err).Send()
+	}
+
 	err = store.CategoriesDomains.AsignCategoryToDomain(newsCategoryId, newsDomainId)
 	if err != nil {
 		logger.Fatal().Err(err).Send()
@@ -254,12 +259,12 @@ func main() {
 		rand.NewSource(time.Now().UnixNano())
 		n := 1 + rand.Intn(50-1+1)
 
-		title := fmt.Sprintf("Home Article %d", i+1)
+		title := fmt.Sprintf("General Article %d", i+1)
 		body := "Lorem ipsum dolor"
 		thumbnail := n
 		isPubished := true
 		authorId := janeId
-		categoryId := homeCategoryId
+		categoryId := generalCategoryId
 		domainId := homeDesignDomainId
 		featured := false
 		article := fixtures.CreateArticle(title, body, thumbnail, isPubished, authorId, categoryId, domainId, featured)
