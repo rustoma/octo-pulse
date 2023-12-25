@@ -74,6 +74,7 @@ func main() {
 		fileService      = services.NewFileService(store.Article, store.Domain, store.Category, store.Image)
 		basicPageService = services.NewBasicPageService(store.BasicPage)
 		imageService     = services.NewImageService(store.Image)
+		emailService     = services.NewEmailService()
 		//Tasks
 		tasks         = ts.NewTasks(articleService, domainService, scrapperService, categoryService, imageService, ai)
 		taskInspector = ts.NewTaskInspector()
@@ -86,6 +87,7 @@ func main() {
 		fileController      = controllers.NewFileController(fileService)
 		imageController     = controllers.NewImageController()
 		basicPageController = controllers.NewBasicPageController(basicPageService)
+		emailController     = controllers.NewEmailController(emailService)
 		apiControllers      = routes.ApiControllers{
 			Auth:      authController,
 			Article:   articleController,
@@ -95,6 +97,7 @@ func main() {
 			File:      fileController,
 			Image:     imageController,
 			BasicPage: basicPageController,
+			Email:     emailController,
 		}
 		apiServices = routes.ApiServices{
 			Auth: authService,

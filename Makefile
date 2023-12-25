@@ -1,4 +1,4 @@
-include .env
+include ./bin/.env
 
 build:
 	@cd ./cmd/api && go build -o ../../bin/api 

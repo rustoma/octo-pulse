@@ -21,6 +21,7 @@ type ApiControllers struct {
 	File      *controllers.FileController
 	Image     *controllers.ImageController
 	BasicPage *controllers.BasicPageController
+	Email     *controllers.EmailController
 }
 
 type ApiServices struct {
@@ -51,6 +52,8 @@ func NewApiRoutes(controllers ApiControllers, services ApiServices, tasks *tasks
 
 		r.Get("/basic-pages", api.MakeHTTPHandler(controllers.BasicPage.HandleGetBasicPages))
 		r.Get("/basic-pages/slug/{slug}", api.MakeHTTPHandler(controllers.BasicPage.HandleGetBasicPageBySlug))
+
+		r.Post("/emails", api.MakeHTTPHandler(controllers.Email.HandleSendEmail))
 	})
 
 	r.Get("/assets/images/*", api.MakeHTTPHandler(controllers.Image.HandleGetImage))
