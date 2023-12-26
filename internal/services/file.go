@@ -110,38 +110,44 @@ func (s *fileService) InsertJPGImagesFromDir(dirPath string, imageCategoryId int
 	files, _ := os.ReadDir(dirPath)
 	for _, imgFile := range files {
 
-		imagesWithTheSamePath, err := s.imageStore.GetImages(&storage.GetImagesFilters{Path: filepath.Join("/", dirPath, imgFile.Name())})
+		fileName := imgFile.Name()
+
+		imagesWithTheSamePath, err := s.imageStore.GetImages(&storage.GetImagesFilters{Path: filepath.Join("/", dirPath, fileName)})
 		if err != nil {
-			logger.Err(err).Msg("File name: " + imgFile.Name())
+			logger.Err(err).Msg("File name: " + fileName)
 		}
 
 		if len(imagesWithTheSamePath) > 0 {
-			logger.Info().Msg("Image already exist on path: " + filepath.Join("/", dirPath, imgFile.Name()) + " File name: " + imgFile.Name())
+			logger.Info().Msg("Image already exist on path: " + filepath.Join("/", dirPath, fileName) + " File name: " + fileName)
 			continue
 		}
 
-		if reader, err := os.Open(filepath.Join(dirPath, imgFile.Name())); err == nil {
+		if reader, err := os.Open(filepath.Join(dirPath, fileName)); err == nil {
 			defer reader.Close()
 			im, err := jpeg.DecodeConfig(reader)
 
 			if err != nil {
-				logger.Err(err).Msg("File name: " + imgFile.Name())
+				logger.Err(err).Msg("File name: " + fileName)
 				continue
 			}
 
-			fileInfo, err := os.Stat(filepath.Join(dirPath, imgFile.Name()))
+			fileInfo, err := os.Stat(filepath.Join(dirPath, fileName))
 			if err != nil {
 				return err
 			}
 
+			filenameBase := path.Base(fileName)
+			extension := path.Ext(fileName)
+			filenameWithoutExt := filenameBase[:len(filenameBase)-len(extension)]
+
 			img := models.Image{
-				Name:       slug.Make(imgFile.Name()),
+				Name:       slug.Make(filenameWithoutExt),
 				Path:       filepath.Join("/", dirPath, imgFile.Name()),
 				Size:       int(fileInfo.Size()),
-				Type:       ".jpg",
+				Type:       extension,
 				Width:      im.Width,
 				Height:     im.Height,
-				Alt:        slug.Make(imgFile.Name()),
+				Alt:        slug.Make(filenameWithoutExt),
 				CategoryId: imageCategoryId,
 				CreatedAt:  time.Now().UTC(),
 				UpdatedAt:  time.Now().UTC(),
