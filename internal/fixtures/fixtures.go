@@ -93,6 +93,7 @@ func (f *fixtures) CreateArticle(title, body string, thumbnail int, isPub bool, 
 		DomainId:        domainId,
 		Featured:        featured,
 		ReadingTime:     &readTime,
+		IsSponsored:     false,
 		CreatedAt:       time.Now().Add(time.Duration(n) * time.Second).UTC(),
 		UpdatedAt:       time.Now().Add(time.Duration(n) * time.Second).UTC(),
 	}

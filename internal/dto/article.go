@@ -18,6 +18,7 @@ type Article struct {
 	DomainId        int             `json:"domainId" validate:"required,min=4"`
 	Featured        bool            `json:"featured"`
 	ReadingTime     *int            `json:"readingTime"`
+	IsSponsored     bool            `json:"isSponsored"`
 	CreatedAt       time.Time       `json:"createdAt" validate:"required,min=4"`
 	UpdatedAt       time.Time       `json:"updatedAt" validate:"required,min=4"`
 }

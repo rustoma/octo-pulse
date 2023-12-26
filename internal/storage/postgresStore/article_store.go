@@ -36,9 +36,9 @@ func (s *PostgressArticleStore) InsertArticle(article *models.Article) (int, err
 
 	stmt, args, err := pgQb().
 		Insert("public.article").
-		Columns("title, slug, body, thumbnail, publication_date, is_published, author_id, category_id, domain_id, featured, reading_time, created_at, updated_at").
+		Columns("title, slug, body, thumbnail, publication_date, is_published, author_id, category_id, domain_id, featured, reading_time, is_sponsored,created_at, updated_at").
 		Values(article.Title, article.Slug, article.Body, article.Thumbnail, article.PublicationDate, article.IsPublished,
-			article.AuthorId, article.CategoryId, article.DomainId, article.Featured, article.ReadingTime, time.Now().UTC(), time.Now().UTC()).
+			article.AuthorId, article.CategoryId, article.DomainId, article.Featured, article.ReadingTime, article.IsSponsored, time.Now().UTC(), time.Now().UTC()).
 		Suffix("RETURNING \"id\"").
 		ToSql()
 
@@ -154,6 +154,7 @@ func (s *PostgressArticleStore) GetArticles(filters ...*storage.GetArticlesFilte
 			DomainId:        articleFromScan.DomainId,
 			Featured:        articleFromScan.Featured,
 			ReadingTime:     articleFromScan.ReadingTime,
+			IsSponsored:     articleFromScan.IsSponsored,
 			CreatedAt:       articleFromScan.CreatedAt,
 			UpdatedAt:       articleFromScan.UpdatedAt,
 		}
@@ -274,6 +275,7 @@ func scanToArticle(rows pgx.Rows) (*models.Article, error) {
 		&article.DomainId,
 		&article.Featured,
 		&article.ReadingTime,
+		&article.IsSponsored,
 		&article.CreatedAt,
 		&article.UpdatedAt,
 	)
@@ -285,12 +287,16 @@ func convertArticleToArticleMap(article *models.Article) map[string]interface{} 
 	return map[string]interface{}{
 		"title":            article.Title,
 		"body":             article.Body,
+		"slug":             article.Slug,
 		"thumbnail":        article.Thumbnail,
 		"publication_date": article.PublicationDate,
 		"is_published":     article.IsPublished,
 		"author_id":        article.AuthorId,
 		"category_id":      article.CategoryId,
 		"domain_id":        article.DomainId,
+		"featured":         article.Featured,
+		"reading_time":     article.ReadingTime,
+		"is_sponsored":     article.IsSponsored,
 		"created_at":       article.CreatedAt,
 		"updated_at":       article.UpdatedAt,
 	}
