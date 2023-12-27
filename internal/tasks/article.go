@@ -175,25 +175,6 @@ func (t articleTasks) HandleGenerateArticles(ctx context.Context, task *asynq.Ta
 
 	logger.Info().Interface("Domain categories", domainCategories).Send()
 
-	//ensures equal distribution of articles for categories
-	categoriesMap := make(map[string]int, len(domainCategories))
-
-	for _, category := range domainCategories {
-		articlesFromCategory, err := t.articleService.GetArticles(&storage.GetArticlesFilters{CategoryId: category.ID, DomainId: payload.DomainId})
-		logger.Info().Interface("category: ", category.ID).Send()
-		if err != nil {
-			logger.Err(err).Send()
-		}
-		logger.Info().Interface("category arrticles: ", len(articlesFromCategory)).Send()
-		categoriesMap[category.Slug] = len(articlesFromCategory)
-	}
-
-	filteredCategories, err := filterCategoriesByEqualDistribution(domainCategories, categoriesMap)
-	if err != nil {
-		logger.Err(err).Send()
-	}
-
-	logger.Info().Interface("Filtered categories to which an article can be assigned: ", filteredCategories).Send()
 	//---------------------
 
 	createdArticles := 0
@@ -203,7 +184,25 @@ func (t articleTasks) HandleGenerateArticles(ctx context.Context, task *asynq.Ta
 			break
 		}
 
-		//TODO: Remove categories if there is an unequal distribution
+		//ensures equal distribution of articles for categories
+		categoriesMap := make(map[string]int, len(domainCategories))
+
+		for _, category := range domainCategories {
+			articlesFromCategory, err := t.articleService.GetArticles(&storage.GetArticlesFilters{CategoryId: category.ID, DomainId: payload.DomainId})
+			logger.Info().Interface("category: ", category.ID).Send()
+			if err != nil {
+				logger.Err(err).Send()
+			}
+			logger.Info().Interface("category articles: ", len(articlesFromCategory)).Send()
+			categoriesMap[category.Slug] = len(articlesFromCategory)
+		}
+
+		filteredCategories, err := filterCategoriesByEqualDistribution(domainCategories, categoriesMap)
+		if err != nil {
+			logger.Err(err).Send()
+		}
+
+		logger.Info().Interface("Filtered categories to which an article can be assigned: ", filteredCategories).Send()
 
 		catgoryId, err := t.ai.ChatGPT.AssignToCategory(filteredCategories, question)
 		if err != nil {
