@@ -247,7 +247,7 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 		},
 			{
 				Role: openai.ChatMessageRoleUser,
-				Content: "Wyobraź sobie, że jesteś doświadczonym copywriterem z zaawansowaną wiedzą na temat SEO i perfekcyjną znajomością języka polskiego. " +
+				Content: "Wyobraź sobie, że jesteś doświadczonym copywriterem z perfekcyjną znajomością języka polskiego. " +
 					"Twoim celem jest stworzenie na podstawie tekstu, który podałeś podsumowania z najważniejszymi treścami pisanego jakby był to nowy artykuł, który będzie wykrozystany jako kontekst przy pisaniu artykułu do którego spis treści wygląda następująco: " + agenda,
 			},
 		}
@@ -272,7 +272,7 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 
 	messages = append(messages, openai.ChatCompletionMessage{
 		Role: openai.ChatMessageRoleUser,
-		Content: "Wyobraź sobie, że jesteś doświadczonym copywriterem z zaawansowaną wiedzą na temat SEO i perfekcyjną znajomością języka polskiego. " +
+		Content: "Wyobraź sobie, że jesteś doświadczonym copywriterem z perfekcyjną znajomością języka polskiego. " +
 			"Twoim celem jest stworzyć 100% oryginalny, zoptymalizowany pod względem SEO artykuł, który czyta się jak napisany przez człowieka. " +
 			"Styl odpowiedzi powinien być profesjonalny. Będzie to artykuł gdzie odbiorca będzie mógł zaczerpnąć informacji. \n\n" +
 			"Na podstawie zadanego tytułu zwróć krótki wstęp do artykułu. \n\n" +
@@ -282,6 +282,7 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 			"Stosuj się do poniższych wymagań: \n\n" +
 			"- Napisz tylko wstęp dla tego tytułu nie odpowiadaj na żadne podtytuły. \n" +
 			"- Nie powtarzaj się. \n" +
+			"- Nie pisz nic na temat SEO \n" +
 			"- Długość wstępu powinina mieć minimum 1000 liter. \n" +
 			"- Możesz zdefiniować kilka paragrafów, aby osiągnąć wymaganą długość wstępu. \n" +
 			"- Długość wstępu jest wymagana! Powinna być bezwględnie przestrzegana! \n" +
@@ -313,7 +314,7 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 			},
 			{
 				Role: openai.ChatMessageRoleUser,
-				Content: "Wyobraź sobie, że jesteś doświadczonym copywriterem z zaawansowaną wiedzą na temat SEO i perfekcyjną znajomością języka polskiego. " +
+				Content: "Wyobraź sobie, że jesteś doświadczonym copywriterem z perfekcyjną znajomością języka polskiego. " +
 					"Twoim celem jest stworzyć 100% oryginalny, zoptymalizowany pod względem SEO artykuł, który czyta się jak napisany przez człowieka. " +
 					"Styl odpowiedzi powinien być profesjonalny. Będzie to artykuł gdzie odbiorca będzie mógł zaczerpnąć informacji. \n\n" +
 					"Rozwiń zadany podtytuł. \n\n" +
@@ -332,6 +333,7 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 					"- Tekst powinien być powiązany kontekstem z poprzednimi odpowiedziami. \n" +
 					"- Nie używaj w odpowiedzi tytułu nadrzędnego \n" +
 					"- Nie powtarzaj się \n" +
+					"- Nie pisz nic na temat SEO \n" +
 					"- Możesz bazować na informacjach zawartych w streszczeniu. \n" +
 					"- Jeżeli nie możesz udzielić lub kontynuować odpowiedzi zwróć pomiędzy trzema myślnikami ---reject--- \nn" +
 					"Przykład poprawnej struktury odpowiedzi: \n\n" +
@@ -369,7 +371,7 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 					},
 					{
 						Role: openai.ChatMessageRoleUser,
-						Content: "Wyobraź sobie, że jesteś doświadczonym copywriterem z zaawansowaną wiedzą na temat SEO i perfekcyjną znajomością języka polskiego. " +
+						Content: "Wyobraź sobie, że jesteś doświadczonym copywriterem z perfekcyjną znajomością języka polskiego. " +
 							"Twoim celem jest stworzyć 100% oryginalny, zoptymalizowany pod względem SEO artykuł, który czyta się jak napisany przez człowieka. " +
 							"Styl odpowiedzi powinien być profesjonalny. Będzie to artykuł gdzie odbiorca będzie mógł zaczerpnąć informacji. \n\n" +
 							"Rozwiń zadany podtytuł. \n\n" +
@@ -385,6 +387,7 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 							"- Tekst powinien być powiązany kontekstem z poprzednimi odpowiedziami. \n" +
 							"- Nie używaj w odpowiedzi tytułu nadrzędnego \n" +
 							"- Nie powtarzaj się \n" +
+							"- Nie pisz nic na temat SEO \n" +
 							"- Możesz bazować na informacjach zawartych w streszczeniu. \n" +
 							"- Jeżeli nie możesz udzielić lub kontynuować odpowiedzi zwróć pomiędzy trzema myślnikami ---reject--- \nn" +
 							"Przykład poprawnej struktury odpowiedzi: \n\n" +
@@ -396,7 +399,7 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 				messagesLvl3 := []openai.ChatCompletionMessage{
 					{
 						Role: openai.ChatMessageRoleUser,
-						Content: "Wyobraź sobie, że jesteś doświadczonym copywriterem z zaawansowaną wiedzą na temat SEO i perfekcyjną znajomością języka polskiego. " +
+						Content: "Wyobraź sobie, że jesteś doświadczonym copywriterem z perfekcyjną znajomością języka polskiego. " +
 							"Twoim celem jest stworzyć 100% oryginalny, zoptymalizowany pod względem SEO artykuł, który czyta się jak napisany przez człowieka. " +
 							"Styl odpowiedzi powinien być profesjonalny. Będzie to artykuł gdzie odbiorca będzie mógł zaczerpnąć informacji. \n\n" +
 							"Rozwiń zadany podtytuł. \n\n" +
@@ -412,6 +415,7 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 							"- Tekst powinien być powiązany kontekstem z poprzednimi odpowiedziami. \n" +
 							"- Nie używaj w odpowiedzi tytułu nadrzędnego \n" +
 							"- Nie powtarzaj się \n" +
+							"- Nie pisz nic na temat SEO \n" +
 							"- Możesz bazować na informacjach zawartych w streszczeniu. \n" +
 							"- Jeżeli nie możesz udzielić lub kontynuować odpowiedzi zwróć pomiędzy trzema myślnikami ---reject--- \nn" +
 							"Przykład poprawnej struktury odpowiedzi: \n\n" +
