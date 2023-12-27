@@ -310,7 +310,7 @@ func findMaxMin(categoriesMap map[string]int) map[string]int {
 		}
 
 		// Check the condition and remove if the difference is more than 10
-		if maxArticles-minArticles > 10 {
+		if maxArticles-minArticles > 3 {
 			delete(categoriesMap, maxCat)
 			findMaxMin(categoriesMap)
 		} else {
