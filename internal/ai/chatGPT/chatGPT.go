@@ -186,7 +186,7 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 	var sourceText string
 
 	for _, pageContent := range question.PageContents {
-		text := c.RemoveMultipleSpaces(pageContent.PageContent)
+		text := c.RemoveMultipleSpaces(pageContent.PageContentProcessed)
 		sourceText = fmt.Sprintf("%s \n\n %s", sourceText, text)
 	}
 
@@ -237,13 +237,13 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 
 	logger.Info().Msg("Generating summary...")
 	for index, pageContent := range question.PageContents {
-		if len(c.RemoveMultipleSpaces(pageContent.PageContent)) < 1000 {
+		if len(c.RemoveMultipleSpaces(pageContent.PageContentProcessed)) < 1000 {
 			continue
 		}
 
 		summaryPromp := []openai.ChatCompletionMessage{{
 			Role:    openai.ChatMessageRoleSystem,
-			Content: pageContent.PageContent,
+			Content: pageContent.PageContentProcessed,
 		},
 			{
 				Role: openai.ChatMessageRoleUser,

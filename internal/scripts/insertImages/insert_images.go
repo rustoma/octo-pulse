@@ -31,7 +31,7 @@ func main() {
 	}
 
 	//Init DB
-	dbpool, err := pgxpool.New(context.Background(), os.Getenv("SEED_DATABASE_URL"))
+	dbpool, err := pgxpool.New(context.Background(), os.Getenv("DATABASE_URL"))
 
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
