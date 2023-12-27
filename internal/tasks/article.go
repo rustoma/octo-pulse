@@ -239,7 +239,7 @@ func (t articleTasks) HandleGenerateArticles(ctx context.Context, task *asynq.Ta
 		article := &models.Article{
 			Title:       question.Question,
 			Slug:        slug.Make(question.Question),
-			Body:        "",
+			Body:        "Treść w przygotowaniu",
 			Thumbnail:   thumbnailId,
 			CategoryId:  catgoryId,
 			AuthorId:    1,
