@@ -180,6 +180,7 @@ func (t articleTasks) HandleGenerateArticles(ctx context.Context, task *asynq.Ta
 
 	for _, category := range domainCategories {
 		articlesFromCategory, err := t.articleService.GetArticles(&storage.GetArticlesFilters{CategoryId: category.ID, DomainId: payload.DomainId})
+
 		if err != nil {
 			logger.Err(err).Send()
 		}
@@ -192,7 +193,7 @@ func (t articleTasks) HandleGenerateArticles(ctx context.Context, task *asynq.Ta
 		logger.Err(err).Send()
 	}
 
-	logger.Info().Interface("Filtered categories to which an article can be assigned: ", domainCategories).Send()
+	logger.Info().Interface("Filtered categories to which an article can be assigned: ", filteredCategories).Send()
 	//---------------------
 
 	createdArticles := 0
@@ -310,7 +311,7 @@ func findMaxMin(categoriesMap map[string]int) map[string]int {
 		}
 
 		// Check the condition and remove if the difference is more than 10
-		if maxArticles-minArticles > 3 {
+		if maxArticles-minArticles > 2 {
 			delete(categoriesMap, maxCat)
 			findMaxMin(categoriesMap)
 		} else {
