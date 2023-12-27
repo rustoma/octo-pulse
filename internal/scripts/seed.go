@@ -116,7 +116,7 @@ func main() {
 		logger.Fatal().Err(err).Send()
 	}
 
-	john := fixtures.CreateAuthor("John", "Doe", "Lorem ipsum dolor", "https://thispersondoesnotexist.com/")
+	john := fixtures.CreateAuthor("John", "Doe", "Lorem ipsum dolor", "/assets/images/avatars/man-avatar.png")
 
 	johnId, err := store.Author.InsertAuthor(john)
 
@@ -124,7 +124,7 @@ func main() {
 		logger.Fatal().Err(err).Send()
 	}
 
-	jane := fixtures.CreateAuthor("Jane", "Doe", "Lorem ipsum dolor", "https://thispersondoesnotexist.com/")
+	jane := fixtures.CreateAuthor("Jane", "Doe", "Lorem ipsum dolor", "/assets/images/avatars/man-avatar.png")
 
 	janeId, err := store.Author.InsertAuthor(jane)
 	if err != nil {
@@ -291,7 +291,7 @@ func main() {
 		authorId := johnId
 		categoryId := newsCategoryId
 		domainId := homeDesignDomainId
-		featured := false
+		featured := true
 		article := fixtures.CreateArticle(title, body, thumbnail, isPubished, authorId, categoryId, domainId, featured)
 
 		_, err = store.Article.InsertArticle(article)
