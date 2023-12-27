@@ -442,18 +442,18 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 		}
 	}
 
-	promptTokenCost := float64(c.Usage.PromptTokens) / 1000 * 0.01
-	completionTokensCost := float64(c.Usage.CompletionTokens) / 1000 * 0.03
-	totalTokenCost := promptTokenCost + completionTokensCost
-
-	promptTokenCostInDolars := fmt.Sprintf("%f $", promptTokenCost)
-	completionTokensCostInDolars := fmt.Sprintf("%f $", completionTokensCost)
-	totalTokenCostInDolars := fmt.Sprintf("%f $", totalTokenCost)
-
-	articleDescription.WriteString("<p>Usage:</p>" +
-		"<p>PromptTokenCost: " + fmt.Sprintf("%d", c.Usage.PromptTokens) + " - " + promptTokenCostInDolars + "</p>" +
-		"<p>CompletionTokenCost: " + fmt.Sprintf("%d", c.Usage.CompletionTokens) + " - " + completionTokensCostInDolars + "</p>" +
-		"<p>TotalTokenCost: " + fmt.Sprintf("%d", c.Usage.TotalTokens) + " - " + totalTokenCostInDolars + "</p>")
+	//promptTokenCost := float64(c.Usage.PromptTokens) / 1000 * 0.01
+	//completionTokensCost := float64(c.Usage.CompletionTokens) / 1000 * 0.03
+	//totalTokenCost := promptTokenCost + completionTokensCost
+	//
+	//promptTokenCostInDolars := fmt.Sprintf("%f $", promptTokenCost)
+	//completionTokensCostInDolars := fmt.Sprintf("%f $", completionTokensCost)
+	//totalTokenCostInDolars := fmt.Sprintf("%f $", totalTokenCost)
+	//
+	//articleDescription.WriteString("<p>Usage:</p>" +
+	//	"<p>PromptTokenCost: " + fmt.Sprintf("%d", c.Usage.PromptTokens) + " - " + promptTokenCostInDolars + "</p>" +
+	//	"<p>CompletionTokenCost: " + fmt.Sprintf("%d", c.Usage.CompletionTokens) + " - " + completionTokensCostInDolars + "</p>" +
+	//	"<p>TotalTokenCost: " + fmt.Sprintf("%d", c.Usage.TotalTokens) + " - " + totalTokenCostInDolars + "</p>")
 
 	c.Usage = &openai.Usage{PromptTokens: 0, CompletionTokens: 0, TotalTokens: 0}
 
