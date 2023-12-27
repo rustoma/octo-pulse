@@ -180,11 +180,11 @@ func (t articleTasks) HandleGenerateArticles(ctx context.Context, task *asynq.Ta
 
 	for _, category := range domainCategories {
 		articlesFromCategory, err := t.articleService.GetArticles(&storage.GetArticlesFilters{CategoryId: category.ID, DomainId: payload.DomainId})
-
+		logger.Info().Interface("category: ", category.ID).Send()
 		if err != nil {
 			logger.Err(err).Send()
 		}
-
+		logger.Info().Interface("category arrticles: ", len(articlesFromCategory)).Send()
 		categoriesMap[category.Slug] = len(articlesFromCategory)
 	}
 
