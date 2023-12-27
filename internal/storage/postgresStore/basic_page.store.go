@@ -19,7 +19,7 @@ type PostgresBasicPageStore struct {
 func NewBasicPageStore(DB *pgxpool.Pool) *PostgresBasicPageStore {
 	return &PostgresBasicPageStore{
 		DB:        DB,
-		dbTimeout: time.Second * 3,
+		dbTimeout: time.Second * 20,
 	}
 }
 

@@ -26,7 +26,7 @@ func NewArticleStore(DB *pgxpool.Pool, categoryStore storage.CategoryStore, imag
 		categoryStore:     categoryStore,
 		imageStorageStore: imageStorageStore,
 		authorStore:       authorStore,
-		dbTimeout:         time.Second * 3,
+		dbTimeout:         time.Second * 20,
 	}
 }
 
@@ -77,8 +77,14 @@ func (s *PostgressArticleStore) GetArticles(filters ...*storage.GetArticlesFilte
 	ctx, cancel := context.WithTimeout(context.Background(), s.dbTimeout)
 	defer cancel()
 
+	selectStmt := "*"
+
+	if len(filters) > 0 && filters[0].ExcludeBody == "true" {
+		selectStmt = "id, title, slug, thumbnail, publication_date, is_published, author_id, category_id, domain_id, featured, reading_time, is_sponsored,created_at, updated_at"
+	}
+
 	articlesStmt := pgQb().
-		Select("*").
+		Select(selectStmt).
 		OrderBy("created_at DESC").
 		From("public.article")
 
@@ -142,7 +148,23 @@ func (s *PostgressArticleStore) GetArticles(filters ...*storage.GetArticlesFilte
 	var articles []*dto.Article
 
 	for rows.Next() {
-		articleFromScan, err := scanToArticle(rows)
+		var articleFromScan *models.Article
+
+		if len(filters) > 0 && filters[0].ExcludeBody == "true" {
+			article, err := scanToArticleWithoutBody(rows)
+			if err != nil {
+				logger.Err(err).Send()
+				return nil, err
+			}
+			articleFromScan = article
+		} else {
+			article, err := scanToArticle(rows)
+			if err != nil {
+				logger.Err(err).Send()
+				return nil, err
+			}
+			articleFromScan = article
+		}
 
 		dtoArticle := dto.Article{
 			ID:              articleFromScan.ID,
@@ -171,6 +193,11 @@ func (s *PostgressArticleStore) GetArticles(filters ...*storage.GetArticlesFilte
 		category, err := s.categoryStore.GetCategory(articleFromScan.CategoryId)
 		if err != nil {
 			logger.Err(err).Send()
+			return nil, err
+		}
+
+		if category == nil {
+			logger.Error().Msgf("No categories for article %s", articleFromScan.Title)
 			return nil, err
 		}
 
@@ -267,6 +294,28 @@ func scanToArticle(rows pgx.Rows) (*models.Article, error) {
 		&article.Title,
 		&article.Slug,
 		&article.Body,
+		&article.Thumbnail,
+		&article.PublicationDate,
+		&article.IsPublished,
+		&article.AuthorId,
+		&article.CategoryId,
+		&article.DomainId,
+		&article.Featured,
+		&article.ReadingTime,
+		&article.IsSponsored,
+		&article.CreatedAt,
+		&article.UpdatedAt,
+	)
+
+	return &article, err
+}
+
+func scanToArticleWithoutBody(rows pgx.Rows) (*models.Article, error) {
+	var article models.Article
+	err := rows.Scan(
+		&article.ID,
+		&article.Title,
+		&article.Slug,
 		&article.Thumbnail,
 		&article.PublicationDate,
 		&article.IsPublished,

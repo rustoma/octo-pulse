@@ -19,7 +19,7 @@ type PostgressDomainStore struct {
 func NewDomainStore(DB *pgxpool.Pool) *PostgressDomainStore {
 	return &PostgressDomainStore{
 		DB:        DB,
-		dbTimeout: time.Second * 3,
+		dbTimeout: time.Second * 20,
 	}
 }
 

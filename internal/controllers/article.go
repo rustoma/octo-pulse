@@ -72,6 +72,7 @@ func (c *ArticleController) HandleGetArticles(w http.ResponseWriter, r *http.Req
 	offsetParam := r.URL.Query().Get("offset")
 	featuredParam := r.URL.Query().Get("featured")
 	slug := r.URL.Query().Get("slug")
+	excludeBodyParam := r.URL.Query().Get("excludeBody")
 
 	var filters storage.GetArticlesFilters
 
@@ -113,6 +114,10 @@ func (c *ArticleController) HandleGetArticles(w http.ResponseWriter, r *http.Req
 
 	if featuredParam == "true" || featuredParam == "false" {
 		filters.Featured = featuredParam
+	}
+
+	if excludeBodyParam == "true" {
+		filters.ExcludeBody = excludeBodyParam
 	}
 
 	if slug != "" {

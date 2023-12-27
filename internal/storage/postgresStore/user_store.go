@@ -19,7 +19,7 @@ type PostgressUserStore struct {
 func NewUserStore(DB *pgxpool.Pool) *PostgressUserStore {
 	return &PostgressUserStore{
 		DB:        DB,
-		dbTimeout: time.Second * 3,
+		dbTimeout: time.Second * 20,
 	}
 }
 

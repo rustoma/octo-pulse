@@ -18,7 +18,7 @@ type PostgressAuthorStore struct {
 func NewAuthorStore(DB *pgxpool.Pool) *PostgressAuthorStore {
 	return &PostgressAuthorStore{
 		DB:        DB,
-		dbTimeout: time.Second * 3,
+		dbTimeout: time.Second * 20,
 	}
 }
 

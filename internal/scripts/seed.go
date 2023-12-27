@@ -80,38 +80,60 @@ func main() {
 
 	homeDesignDomain := fixtures.CreateDomain("homedesign.com", "homedesign@gmail.com")
 	homeDesignDomainId, err := store.Domain.InsertDomain(homeDesignDomain)
-
 	if err != nil {
 		logger.Fatal().Err(err).Send()
 	}
 
 	newsDomain := fixtures.CreateDomain("hotnews.com", "hotnews@gmail.com")
 	newsDomainId, err := store.Domain.InsertDomain(newsDomain)
-
 	if err != nil {
 		logger.Fatal().Err(err).Send()
 	}
 
-	homeCategory := fixtures.CreateCategory("Home")
-
-	homeCategoryId, err := store.Category.InsertCategory(homeCategory)
-
+	installationOfPanelsCategory := fixtures.CreateCategory("Installation of Panels")
+	installationOfPanelsCategoryId, err := store.Category.InsertCategory(installationOfPanelsCategory)
 	if err != nil {
 		logger.Fatal().Err(err).Send()
 	}
 
-	generalCategory := fixtures.CreateCategory("General")
-
-	generalCategoryId, err := store.Category.InsertCategory(generalCategory)
-
+	materialsAndToolsCategory := fixtures.CreateCategory("Materials and Tools")
+	materialsAndToolsCategoryId, err := store.Category.InsertCategory(materialsAndToolsCategory)
 	if err != nil {
 		logger.Fatal().Err(err).Send()
 	}
 
-	newsCategory := fixtures.CreateCategory("News")
+	maintenanceAndRepairCategory := fixtures.CreateCategory("Maintenance and Repair")
+	maintenanceAndRepairCategoryId, err := store.Category.InsertCategory(maintenanceAndRepairCategory)
+	if err != nil {
+		logger.Fatal().Err(err).Send()
+	}
 
-	newsCategoryId, err := store.Category.InsertCategory(newsCategory)
+	underfloorHeatingCategory := fixtures.CreateCategory("Underfloor Heating")
+	underfloorHeatingCategoryId, err := store.Category.InsertCategory(underfloorHeatingCategory)
+	if err != nil {
+		logger.Fatal().Err(err).Send()
+	}
 
+	moistureAndWaterproofingCategory := fixtures.CreateCategory("Moisture and Waterproofing")
+	moistureAndWaterproofingCategoryId, err := store.Category.InsertCategory(moistureAndWaterproofingCategory)
+	if err != nil {
+		logger.Fatal().Err(err).Send()
+	}
+
+	diyProjectsCategory := fixtures.CreateCategory("DIY projects")
+	diyProjectsCategoryCategoryId, err := store.Category.InsertCategory(diyProjectsCategory)
+	if err != nil {
+		logger.Fatal().Err(err).Send()
+	}
+
+	technicalSolutionsCategory := fixtures.CreateCategory("Technical Solutions")
+	technicalSolutionsCategoryId, err := store.Category.InsertCategory(technicalSolutionsCategory)
+	if err != nil {
+		logger.Fatal().Err(err).Send()
+	}
+
+	designAndTrendsCategory := fixtures.CreateCategory("Design and Trends")
+	designAndTrendsCategoryId, err := store.Category.InsertCategory(designAndTrendsCategory)
 	if err != nil {
 		logger.Fatal().Err(err).Send()
 	}
@@ -131,22 +153,47 @@ func main() {
 		logger.Fatal().Err(err).Send()
 	}
 
-	err = store.CategoriesDomains.AsignCategoryToDomain(homeCategoryId, homeDesignDomainId)
+	err = store.CategoriesDomains.AsignCategoryToDomain(installationOfPanelsCategoryId, homeDesignDomainId)
 	if err != nil {
 		logger.Fatal().Err(err).Send()
 	}
 
-	err = store.CategoriesDomains.AsignCategoryToDomain(newsCategoryId, homeDesignDomainId)
+	err = store.CategoriesDomains.AsignCategoryToDomain(materialsAndToolsCategoryId, homeDesignDomainId)
 	if err != nil {
 		logger.Fatal().Err(err).Send()
 	}
 
-	err = store.CategoriesDomains.AsignCategoryToDomain(generalCategoryId, homeDesignDomainId)
+	err = store.CategoriesDomains.AsignCategoryToDomain(maintenanceAndRepairCategoryId, homeDesignDomainId)
 	if err != nil {
 		logger.Fatal().Err(err).Send()
 	}
 
-	err = store.CategoriesDomains.AsignCategoryToDomain(newsCategoryId, newsDomainId)
+	err = store.CategoriesDomains.AsignCategoryToDomain(underfloorHeatingCategoryId, homeDesignDomainId)
+	if err != nil {
+		logger.Fatal().Err(err).Send()
+	}
+
+	err = store.CategoriesDomains.AsignCategoryToDomain(moistureAndWaterproofingCategoryId, homeDesignDomainId)
+	if err != nil {
+		logger.Fatal().Err(err).Send()
+	}
+
+	err = store.CategoriesDomains.AsignCategoryToDomain(diyProjectsCategoryCategoryId, homeDesignDomainId)
+	if err != nil {
+		logger.Fatal().Err(err).Send()
+	}
+
+	err = store.CategoriesDomains.AsignCategoryToDomain(technicalSolutionsCategoryId, homeDesignDomainId)
+	if err != nil {
+		logger.Fatal().Err(err).Send()
+	}
+
+	err = store.CategoriesDomains.AsignCategoryToDomain(designAndTrendsCategoryId, homeDesignDomainId)
+	if err != nil {
+		logger.Fatal().Err(err).Send()
+	}
+
+	err = store.CategoriesDomains.AsignCategoryToDomain(designAndTrendsCategoryId, newsDomainId)
 	if err != nil {
 		logger.Fatal().Err(err).Send()
 	}
@@ -263,12 +310,12 @@ func main() {
 		rand.NewSource(time.Now().UnixNano())
 		n := 1 + rand.Intn(50-1+1)
 
-		title := fmt.Sprintf("General Article %d", i+1)
+		title := fmt.Sprintf("Installation Of Panels Article %d", i+1)
 		body := "Lorem ipsum dolor"
 		thumbnail := n
 		isPubished := true
 		authorId := janeId
-		categoryId := generalCategoryId
+		categoryId := installationOfPanelsCategoryId
 		domainId := homeDesignDomainId
 		featured := false
 		article := fixtures.CreateArticle(title, body, thumbnail, isPubished, authorId, categoryId, domainId, featured)
@@ -284,12 +331,12 @@ func main() {
 		rand.NewSource(time.Now().UnixNano())
 		n := 1 + rand.Intn(50-1+1)
 
-		title := fmt.Sprintf("News Article %d", i+1)
+		title := fmt.Sprintf("Materials And Tools Article %d", i+1)
 		body := generateArticleDescription()
 		thumbnail := n
 		isPubished := true
 		authorId := johnId
-		categoryId := newsCategoryId
+		categoryId := materialsAndToolsCategoryId
 		domainId := homeDesignDomainId
 		featured := true
 		article := fixtures.CreateArticle(title, body, thumbnail, isPubished, authorId, categoryId, domainId, featured)
@@ -305,12 +352,12 @@ func main() {
 		rand.NewSource(time.Now().UnixNano())
 		n := 1 + rand.Intn(50-1+1)
 
-		title := fmt.Sprintf("Clean Home Article %d", i+1)
+		title := fmt.Sprintf("Maintenance And Repair Article %d", i+1)
 		body := "Lorem ipsum dolor"
 		thumbnail := n
 		isPubished := true
 		authorId := johnId
-		categoryId := homeCategoryId
+		categoryId := maintenanceAndRepairCategoryId
 		domainId := homeDesignDomainId
 		featured := false
 		article := fixtures.CreateArticle(title, body, thumbnail, isPubished, authorId, categoryId, domainId, featured)
@@ -322,16 +369,122 @@ func main() {
 		}
 	}
 
+	for i := 0; i < 10; i++ {
+		rand.NewSource(time.Now().UnixNano())
+		n := 1 + rand.Intn(50-1+1)
+
+		title := fmt.Sprintf("Underfloor Heating Article %d", i+1)
+		body := "Lorem ipsum dolor"
+		thumbnail := n
+		isPubished := true
+		authorId := janeId
+		categoryId := underfloorHeatingCategoryId
+		domainId := homeDesignDomainId
+		featured := false
+		article := fixtures.CreateArticle(title, body, thumbnail, isPubished, authorId, categoryId, domainId, featured)
+
+		_, err = store.Article.InsertArticle(article)
+
+		if err != nil {
+			logger.Fatal().Err(err).Send()
+		}
+	}
+
+	for i := 0; i < 10; i++ {
+		rand.NewSource(time.Now().UnixNano())
+		n := 1 + rand.Intn(50-1+1)
+
+		title := fmt.Sprintf("Moisture And Waterproofing Article %d", i+1)
+		body := "Lorem ipsum dolor"
+		thumbnail := n
+		isPubished := true
+		authorId := janeId
+		categoryId := moistureAndWaterproofingCategoryId
+		domainId := homeDesignDomainId
+		featured := false
+		article := fixtures.CreateArticle(title, body, thumbnail, isPubished, authorId, categoryId, domainId, featured)
+
+		_, err = store.Article.InsertArticle(article)
+
+		if err != nil {
+			logger.Fatal().Err(err).Send()
+		}
+	}
+
+	for i := 0; i < 10; i++ {
+		rand.NewSource(time.Now().UnixNano())
+		n := 1 + rand.Intn(50-1+1)
+
+		title := fmt.Sprintf("Diy Projects Article %d", i+1)
+		body := "Lorem ipsum dolor"
+		thumbnail := n
+		isPubished := true
+		authorId := janeId
+		categoryId := diyProjectsCategoryCategoryId
+		domainId := homeDesignDomainId
+		featured := false
+		article := fixtures.CreateArticle(title, body, thumbnail, isPubished, authorId, categoryId, domainId, featured)
+
+		_, err = store.Article.InsertArticle(article)
+
+		if err != nil {
+			logger.Fatal().Err(err).Send()
+		}
+	}
+
+	for i := 0; i < 10; i++ {
+		rand.NewSource(time.Now().UnixNano())
+		n := 1 + rand.Intn(50-1+1)
+
+		title := fmt.Sprintf("Technical Solutions Article %d", i+1)
+		body := "Lorem ipsum dolor"
+		thumbnail := n
+		isPubished := true
+		authorId := janeId
+		categoryId := technicalSolutionsCategoryId
+		domainId := homeDesignDomainId
+		featured := false
+		article := fixtures.CreateArticle(title, body, thumbnail, isPubished, authorId, categoryId, domainId, featured)
+
+		_, err = store.Article.InsertArticle(article)
+
+		if err != nil {
+			logger.Fatal().Err(err).Send()
+		}
+	}
+
+	for i := 0; i < 10; i++ {
+		rand.NewSource(time.Now().UnixNano())
+		n := 1 + rand.Intn(50-1+1)
+
+		title := fmt.Sprintf("Design And Trends Article %d", i+1)
+		body := "Lorem ipsum dolor"
+		thumbnail := n
+		isPubished := true
+		authorId := janeId
+		categoryId := designAndTrendsCategoryId
+		domainId := homeDesignDomainId
+		featured := false
+		article := fixtures.CreateArticle(title, body, thumbnail, isPubished, authorId, categoryId, domainId, featured)
+
+		_, err = store.Article.InsertArticle(article)
+
+		if err != nil {
+			logger.Fatal().Err(err).Send()
+		}
+	}
+
+	//NEWS DOMAIN
 	for i := 0; i < 15; i++ {
 		rand.NewSource(time.Now().UnixNano())
 		n := 1 + rand.Intn(50-1+1)
 
-		title := fmt.Sprintf("General Article %d", i+1)
+		title := fmt.Sprintf("Design And Trends Article %d", i+1)
 		body := generateArticleDescription()
 		thumbnail := n
 		isPubished := true
 		authorId := johnId
-		categoryId := generalCategoryId
+		categoryId := designAndTrendsCategoryId
 		domainId := newsDomainId
 		featured := false
 		article := fixtures.CreateArticle(title, body, thumbnail, isPubished, authorId, categoryId, domainId, featured)

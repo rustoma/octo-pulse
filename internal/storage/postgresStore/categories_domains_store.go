@@ -17,7 +17,7 @@ type PostgressCategoriesDomainsStore struct {
 func NewCategoriesDomainsStore(DB *pgxpool.Pool) *PostgressCategoriesDomainsStore {
 	return &PostgressCategoriesDomainsStore{
 		DB:        DB,
-		dbTimeout: time.Second * 3,
+		dbTimeout: time.Second * 20,
 	}
 }
 

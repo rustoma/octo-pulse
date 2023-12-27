@@ -19,7 +19,7 @@ type PostgresImageStorageStore struct {
 func NewImageStorageStore(DB *pgxpool.Pool) *PostgresImageStorageStore {
 	return &PostgresImageStorageStore{
 		DB:        DB,
-		dbTimeout: time.Second * 3,
+		dbTimeout: time.Second * 20,
 	}
 }
 

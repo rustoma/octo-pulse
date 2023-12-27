@@ -19,7 +19,7 @@ type PostgressCategoryStore struct {
 func NewCategoryStore(DB *pgxpool.Pool) *PostgressCategoryStore {
 	return &PostgressCategoryStore{
 		DB:        DB,
-		dbTimeout: time.Second * 3,
+		dbTimeout: time.Second * 20,
 	}
 }
 
@@ -29,8 +29,8 @@ func (c *PostgressCategoryStore) InsertCategory(category *models.Category) (int,
 
 	stmt, args, err := pgQb().
 		Insert("public.category").
-		Columns("name, slug, created_at, updated_at").
-		Values(category.Name, category.Slug, time.Now().UTC(), time.Now().UTC()).
+		Columns("name, slug, weight, created_at, updated_at").
+		Values(category.Name, category.Slug, category.Weight, time.Now().UTC(), time.Now().UTC()).
 		Suffix("RETURNING \"id\"").
 		ToSql()
 
@@ -51,6 +51,7 @@ func (s *PostgressCategoryStore) GetCategories(filters ...*storage.GetCategories
 
 	categoriesStmt := pgQb().
 		Select("*").
+		OrderBy("weight").
 		OrderBy("name").
 		From("public.category")
 
@@ -137,6 +138,7 @@ func scanToCategory(rows pgx.Rows) (*models.Category, error) {
 		&category.ID,
 		&category.Name,
 		&category.Slug,
+		&category.Weight,
 		&category.CreatedAt,
 		&category.UpdatedAt,
 	)

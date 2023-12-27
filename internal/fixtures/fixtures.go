@@ -57,6 +57,7 @@ func (f *fixtures) CreateCategory(name string) *models.Category {
 	return &models.Category{
 		Name:      name,
 		Slug:      slug.Make(name),
+		Weight:    0,
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
 	}

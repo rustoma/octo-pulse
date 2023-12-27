@@ -16,7 +16,7 @@ type PostgressRoleStore struct {
 func NewRoleStore(DB *pgxpool.Pool) *PostgressRoleStore {
 	return &PostgressRoleStore{
 		DB:        DB,
-		dbTimeout: time.Second * 3,
+		dbTimeout: time.Second * 20,
 	}
 }
 

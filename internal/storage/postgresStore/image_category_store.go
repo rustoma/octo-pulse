@@ -16,7 +16,7 @@ type PostgresImageCategoryStore struct {
 func NewImageCategoryStore(DB *pgxpool.Pool) *PostgresImageCategoryStore {
 	return &PostgresImageCategoryStore{
 		DB:        DB,
-		dbTimeout: time.Second * 3,
+		dbTimeout: time.Second * 20,
 	}
 }
 

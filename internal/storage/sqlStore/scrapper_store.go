@@ -17,7 +17,7 @@ type SqlScrapperStore struct {
 func NewScrapperStore(DB *sql.DB) *SqlScrapperStore {
 	return &SqlScrapperStore{
 		DB:        DB,
-		dbTimeout: time.Second * 3,
+		dbTimeout: time.Second * 20,
 	}
 }
 
