@@ -1,11 +1,15 @@
 package services
 
 import (
+	"fmt"
 	a "github.com/rustoma/octo-pulse/internal/ai"
 	"github.com/rustoma/octo-pulse/internal/dto"
 	"github.com/rustoma/octo-pulse/internal/models"
 	"github.com/rustoma/octo-pulse/internal/storage"
+	"github.com/rustoma/octo-pulse/internal/utils"
 	"github.com/rustoma/octo-pulse/internal/validator"
+	"regexp"
+	"strings"
 )
 
 type ArticleService interface {
@@ -15,6 +19,7 @@ type ArticleService interface {
 	GetArticles(filters ...*storage.GetArticlesFilters) ([]*dto.Article, error)
 	CreateArticle(article *models.Article) (int, error)
 	DeleteArticle(id int) (int, error)
+	RemoveDuplicateHeadingsFromArticle(articleId int) error
 }
 
 type articleService struct {
@@ -67,4 +72,64 @@ func (s *articleService) GetArticle(id int) (*models.Article, error) {
 
 func (s *articleService) GetArticles(filters ...*storage.GetArticlesFilters) ([]*dto.Article, error) {
 	return s.articleStore.GetArticles(filters...)
+}
+
+func (s *articleService) RemoveDuplicateHeadingsFromArticle(articleId int) error {
+
+	article, err := s.articleStore.GetArticle(articleId)
+	if err != nil {
+		return err
+	}
+
+	htmlString := article.Body
+
+	// Define a regular expression pattern for detecting headings
+	headingPattern := `(<h[1-6][^>]*>(.*?)<\/h[1-6]>)`
+
+	// Find all matches of headings in the HTML string
+	re := regexp.MustCompile(headingPattern)
+	matches := re.FindAllString(utils.RemoveMultipleSpaces(htmlString), -1)
+
+	headingMap := make(map[string]bool)
+
+	for _, match := range matches {
+		if headingMap[match] {
+
+			logger.Info().Interface("Heading to remove: ", match).Send()
+			pattern := match + `(.*?)(<h[1-6][^>]*>|$)`
+			re := regexp.MustCompile(pattern)
+			matches := re.FindAllString(utils.RemoveMultipleSpaces(htmlString), -1)
+			modifiedHTML := utils.RemoveMultipleSpaces(htmlString)
+			if len(matches) >= 1 {
+				// Define the number of characters you want to extract from the end <h2> or <h3> it is 4 characters
+				numCharacters := 4
+				// Calculate the starting index for slicing
+				startIndex := len(matches[0]) - numCharacters
+				// Check if startIndex is valid
+				if startIndex >= 0 {
+					lastCharacters := matches[0][startIndex:]
+					modifiedHTML = strings.Replace(modifiedHTML, matches[0], lastCharacters, 1)
+				} else {
+					fmt.Println("Input string is too short.")
+				}
+
+			}
+
+			article.Body = modifiedHTML
+
+			_, err := s.UpdateArticle(article.ID, article)
+			if err != nil {
+				return err
+			}
+
+			err = s.RemoveDuplicateHeadingsFromArticle(articleId)
+			if err != nil {
+				return err
+			}
+		} else {
+			headingMap[match] = true
+		}
+	}
+
+	return nil
 }

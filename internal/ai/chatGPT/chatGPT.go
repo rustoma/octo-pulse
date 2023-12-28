@@ -210,6 +210,14 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 				"Nie uwzględniaj tytułów takich jak 'o nas', 'informacje kontaktowe', 'o firmie' i wszystkich innych powiązanych z konkretną firmą. Nie dodawaj tytułów związanych z newsletter, biuletynem itp. \n" +
 				"Nie dodawaj podtytułów 'podsumowanie', 'kontynuacja tematu' \n" +
 				"Nie numeruj tytułów. \n" +
+				"Nagłówki i podrzędnye nagłówki powinny koncentrować się na kluczowych punktach, podtematach lub sekcjach związanych z głównym tytułem. \n" +
+				"Obiekt powinien być zwięzły, a nagłówki mieścić się w zakresie głównego tytułu i otaczającego go kontekstu. \n" +
+				"Nie odbiegaj od głównego tematu. \n" +
+				"Ogranicz wygenerowany obiekt do kilku najważniejszych nagłówków i podrzędnych nagłówków. \n" +
+				"Maksymalnie zastosuj cztery nagłówki. \n" +
+				"Maksymalnie zastosuj dla każdego nagłówka 3 podrzędne nagłówki. \n" +
+				"Nie pisz nic o tym gdzie kupić towar. \n" +
+				"Nie pisz nic o umowach. \n" +
 				"Zwróć poprawny json string na wzór: \n\n" +
 				"{\"mainTitle:\"" + question.Question + ", \"subtitles\": [{\"title\": \"Subtitle1\", \"subtitles\": [\"Subtitle1\", \"Subtitle2\"]},{\"title\": \"Subtitle2\", \"subtitles\": [\"Subtitle1\", \"Subtitle2\"]}]}" + "\n\n" +
 				"Nie dodawaj znaczników '\n'. Wszystko zwróć w jedej linii",

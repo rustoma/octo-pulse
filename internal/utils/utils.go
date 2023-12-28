@@ -3,6 +3,7 @@ package utils
 import (
 	"math"
 	"os"
+	"regexp"
 	"strings"
 )
 
@@ -41,4 +42,17 @@ func CalculateReadTime(text string) int {
 	}
 
 	return minutes
+}
+
+func RemoveMultipleSpaces(text string) string {
+	trimmedText := strings.TrimSpace(text)
+
+	// Define the regular expression pattern to match consecutive whitespaces
+	pattern := `\s+`
+
+	// Compile the regular expression pattern
+	reg := regexp.MustCompile(pattern)
+
+	// Replace multiple whitespaces with a single space
+	return reg.ReplaceAllString(trimmedText, " ") + "\n\n"
 }

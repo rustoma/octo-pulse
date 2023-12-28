@@ -70,6 +70,7 @@ func NewApiRoutes(controllers ApiControllers, services ApiServices, tasks *tasks
 		r.Put("/articles/{id}", api.MakeHTTPHandler(controllers.Article.HandleUpdateArticle))
 		r.Delete("/articles/{id}", api.MakeHTTPHandler(controllers.Article.HandleDeleteArticle))
 		r.Post("/articles/{id}/generate-description", api.MakeHTTPHandler(controllers.Article.HandleGenerateDescritption))
+		r.Get("/articles/{id}/remove-duplicates", api.MakeHTTPHandler(controllers.Article.HandleRemoveDuplicatesFromArticle))
 		r.Post("/articles/generate", api.MakeHTTPHandler(controllers.Article.HandleGenerateArticles))
 
 		r.Get("/categories", api.MakeHTTPHandler(controllers.Category.HandleGetCategories))
