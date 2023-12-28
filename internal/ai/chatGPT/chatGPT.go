@@ -211,7 +211,7 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 				"Nie dodawaj podtytułów 'podsumowanie', 'kontynuacja tematu' \n" +
 				"Nie numeruj tytułów. \n" +
 				"Zwróć poprawny json string na wzór: \n\n" +
-				`{"mainTitle": {{question.Question}}, "subtitles": [{"title": "Subtitle1", "subtitles": ["Subtitle1", "Subtitle2"]},{"title": "Subtitle2", "subtitles": ["Subtitle1", "Subtitle2"]}]}` + "\n\n" +
+				"{\"mainTitle:\"" + question.Question + ", \"subtitles\": [{\"title\": \"Subtitle1\", \"subtitles\": [\"Subtitle1\", \"Subtitle2\"]},{\"title\": \"Subtitle2\", \"subtitles\": [\"Subtitle1\", \"Subtitle2\"]}]}" + "\n\n" +
 				"Nie dodawaj znaczników '\n'. Wszystko zwróć w jedej linii",
 		})
 
