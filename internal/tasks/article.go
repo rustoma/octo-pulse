@@ -146,9 +146,13 @@ func (t articleTasks) HandleGenerateDescription(ctx context.Context, task *asynq
 	article.ReadingTime = &readingTime
 
 	_, err = t.articleService.UpdateArticle(payload.ArticleId, article)
-
 	if err != nil {
 		return err
+	}
+
+	err = t.articleService.RemoveDuplicateHeadingsFromArticle(payload.ArticleId)
+	if err != nil {
+		logger.Err(err).Msgf("Cannot remove duplicates for article id: %s", payload.ArticleId)
 	}
 
 	return nil
@@ -309,7 +313,7 @@ func findMaxMin(categoriesMap map[string]int) map[string]int {
 			}
 		}
 
-		// Check the condition and remove if the difference is more than 10
+		// Check the condition and remove if the difference is more than 2
 		if maxArticles-minArticles > 2 {
 			delete(categoriesMap, maxCat)
 			findMaxMin(categoriesMap)
