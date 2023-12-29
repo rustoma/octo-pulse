@@ -142,6 +142,7 @@ func (s *SqlScrapperStore) GetQuestions(filters ...*storage.GetQuestionsFilters)
 		Select("id_question, question,COALESCE(answer, '') AS answer, href, octopulse_questions.fetched, id_category").
 		From("octopulse_questions").
 		Join("octopulse_phrases USING (id_phrase)").
+		OrderBy("RAND()").
 		Limit(100)
 
 	if len(filters) > 0 && filters[0].CategoryId != 0 {
