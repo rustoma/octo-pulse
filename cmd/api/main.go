@@ -75,6 +75,7 @@ func main() {
 		basicPageService = services.NewBasicPageService(store.BasicPage)
 		imageService     = services.NewImageService(store.Image)
 		emailService     = services.NewEmailService()
+		authorService    = services.NewAuthorService(store.Author)
 		//Tasks
 		tasks         = ts.NewTasks(articleService, domainService, scrapperService, categoryService, imageService, ai)
 		taskInspector = ts.NewTaskInspector()
@@ -88,6 +89,7 @@ func main() {
 		imageController     = controllers.NewImageController()
 		basicPageController = controllers.NewBasicPageController(basicPageService)
 		emailController     = controllers.NewEmailController(emailService)
+		authorController    = controllers.NewAuthorController(authorService)
 		apiControllers      = routes.ApiControllers{
 			Auth:      authController,
 			Article:   articleController,
@@ -98,6 +100,7 @@ func main() {
 			Image:     imageController,
 			BasicPage: basicPageController,
 			Email:     emailController,
+			Author:    authorController,
 		}
 		apiServices = routes.ApiServices{
 			Auth: authService,
