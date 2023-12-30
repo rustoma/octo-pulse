@@ -54,6 +54,7 @@ type CategoriesDomainsStore interface {
 
 type AuthorStore interface {
 	InsertAuthor(author *models.Author) (int, error)
+	GetAuthors() ([]*models.Author, error)
 	GetAuthor(id int) (*models.Author, error)
 }
 

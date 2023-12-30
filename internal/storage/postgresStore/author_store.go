@@ -22,8 +22,8 @@ func NewAuthorStore(DB *pgxpool.Pool) *PostgressAuthorStore {
 	}
 }
 
-func (a *PostgressAuthorStore) InsertAuthor(author *models.Author) (int, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), a.dbTimeout)
+func (s *PostgressAuthorStore) InsertAuthor(author *models.Author) (int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), s.dbTimeout)
 	defer cancel()
 
 	stmt, args, err := pgQb().
@@ -40,8 +40,47 @@ func (a *PostgressAuthorStore) InsertAuthor(author *models.Author) (int, error) 
 
 	var authorId int
 
-	err = a.DB.QueryRow(ctx, stmt, args...).Scan(&authorId)
+	err = s.DB.QueryRow(ctx, stmt, args...).Scan(&authorId)
 	return authorId, err
+}
+
+func (s *PostgressAuthorStore) GetAuthors() ([]*models.Author, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), s.dbTimeout)
+	defer cancel()
+
+	stmt, args, err := pgQb().
+		Select("*").
+		OrderBy("first_name ASC").
+		From("public.author").
+		ToSql()
+
+	if err != nil {
+		logger.Err(err).Send()
+		return nil, err
+	}
+
+	rows, err := s.DB.Query(ctx, stmt, args...)
+	defer rows.Close()
+
+	if err != nil {
+		logger.Err(err).Send()
+		return nil, err
+	}
+
+	var authors []*models.Author
+
+	for rows.Next() {
+		authorsFromScan, err := scanToAuthor(rows)
+
+		if err != nil {
+			logger.Err(err).Send()
+			return nil, err
+		}
+
+		authors = append(authors, authorsFromScan)
+	}
+
+	return authors, err
 }
 
 func (s *PostgressAuthorStore) GetAuthor(id int) (*models.Author, error) {
