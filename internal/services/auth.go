@@ -51,7 +51,6 @@ func NewAuthService(userStore storage.UserStore) AuthService {
 }
 
 func (a *authService) Login(userCredentials *dto.AuthLogin) (*dto.AuthUser, *http.Cookie, error) {
-	logger.Info().Interface("userCredentials", userCredentials)
 	user, err := a.userStore.GetUserByEmail(userCredentials.Email)
 
 	if err != nil {
