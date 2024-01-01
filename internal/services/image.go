@@ -2,7 +2,6 @@ package services
 
 import (
 	"errors"
-	"fmt"
 	"github.com/gosimple/slug"
 	e "github.com/rustoma/octo-pulse/internal/errors"
 	"github.com/rustoma/octo-pulse/internal/models"
@@ -45,11 +44,6 @@ func (s *imageService) GetImageCategories() ([]*models.ImageCategory, error) {
 }
 
 func (s *imageService) UploadImage(file multipart.File, handler *multipart.FileHeader, imageCategory int) (int, error) {
-
-	fmt.Printf("Uploaded File: %+v\n", handler.Filename)
-	fmt.Printf("File Size: %+v\n", handler.Size)
-	fmt.Printf("MIME Header: %+v\n", handler.Header.Get("Content-Type"))
-	fmt.Printf("file: %+v\n", file)
 
 	tempFile, err := os.CreateTemp(filepath.Join(os.Getenv("PATH_TO_ASSETS"), "images", "uploaded"), "*-"+handler.Filename)
 	if err != nil {
