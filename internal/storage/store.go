@@ -89,6 +89,8 @@ type ScrapperStore interface {
 type GetImagesFilters struct {
 	CategoryId int
 	Path       string
+	Limit      int
+	Offset     int
 }
 
 type ImageStorageStore interface {
@@ -99,6 +101,7 @@ type ImageStorageStore interface {
 
 type ImageCategoryStore interface {
 	InsertCategory(category *models.ImageCategory) (int, error)
+	GetCategories() ([]*models.ImageCategory, error)
 }
 
 type GetBasicPagesFilters struct {

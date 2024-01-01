@@ -73,7 +73,7 @@ func main() {
 		scrapperService  = services.NewScrapperService(store.Scrapper, validator.Scrapper)
 		fileService      = services.NewFileService(store.Article, store.Domain, store.Category, store.Image)
 		basicPageService = services.NewBasicPageService(store.BasicPage)
-		imageService     = services.NewImageService(store.Image)
+		imageService     = services.NewImageService(store.Image, store.ImageCategory)
 		emailService     = services.NewEmailService()
 		authorService    = services.NewAuthorService(store.Author)
 		//Tasks
@@ -86,7 +86,7 @@ func main() {
 		domainController    = controllers.NewDomainController(domainService)
 		categoryController  = controllers.NewCategoryController(categoryService)
 		fileController      = controllers.NewFileController(fileService)
-		imageController     = controllers.NewImageController()
+		imageController     = controllers.NewImageController(imageService)
 		basicPageController = controllers.NewBasicPageController(basicPageService)
 		emailController     = controllers.NewEmailController(emailService)
 		authorController    = controllers.NewAuthorController(authorService)

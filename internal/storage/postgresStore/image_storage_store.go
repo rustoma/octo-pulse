@@ -91,7 +91,16 @@ func (s *PostgresImageStorageStore) GetImages(filters ...*storage.GetImagesFilte
 
 	imagesStmt := pgQb().
 		Select("*").
+		OrderBy("created_at DESC").
 		From("public.image_storage")
+
+	if len(filters) > 0 && filters[0].Limit != 0 {
+		imagesStmt = imagesStmt.Limit(uint64(filters[0].Limit))
+	}
+
+	if len(filters) > 0 && filters[0].Offset != 0 {
+		imagesStmt = imagesStmt.Offset(uint64(filters[0].Offset))
+	}
 
 	if len(filters) > 0 && filters[0].CategoryId != 0 {
 		imagesStmt = imagesStmt.Where(
@@ -122,7 +131,7 @@ func (s *PostgresImageStorageStore) GetImages(filters ...*storage.GetImagesFilte
 		return nil, err
 	}
 
-	var images []*models.Image
+	images := make([]*models.Image, 0)
 
 	for rows.Next() {
 		imageFromScan, err := scanToImage(rows)

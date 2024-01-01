@@ -53,7 +53,7 @@ func NewApiRoutes(controllers ApiControllers, services ApiServices, tasks *tasks
 		r.Post("/emails", api.MakeHTTPHandler(controllers.Email.HandleSendEmail))
 	})
 
-	r.Get("/assets/images/*", api.MakeHTTPHandler(controllers.Image.HandleGetImage))
+	r.Get("/assets/images/*", api.MakeHTTPHandler(controllers.Image.HandleGetImageByPath))
 
 	r.Route("/api/v1/dashboard/auth", func(r chi.Router) {
 		r.Post("/login", api.MakeHTTPHandler(controllers.Auth.HandleLogin))
@@ -85,6 +85,12 @@ func NewApiRoutes(controllers ApiControllers, services ApiServices, tasks *tasks
 		r.Post("/files/articles", api.MakeHTTPHandler(controllers.File.HandleCreateArticles))
 
 		r.Post("/tasks", api.MakeHTTPHandler(controllers.Task.HandleGetTasksInfo))
+
+		r.Get("/images", api.MakeHTTPHandler(controllers.Image.HandleGetImages))
+		r.Post("/images/category-id/{id}", api.MakeHTTPHandler(controllers.Image.HandleUploadImage))
+		r.Get("/images/{id}", api.MakeHTTPHandler(controllers.Image.HandleGetImage))
+		r.Get("/image-categories", api.MakeHTTPHandler(controllers.Image.HandleGetImageCategories))
+		r.Get("/assets/images/*", api.MakeHTTPHandler(controllers.Image.HandleGetImageByPath))
 	})
 
 	return r
