@@ -162,13 +162,11 @@ func (c *ArticleController) HandleUpdateArticle(w http.ResponseWriter, r *http.R
 	}
 
 	err = api.ReadJSON(w, r, &article)
-
 	if err != nil {
 		return api.Error{Err: err.Error(), Status: http.StatusBadRequest}
 	}
 
 	updatedArticle, err := c.articleService.UpdateArticle(articleId, article)
-
 	if err != nil {
 		return api.Error{Err: err.Error(), Status: api.HandleErrorStatus(err)}
 	}
@@ -206,4 +204,20 @@ func (c *ArticleController) HandleRemoveDuplicatesFromArticle(w http.ResponseWri
 	}
 
 	return api.WriteJSON(w, http.StatusOK, "Duplicates removed successfully!")
+}
+
+func (c *ArticleController) HandleCreateArticle(w http.ResponseWriter, r *http.Request) error {
+	var article *models.Article
+
+	err := api.ReadJSON(w, r, &article)
+	if err != nil {
+		return api.Error{Err: err.Error(), Status: http.StatusBadRequest}
+	}
+
+	createdArticleId, err := c.articleService.CreateArticle(article)
+	if err != nil {
+		return api.Error{Err: err.Error(), Status: api.HandleErrorStatus(err)}
+	}
+
+	return api.WriteJSON(w, http.StatusOK, fmt.Sprintf("Article with ID %d was created successfully", createdArticleId))
 }
