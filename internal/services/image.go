@@ -6,6 +6,7 @@ import (
 	e "github.com/rustoma/octo-pulse/internal/errors"
 	"github.com/rustoma/octo-pulse/internal/models"
 	"github.com/rustoma/octo-pulse/internal/storage"
+	"github.com/rustoma/octo-pulse/internal/validator"
 	"image"
 	"io"
 	"mime/multipart"
@@ -20,15 +21,17 @@ type ImageService interface {
 	GetImage(id int) (*models.Image, error)
 	GetImageCategories() ([]*models.ImageCategory, error)
 	UploadImage(image multipart.File, handler *multipart.FileHeader, imageCategory int) (int, error)
+	CreateImageCategory(category *models.ImageCategory) (int, error)
 }
 
 type imageService struct {
-	imageStore         storage.ImageStorageStore
-	imageCategoryStore storage.ImageCategoryStore
+	imageStore             storage.ImageStorageStore
+	imageCategoryStore     storage.ImageCategoryStore
+	imageCategoryValidator validator.ImageCategoryValidatorer
 }
 
-func NewImageService(imageStorageStore storage.ImageStorageStore, imageCategoryStore storage.ImageCategoryStore) ImageService {
-	return &imageService{imageStore: imageStorageStore, imageCategoryStore: imageCategoryStore}
+func NewImageService(imageStorageStore storage.ImageStorageStore, imageCategoryStore storage.ImageCategoryStore, imageCategoryValidator validator.ImageCategoryValidatorer) ImageService {
+	return &imageService{imageStore: imageStorageStore, imageCategoryStore: imageCategoryStore, imageCategoryValidator: imageCategoryValidator}
 }
 
 func (s *imageService) GetImages(filters ...*storage.GetImagesFilters) ([]*models.Image, error) {
@@ -41,6 +44,16 @@ func (s *imageService) GetImage(id int) (*models.Image, error) {
 
 func (s *imageService) GetImageCategories() ([]*models.ImageCategory, error) {
 	return s.imageCategoryStore.GetCategories()
+}
+
+func (s *imageService) CreateImageCategory(category *models.ImageCategory) (int, error) {
+	err := s.imageCategoryValidator.Validate(category)
+	if err != nil {
+		logger.Err(err).Send()
+		return 0, err
+	}
+
+	return s.imageCategoryStore.InsertCategory(category)
 }
 
 func (s *imageService) UploadImage(file multipart.File, handler *multipart.FileHeader, imageCategory int) (int, error) {

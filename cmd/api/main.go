@@ -73,7 +73,7 @@ func main() {
 		scrapperService  = services.NewScrapperService(store.Scrapper, validator.Scrapper)
 		fileService      = services.NewFileService(store.Article, store.Domain, store.Category, store.Image)
 		basicPageService = services.NewBasicPageService(store.BasicPage)
-		imageService     = services.NewImageService(store.Image, store.ImageCategory)
+		imageService     = services.NewImageService(store.Image, store.ImageCategory, validator.ImageCategory)
 		emailService     = services.NewEmailService()
 		authorService    = services.NewAuthorService(store.Author)
 		//Tasks

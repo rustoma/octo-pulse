@@ -62,7 +62,7 @@ func main() {
 		domainService   = services.NewDomainService(store.Domain, validator.Domain)
 		categoryService = services.NewCategoryService(store.Category, store.CategoriesDomains)
 		scrapperService = services.NewScrapperService(store.Scrapper, validator.Scrapper)
-		imageService    = services.NewImageService(store.Image, store.ImageCategory)
+		imageService    = services.NewImageService(store.Image, store.ImageCategory, validator.ImageCategory)
 		tasks           = ts.NewTasks(articleService, domainService, scrapperService, categoryService, imageService, ai)
 	)
 

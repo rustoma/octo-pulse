@@ -6,18 +6,20 @@ import (
 )
 
 type Validator struct {
-	Article  ArticleValidatorer
-	Scrapper ScrapperValidatorer
-	Domain   DomainValidatorer
+	Article       ArticleValidatorer
+	Scrapper      ScrapperValidatorer
+	Domain        DomainValidatorer
+	ImageCategory ImageCategoryValidatorer
 }
 
 func NewValidator() *Validator {
 	validate := validator.New(validator.WithRequiredStructEnabled())
 
 	return &Validator{
-		Article:  newArticleValidator(validate),
-		Scrapper: newScrapperValidator(validate),
-		Domain:   newDomainValidator(validate),
+		Article:       newArticleValidator(validate),
+		Scrapper:      newScrapperValidator(validate),
+		Domain:        newDomainValidator(validate),
+		ImageCategory: newImageCategoryValidator(validate),
 	}
 }
 
@@ -31,4 +33,8 @@ type ScrapperValidatorer interface {
 
 type DomainValidatorer interface {
 	Validate(domain *models.Domain) error
+}
+
+type ImageCategoryValidatorer interface {
+	Validate(category *models.ImageCategory) error
 }
