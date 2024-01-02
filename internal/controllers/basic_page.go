@@ -1,8 +1,10 @@
 package controllers
 
 import (
+	"fmt"
 	"github.com/go-chi/chi/v5"
 	"github.com/rustoma/octo-pulse/internal/api"
+	"github.com/rustoma/octo-pulse/internal/models"
 	"github.com/rustoma/octo-pulse/internal/services"
 	"github.com/rustoma/octo-pulse/internal/storage"
 	"net/http"
@@ -79,4 +81,22 @@ func (c *BasicPageController) HandleGetBasicPages(w http.ResponseWriter, r *http
 	}
 
 	return api.WriteJSON(w, http.StatusOK, domains)
+}
+
+func (c *BasicPageController) HandleCreateBasicPage(w http.ResponseWriter, r *http.Request) error {
+	var request *models.BasicPage
+
+	err := api.ReadJSON(w, r, &request)
+	if err != nil {
+		logger.Err(err).Msg("Bad request")
+		return api.Error{Err: "bad request", Status: http.StatusBadRequest}
+	}
+
+	pageId, err := c.basicPageService.CreateBasicPage(request)
+	if err != nil {
+		logger.Err(err).Send()
+		return api.Error{Err: "cannot create basic page", Status: api.HandleErrorStatus(err)}
+	}
+
+	return api.WriteJSON(w, http.StatusOK, fmt.Sprintf("Basic page with ID %d was created successfully", pageId))
 }

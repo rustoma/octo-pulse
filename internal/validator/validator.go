@@ -12,6 +12,7 @@ type Validator struct {
 	ImageCategory ImageCategoryValidatorer
 	Author        AuthorValidatorer
 	Category      CategoryValidatorer
+	BasicPage     BasicPageValidatorer
 }
 
 func NewValidator() *Validator {
@@ -24,6 +25,7 @@ func NewValidator() *Validator {
 		ImageCategory: newImageCategoryValidator(validate),
 		Author:        newAuthorValidator(validate),
 		Category:      newCategoryValidator(validate),
+		BasicPage:     newBasicPageValidator(validate),
 	}
 }
 
@@ -49,4 +51,8 @@ type AuthorValidatorer interface {
 
 type CategoryValidatorer interface {
 	Validate(category *models.Category) error
+}
+
+type BasicPageValidatorer interface {
+	Validate(category *models.BasicPage) error
 }

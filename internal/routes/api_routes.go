@@ -98,6 +98,7 @@ func NewApiRoutes(controllers ApiControllers, services ApiServices, tasks *tasks
 		r.Get("/assets/images/*", api.MakeHTTPHandler(controllers.Image.HandleGetImageByPath))
 
 		r.Get("/basic-pages", api.MakeHTTPHandler(controllers.BasicPage.HandleGetBasicPages))
+		r.Post("/basic-pages", api.MakeHTTPHandler(controllers.BasicPage.HandleCreateBasicPage))
 		r.Get("/basic-pages/{id}", api.MakeHTTPHandler(controllers.BasicPage.HandleGetBasicPage))
 	})
 
