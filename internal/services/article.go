@@ -2,6 +2,7 @@ package services
 
 import (
 	"fmt"
+	"github.com/gosimple/slug"
 	a "github.com/rustoma/octo-pulse/internal/ai"
 	"github.com/rustoma/octo-pulse/internal/dto"
 	"github.com/rustoma/octo-pulse/internal/models"
@@ -33,6 +34,10 @@ func NewArticleService(articleStore storage.ArticleStore, articleValidator valid
 }
 
 func (s *articleService) CreateArticle(article *models.Article) (int, error) {
+	article.Slug = slug.Make(article.Title)
+	readingTime := utils.CalculateReadTime(article.Body)
+	article.ReadingTime = &readingTime
+
 	err := s.articleValidator.Validate(article)
 	if err != nil {
 		return 0, err
@@ -57,8 +62,11 @@ func (s *articleService) GenerateDescription(question *models.Question) (string,
 }
 
 func (s *articleService) UpdateArticle(articleId int, article *models.Article) (int, error) {
-	err := s.articleValidator.Validate(article)
+	article.Slug = slug.Make(article.Title)
+	readingTime := utils.CalculateReadTime(article.Body)
+	article.ReadingTime = &readingTime
 
+	err := s.articleValidator.Validate(article)
 	if err != nil {
 		return 0, err
 	}
