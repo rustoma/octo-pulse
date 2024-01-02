@@ -144,6 +144,8 @@ func (t articleTasks) HandleGenerateDescription(ctx context.Context, task *asynq
 
 	readingTime := utils.CalculateReadTime(description)
 	article.ReadingTime = &readingTime
+	article.IsPublished = true
+	article.PublicationDate = time.Now().UTC()
 
 	_, err = t.articleService.UpdateArticle(payload.ArticleId, article)
 	if err != nil {
