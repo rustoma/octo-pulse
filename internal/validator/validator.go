@@ -8,6 +8,7 @@ import (
 type Validator struct {
 	Article  ArticleValidatorer
 	Scrapper ScrapperValidatorer
+	Domain   DomainValidatorer
 }
 
 func NewValidator() *Validator {
@@ -16,6 +17,7 @@ func NewValidator() *Validator {
 	return &Validator{
 		Article:  newArticleValidator(validate),
 		Scrapper: newScrapperValidator(validate),
+		Domain:   newDomainValidator(validate),
 	}
 }
 
@@ -25,4 +27,8 @@ type ArticleValidatorer interface {
 
 type ScrapperValidatorer interface {
 	Validate(question *models.Question) error
+}
+
+type DomainValidatorer interface {
+	Validate(domain *models.Domain) error
 }

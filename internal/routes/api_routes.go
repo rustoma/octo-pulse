@@ -65,6 +65,7 @@ func NewApiRoutes(controllers ApiControllers, services ApiServices, tasks *tasks
 		r.Use(middlewares.RequireAuth())
 
 		r.Get("/domains", api.MakeHTTPHandler(controllers.Domain.HandleGetDomains))
+		r.Post("/domains", api.MakeHTTPHandler(controllers.Domain.HandleCreateDomain))
 		r.Get("/domains/{id}", api.MakeHTTPHandler(controllers.Domain.HandleGetDomain))
 
 		r.Get("/domain-categories/{id}", api.MakeHTTPHandler(controllers.Category.HandleGetDomainCategories))
@@ -92,6 +93,9 @@ func NewApiRoutes(controllers ApiControllers, services ApiServices, tasks *tasks
 		r.Get("/images/{id}", api.MakeHTTPHandler(controllers.Image.HandleGetImage))
 		r.Get("/image-categories", api.MakeHTTPHandler(controllers.Image.HandleGetImageCategories))
 		r.Get("/assets/images/*", api.MakeHTTPHandler(controllers.Image.HandleGetImageByPath))
+
+		r.Get("/basic-pages", api.MakeHTTPHandler(controllers.BasicPage.HandleGetBasicPages))
+		r.Get("/basic-pages/{id}", api.MakeHTTPHandler(controllers.BasicPage.HandleGetBasicPage))
 	})
 
 	return r

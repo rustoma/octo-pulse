@@ -59,7 +59,7 @@ func main() {
 			Scrapper:          sqlStore.Scrapper,
 		}
 		articleService  = services.NewArticleService(store.Article, validator.Article, ai)
-		domainService   = services.NewDomainService(store.Domain)
+		domainService   = services.NewDomainService(store.Domain, validator.Domain)
 		categoryService = services.NewCategoryService(store.Category, store.CategoriesDomains)
 		scrapperService = services.NewScrapperService(store.Scrapper, validator.Scrapper)
 		imageService    = services.NewImageService(store.Image, store.ImageCategory)

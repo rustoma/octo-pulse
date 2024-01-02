@@ -19,6 +19,22 @@ func NewBasicPageController(basicPageService services.BasicPageService) *BasicPa
 	}
 }
 
+func (c *BasicPageController) HandleGetBasicPage(w http.ResponseWriter, r *http.Request) error {
+	idParam := chi.URLParam(r, "id")
+
+	pageId, err := strconv.Atoi(idParam)
+	if err != nil {
+		return api.Error{Err: "bad request", Status: http.StatusBadRequest}
+	}
+
+	page, err := c.basicPageService.GetBasicPage(pageId)
+	if err != nil {
+		return api.Error{Err: "cannot get the page", Status: api.HandleErrorStatus(err)}
+	}
+
+	return api.WriteJSON(w, http.StatusOK, page)
+}
+
 func (c *BasicPageController) HandleGetBasicPageBySlug(w http.ResponseWriter, r *http.Request) error {
 	slug := chi.URLParam(r, "slug")
 	domainIdParam := r.URL.Query().Get("domainId")
@@ -34,13 +50,12 @@ func (c *BasicPageController) HandleGetBasicPageBySlug(w http.ResponseWriter, r 
 		filters.DomainId = domainId
 	}
 
-	domains, err := c.basicPageService.GetBasicPageBySlug(slug, &filters)
-
+	pages, err := c.basicPageService.GetBasicPageBySlug(slug, &filters)
 	if err != nil {
 		return api.Error{Err: "cannot get the page", Status: api.HandleErrorStatus(err)}
 	}
 
-	return api.WriteJSON(w, http.StatusOK, domains)
+	return api.WriteJSON(w, http.StatusOK, pages)
 }
 
 func (c *BasicPageController) HandleGetBasicPages(w http.ResponseWriter, r *http.Request) error {
