@@ -9,19 +9,19 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type PostgressCategoriesDomainsStore struct {
+type PostgresCategoriesDomainsStore struct {
 	DB        *pgxpool.Pool
 	dbTimeout time.Duration
 }
 
-func NewCategoriesDomainsStore(DB *pgxpool.Pool) *PostgressCategoriesDomainsStore {
-	return &PostgressCategoriesDomainsStore{
+func NewCategoriesDomainsStore(DB *pgxpool.Pool) *PostgresCategoriesDomainsStore {
+	return &PostgresCategoriesDomainsStore{
 		DB:        DB,
 		dbTimeout: time.Second * 20,
 	}
 }
 
-func (s *PostgressCategoriesDomainsStore) AsignCategoryToDomain(categoryId int, domainId int) error {
+func (s *PostgresCategoriesDomainsStore) AssignCategoryToDomain(categoryId int, domainId int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), s.dbTimeout)
 	defer cancel()
 
@@ -44,7 +44,7 @@ func (s *PostgressCategoriesDomainsStore) AsignCategoryToDomain(categoryId int, 
 	return err
 }
 
-func (s *PostgressCategoriesDomainsStore) GetDomainCategories(domainId int) ([]int, error) {
+func (s *PostgresCategoriesDomainsStore) GetDomainCategories(domainId int) ([]int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), s.dbTimeout)
 	defer cancel()
 

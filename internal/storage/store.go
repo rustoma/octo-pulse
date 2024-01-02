@@ -48,7 +48,7 @@ type CategoryStore interface {
 }
 
 type CategoriesDomainsStore interface {
-	AsignCategoryToDomain(categoryId int, domainId int) error
+	AssignCategoryToDomain(categoryId int, domainId int) error
 	GetDomainCategories(domainId int) ([]int, error)
 }
 

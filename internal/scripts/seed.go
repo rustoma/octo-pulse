@@ -153,47 +153,47 @@ func main() {
 		logger.Fatal().Err(err).Send()
 	}
 
-	err = store.CategoriesDomains.AsignCategoryToDomain(installationOfPanelsCategoryId, homeDesignDomainId)
+	err = store.CategoriesDomains.AssignCategoryToDomain(installationOfPanelsCategoryId, homeDesignDomainId)
 	if err != nil {
 		logger.Fatal().Err(err).Send()
 	}
 
-	err = store.CategoriesDomains.AsignCategoryToDomain(materialsAndToolsCategoryId, homeDesignDomainId)
+	err = store.CategoriesDomains.AssignCategoryToDomain(materialsAndToolsCategoryId, homeDesignDomainId)
 	if err != nil {
 		logger.Fatal().Err(err).Send()
 	}
 
-	err = store.CategoriesDomains.AsignCategoryToDomain(maintenanceAndRepairCategoryId, homeDesignDomainId)
+	err = store.CategoriesDomains.AssignCategoryToDomain(maintenanceAndRepairCategoryId, homeDesignDomainId)
 	if err != nil {
 		logger.Fatal().Err(err).Send()
 	}
 
-	err = store.CategoriesDomains.AsignCategoryToDomain(underfloorHeatingCategoryId, homeDesignDomainId)
+	err = store.CategoriesDomains.AssignCategoryToDomain(underfloorHeatingCategoryId, homeDesignDomainId)
 	if err != nil {
 		logger.Fatal().Err(err).Send()
 	}
 
-	err = store.CategoriesDomains.AsignCategoryToDomain(moistureAndWaterproofingCategoryId, homeDesignDomainId)
+	err = store.CategoriesDomains.AssignCategoryToDomain(moistureAndWaterproofingCategoryId, homeDesignDomainId)
 	if err != nil {
 		logger.Fatal().Err(err).Send()
 	}
 
-	err = store.CategoriesDomains.AsignCategoryToDomain(diyProjectsCategoryCategoryId, homeDesignDomainId)
+	err = store.CategoriesDomains.AssignCategoryToDomain(diyProjectsCategoryCategoryId, homeDesignDomainId)
 	if err != nil {
 		logger.Fatal().Err(err).Send()
 	}
 
-	err = store.CategoriesDomains.AsignCategoryToDomain(technicalSolutionsCategoryId, homeDesignDomainId)
+	err = store.CategoriesDomains.AssignCategoryToDomain(technicalSolutionsCategoryId, homeDesignDomainId)
 	if err != nil {
 		logger.Fatal().Err(err).Send()
 	}
 
-	err = store.CategoriesDomains.AsignCategoryToDomain(designAndTrendsCategoryId, homeDesignDomainId)
+	err = store.CategoriesDomains.AssignCategoryToDomain(designAndTrendsCategoryId, homeDesignDomainId)
 	if err != nil {
 		logger.Fatal().Err(err).Send()
 	}
 
-	err = store.CategoriesDomains.AsignCategoryToDomain(designAndTrendsCategoryId, newsDomainId)
+	err = store.CategoriesDomains.AssignCategoryToDomain(designAndTrendsCategoryId, newsDomainId)
 	if err != nil {
 		logger.Fatal().Err(err).Send()
 	}
