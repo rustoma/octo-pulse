@@ -69,7 +69,7 @@ func main() {
 		authService      = services.NewAuthService(store.User)
 		articleService   = services.NewArticleService(store.Article, validator.Article, ai)
 		domainService    = services.NewDomainService(store.Domain, validator.Domain)
-		categoryService  = services.NewCategoryService(store.Category, store.CategoriesDomains)
+		categoryService  = services.NewCategoryService(store.Category, store.CategoriesDomains, validator.Category)
 		scrapperService  = services.NewScrapperService(store.Scrapper, validator.Scrapper)
 		fileService      = services.NewFileService(store.Article, store.Domain, store.Category, store.Image)
 		basicPageService = services.NewBasicPageService(store.BasicPage)

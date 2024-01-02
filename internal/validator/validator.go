@@ -11,6 +11,7 @@ type Validator struct {
 	Domain        DomainValidatorer
 	ImageCategory ImageCategoryValidatorer
 	Author        AuthorValidatorer
+	Category      CategoryValidatorer
 }
 
 func NewValidator() *Validator {
@@ -22,6 +23,7 @@ func NewValidator() *Validator {
 		Domain:        newDomainValidator(validate),
 		ImageCategory: newImageCategoryValidator(validate),
 		Author:        newAuthorValidator(validate),
+		Category:      newCategoryValidator(validate),
 	}
 }
 
@@ -42,5 +44,9 @@ type ImageCategoryValidatorer interface {
 }
 
 type AuthorValidatorer interface {
-	Validate(category *models.Author) error
+	Validate(author *models.Author) error
+}
+
+type CategoryValidatorer interface {
+	Validate(category *models.Category) error
 }
