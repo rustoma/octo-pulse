@@ -83,6 +83,7 @@ func NewApiRoutes(controllers ApiControllers, services ApiServices, tasks *tasks
 		r.Get("/categories/{id}", api.MakeHTTPHandler(controllers.Category.HandleGetCategory))
 
 		r.Get("/authors", api.MakeHTTPHandler(controllers.Author.HandleGetAuthors))
+		r.Post("/authors", api.MakeHTTPHandler(controllers.Author.HandleCreateAuthor))
 
 		r.Post("/files/articles", api.MakeHTTPHandler(controllers.File.HandleCreateArticles))
 

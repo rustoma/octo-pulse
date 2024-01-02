@@ -75,7 +75,7 @@ func main() {
 		basicPageService = services.NewBasicPageService(store.BasicPage)
 		imageService     = services.NewImageService(store.Image, store.ImageCategory, validator.ImageCategory)
 		emailService     = services.NewEmailService()
-		authorService    = services.NewAuthorService(store.Author)
+		authorService    = services.NewAuthorService(store.Author, validator.Author)
 		//Tasks
 		tasks         = ts.NewTasks(articleService, domainService, scrapperService, categoryService, imageService, ai)
 		taskInspector = ts.NewTaskInspector()
