@@ -57,6 +57,10 @@ func (a *authService) Login(userCredentials *dto.AuthLogin) (*dto.AuthUser, *htt
 		return nil, nil, e.NotFound{Err: "user not found"}
 	}
 
+	if !user.IsEnabled {
+		return nil, nil, e.BadRequest{Err: "user not found"}
+	}
+
 	err = a.CheckPassword(userCredentials.Password, user.PasswordHash)
 
 	if err != nil {
@@ -137,8 +141,11 @@ func (a *authService) Logout(logoutRequest *dto.LogoutRequest) (*http.Cookie, er
 func (a *authService) RefreshToken(refreshTokenRequest *dto.RefreshTokenRequest) (string, error) {
 
 	user, err := a.userStore.SelectUserByRefreshToken(refreshTokenRequest.RefreshToken)
-
 	if err != nil {
+		return "", e.NotFound{Err: err.Error()}
+	}
+
+	if !user.IsEnabled {
 		return "", e.NotFound{Err: err.Error()}
 	}
 
@@ -180,7 +187,7 @@ func (claims JWTClaims) Validate() error {
 }
 
 func (a *authService) createTokenExpirationTimeForJWTToken() *jwt.NumericDate {
-	ttl := 23 * time.Hour
+	ttl := 30 * time.Minute
 	expirationTime := time.Now().UTC().Add(ttl)
 	return &jwt.NumericDate{Time: expirationTime}
 }

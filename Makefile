@@ -12,6 +12,9 @@ test:
 migration_up:
 	migrate -path internal/db/migrations/ -database "postgresql://${dbuser}@${host}:${dbport}/${dbname}?sslmode=disable" -verbose up
 
+#migration_up:
+	migrate -path internal/db/migrations/ -database "postgresql://${dbuser}:${dbpass}@${host}:${dbport}/${dbname}?sslmode=disable" -verbose up
+
 migration_down:
 	migrate -path internal/db/migrations/ -database "postgresql://${dbuser}@${host}:${dbport}/${dbname}?sslmode=disable" -verbose down
 
@@ -22,7 +25,7 @@ migration_go_to:
 	migrate -path internal/db/migrations/ -database "postgresql://${dbuser}@${host}:${dbport}/${dbname}?sslmode=disable" -verbose goto VERSION
 
 migration_create:
-	migrate create -ext sql -dir internal/db/migrations -seq init
+	migrate create -ext sql -dir internal/db/migrations -seq add_user_is_enabled
 
 task_monit:
 	./asynqmon --port=9090 --redis-password=${REDIS_PASSWORD}

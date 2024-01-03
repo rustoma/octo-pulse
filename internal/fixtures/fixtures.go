@@ -31,6 +31,7 @@ func (f *fixtures) CreateUser(email string, pass string, roleId int) *models.Use
 		RoleId:       roleId,
 		CreatedAt:    time.Now().UTC(),
 		UpdatedAt:    time.Now().UTC(),
+		IsEnabled:    true,
 	}
 
 	return user

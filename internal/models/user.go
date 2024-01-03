@@ -10,6 +10,7 @@ type User struct {
 	RoleId       int       `json:"roleID"`
 	CreatedAt    time.Time `json:"-"`
 	UpdatedAt    time.Time `json:"-"`
+	IsEnabled    bool      `json:"isEnabled"`
 }
 
 type UserRoles struct {

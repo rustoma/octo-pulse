@@ -29,8 +29,8 @@ func (u *PostgressUserStore) InsertUser(user *models.User) (int, error) {
 
 	stmt, args, err := pgQb().
 		Insert("public.user").
-		Columns("email, password_hash, role_id, created_at, updated_at").
-		Values(user.Email, user.PasswordHash, user.RoleId, time.Now().UTC(), time.Now().UTC()).
+		Columns("email, password_hash, role_id, created_at, updated_at, is_enabled").
+		Values(user.Email, user.PasswordHash, user.RoleId, time.Now().UTC(), time.Now().UTC(), user.IsEnabled).
 		Suffix("RETURNING \"id\"").
 		ToSql()
 
@@ -51,7 +51,7 @@ func (u *PostgressUserStore) GetUserByEmail(email string) (*models.User, error) 
 	defer cancel()
 
 	stmt, args, err := pgQb().
-		Select("id, email, COALESCE(refresh_token, '') AS refresh_token, password_hash, role_id, created_at, updated_at").
+		Select("id, email, COALESCE(refresh_token, '') AS refresh_token, password_hash, role_id, created_at, updated_at, is_enabled").
 		From("public.user").
 		Where(squirrel.Eq{"email": email}).
 		ToSql()
@@ -117,7 +117,7 @@ func (u *PostgressUserStore) SelectUserByRefreshToken(refreshToken string) (*mod
 	defer cancel()
 
 	stmt, args, err := pgQb().
-		Select("id, email, COALESCE(refresh_token, '') AS refresh_token, password_hash, role_id, created_at, updated_at").
+		Select("id, email, COALESCE(refresh_token, '') AS refresh_token, password_hash, role_id, created_at, updated_at, is_enabled").
 		From("public.user").
 		Where(squirrel.Eq{"refresh_token": refreshToken}).
 		ToSql()
@@ -165,6 +165,7 @@ func scanToUser(rows pgx.Rows) (*models.User, error) {
 		&user.RoleId,
 		&user.CreatedAt,
 		&user.UpdatedAt,
+		&user.IsEnabled,
 	)
 
 	return &user, err
