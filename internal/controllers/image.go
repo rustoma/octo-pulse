@@ -141,7 +141,7 @@ func (c *ImageController) HandleUploadImage(w http.ResponseWriter, r *http.Reque
 	return api.WriteJSON(w, http.StatusOK, "Image uploaded successfully")
 }
 
-func (c *ImageController) HandleCreateImageCategories(w http.ResponseWriter, r *http.Request) error {
+func (c *ImageController) HandleCreateImageCategory(w http.ResponseWriter, r *http.Request) error {
 	var request *models.ImageCategory
 
 	err := api.ReadJSON(w, r, &request)
@@ -157,4 +157,26 @@ func (c *ImageController) HandleCreateImageCategories(w http.ResponseWriter, r *
 	}
 
 	return api.WriteJSON(w, http.StatusOK, fmt.Sprintf("Image category with ID %d was created successfully", imageCategoryId))
+}
+
+func (c *ImageController) HandleUpdateImageCategory(w http.ResponseWriter, r *http.Request) error {
+	var category *models.ImageCategory
+
+	categoryIdParam := chi.URLParam(r, "id")
+	categoryId, err := strconv.Atoi(categoryIdParam)
+	if err != nil {
+		return api.Error{Err: "bad request", Status: http.StatusBadRequest}
+	}
+
+	err = api.ReadJSON(w, r, &category)
+	if err != nil {
+		return api.Error{Err: err.Error(), Status: http.StatusBadRequest}
+	}
+
+	updatedImageCategory, err := c.imageService.UpdateImageCategory(categoryId, category)
+	if err != nil {
+		return api.Error{Err: err.Error(), Status: api.HandleErrorStatus(err)}
+	}
+
+	return api.WriteJSON(w, http.StatusOK, updatedImageCategory)
 }

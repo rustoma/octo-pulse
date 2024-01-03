@@ -98,7 +98,8 @@ func NewApiRoutes(controllers ApiControllers, services ApiServices, tasks *tasks
 		r.Post("/images/category-id/{id}", api.MakeHTTPHandler(controllers.Image.HandleUploadImage))
 		r.Get("/images/{id}", api.MakeHTTPHandler(controllers.Image.HandleGetImage))
 		r.Get("/image-categories", api.MakeHTTPHandler(controllers.Image.HandleGetImageCategories))
-		r.Post("/image-categories", api.MakeHTTPHandler(controllers.Image.HandleCreateImageCategories))
+		r.Post("/image-categories", api.MakeHTTPHandler(controllers.Image.HandleCreateImageCategory))
+		r.Put("/image-categories/{id}", api.MakeHTTPHandler(controllers.Image.HandleUpdateImageCategory))
 		r.Get("/assets/images/*", api.MakeHTTPHandler(controllers.Image.HandleGetImageByPath))
 
 		r.Get("/basic-pages", api.MakeHTTPHandler(controllers.BasicPage.HandleGetBasicPages))

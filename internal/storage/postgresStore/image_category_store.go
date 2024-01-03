@@ -2,6 +2,7 @@ package postgresstore
 
 import (
 	"context"
+	"github.com/Masterminds/squirrel"
 	"github.com/jackc/pgx/v5"
 	"time"
 
@@ -82,6 +83,30 @@ func (s *PostgresImageCategoryStore) GetCategories() ([]*models.ImageCategory, e
 	return categories, err
 }
 
+func (s *PostgresImageCategoryStore) UpdateImageCategory(id int, category *models.ImageCategory) (int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), s.dbTimeout)
+	defer cancel()
+
+	categoryMap := convertImageCategoryToImageCategoryMap(category)
+	categoryMap["updated_at"] = time.Now().UTC()
+
+	stmt, args, err := pgQb().
+		Update("public.image_category").
+		SetMap(categoryMap).
+		Where(squirrel.Eq{"id": id}).
+		Suffix("RETURNING \"id\"").ToSql()
+
+	if err != nil {
+		logger.Err(err).Send()
+		return 0, err
+	}
+
+	var updatedImageCategoryId int
+
+	err = s.DB.QueryRow(ctx, stmt, args...).Scan(&updatedImageCategoryId)
+	return updatedImageCategoryId, err
+}
+
 func scanToImageCategory(rows pgx.Rows) (*models.ImageCategory, error) {
 	var imageCategory models.ImageCategory
 
@@ -93,4 +118,12 @@ func scanToImageCategory(rows pgx.Rows) (*models.ImageCategory, error) {
 	)
 
 	return &imageCategory, err
+}
+
+func convertImageCategoryToImageCategoryMap(category *models.ImageCategory) map[string]interface{} {
+	return map[string]interface{}{
+		"name":       category.Name,
+		"created_at": category.CreatedAt,
+		"updated_at": category.UpdatedAt,
+	}
 }

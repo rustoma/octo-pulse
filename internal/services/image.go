@@ -22,6 +22,7 @@ type ImageService interface {
 	GetImageCategories() ([]*models.ImageCategory, error)
 	UploadImage(image multipart.File, handler *multipart.FileHeader, imageCategory int) (int, error)
 	CreateImageCategory(category *models.ImageCategory) (int, error)
+	UpdateImageCategory(id int, category *models.ImageCategory) (int, error)
 }
 
 type imageService struct {
@@ -108,4 +109,13 @@ func (s *imageService) UploadImage(file multipart.File, handler *multipart.FileH
 	}
 
 	return s.imageStore.InsertImage(&img)
+}
+
+func (s *imageService) UpdateImageCategory(id int, category *models.ImageCategory) (int, error) {
+	err := s.imageCategoryValidator.Validate(category)
+	if err != nil {
+		return 0, err
+	}
+
+	return s.imageCategoryStore.UpdateImageCategory(id, category)
 }
