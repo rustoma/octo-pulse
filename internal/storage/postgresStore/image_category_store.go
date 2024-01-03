@@ -44,6 +44,44 @@ func (s *PostgresImageCategoryStore) InsertCategory(category *models.ImageCatego
 	return categoryId, err
 }
 
+func (s *PostgresImageCategoryStore) GetCategory(id int) (*models.ImageCategory, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), s.dbTimeout)
+	defer cancel()
+
+	stmt, args, err := pgQb().
+		Select("*").
+		From("public.image_category").
+		Where(squirrel.Eq{"id": id}).
+		ToSql()
+
+	if err != nil {
+		logger.Err(err).Send()
+		return nil, err
+	}
+
+	rows, err := s.DB.Query(ctx, stmt, args...)
+	defer rows.Close()
+
+	if err != nil {
+		logger.Err(err).Send()
+		return nil, err
+	}
+
+	var category *models.ImageCategory
+
+	for rows.Next() {
+		categoryFromScan, err := scanToImageCategory(rows)
+		if err != nil {
+			logger.Err(err).Send()
+			return nil, err
+		}
+
+		category = categoryFromScan
+	}
+
+	return category, err
+}
+
 func (s *PostgresImageCategoryStore) GetCategories() ([]*models.ImageCategory, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), s.dbTimeout)
 	defer cancel()

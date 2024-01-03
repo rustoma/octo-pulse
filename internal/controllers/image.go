@@ -105,6 +105,21 @@ func (c *ImageController) HandleGetImage(w http.ResponseWriter, r *http.Request)
 
 }
 
+func (c *ImageController) HandleGetImageCategory(w http.ResponseWriter, r *http.Request) error {
+	categoryIdParam := chi.URLParam(r, "id")
+	categoryId, err := strconv.Atoi(categoryIdParam)
+	if err != nil {
+		return api.Error{Err: "bad request", Status: http.StatusBadRequest}
+	}
+
+	category, err := c.imageService.GetImageCategory(categoryId)
+	if err != nil {
+		return api.Error{Err: "cannot get image category", Status: api.HandleErrorStatus(err)}
+	}
+
+	return api.WriteJSON(w, http.StatusOK, category)
+}
+
 func (c *ImageController) HandleGetImageCategories(w http.ResponseWriter, r *http.Request) error {
 	categories, err := c.imageService.GetImageCategories()
 	if err != nil {

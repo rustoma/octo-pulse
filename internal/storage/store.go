@@ -104,6 +104,7 @@ type ImageStorageStore interface {
 
 type ImageCategoryStore interface {
 	InsertCategory(category *models.ImageCategory) (int, error)
+	GetCategory(id int) (*models.ImageCategory, error)
 	GetCategories() ([]*models.ImageCategory, error)
 	UpdateImageCategory(id int, category *models.ImageCategory) (int, error)
 }
