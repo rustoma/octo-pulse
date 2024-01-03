@@ -20,6 +20,21 @@ func NewAuthorController(authorService services.AuthorService) *AuthorController
 	}
 }
 
+func (c *AuthorController) HandleGetAuthor(w http.ResponseWriter, r *http.Request) error {
+	authorIdParam := chi.URLParam(r, "id")
+	authorId, err := strconv.Atoi(authorIdParam)
+	if err != nil {
+		return api.Error{Err: "bad request", Status: http.StatusBadRequest}
+	}
+
+	category, err := c.authorService.GetAuthor(authorId)
+	if err != nil {
+		return api.Error{Err: "cannot get author", Status: api.HandleErrorStatus(err)}
+	}
+
+	return api.WriteJSON(w, http.StatusOK, category)
+}
+
 func (c *AuthorController) HandleGetAuthors(w http.ResponseWriter, r *http.Request) error {
 	categories, err := c.authorService.GetAuthors()
 	if err != nil {

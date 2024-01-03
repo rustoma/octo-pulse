@@ -7,6 +7,7 @@ import (
 )
 
 type AuthorService interface {
+	GetAuthor(id int) (*models.Author, error)
 	GetAuthors() ([]*models.Author, error)
 	CreateAuthor(author *models.Author) (int, error)
 	UpdateAuthor(id int, author *models.Author) (int, error)
@@ -19,6 +20,10 @@ type authorService struct {
 
 func NewAuthorService(authorStore storage.AuthorStore, authorValidator validator.AuthorValidatorer) AuthorService {
 	return &authorService{authorStore: authorStore, authorValidator: authorValidator}
+}
+
+func (s *authorService) GetAuthor(id int) (*models.Author, error) {
+	return s.authorStore.GetAuthor(id)
 }
 
 func (s *authorService) GetAuthors() ([]*models.Author, error) {
