@@ -203,6 +203,42 @@ func (s *SqlScrapperStore) UpdateQuestion(id int, question *models.Question) err
 	return err
 }
 
+func (s *SqlScrapperStore) GetQuestionCategories() ([]*models.QuestionCategory, error) {
+	stmt, args, err := sqlQb().
+		Select("*").
+		From("octopulse_categories").
+		ToSql()
+
+	if err != nil {
+		logger.Err(err).Send()
+		return nil, err
+	}
+
+	rows, err := s.DB.Query(stmt, args...)
+
+	if err != nil {
+		logger.Err(err).Send()
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	categories := make([]*models.QuestionCategory, 0)
+
+	for rows.Next() {
+		categoryFromScan, err := scanToQuestionCategory(rows)
+
+		if err != nil {
+			logger.Err(err).Send()
+			return nil, err
+		}
+
+		categories = append(categories, categoryFromScan)
+	}
+
+	return categories, nil
+}
+
 func scanToQuestion(rows *sql.Rows) (*models.Question, error) {
 	var question models.Question
 	err := rows.Scan(
@@ -240,6 +276,16 @@ func scanToQuestionPageContent(rows *sql.Rows) (*models.QuestionPageContent, err
 	)
 
 	return &questionPageContent, err
+}
+
+func scanToQuestionCategory(rows *sql.Rows) (*models.QuestionCategory, error) {
+	var category models.QuestionCategory
+	err := rows.Scan(
+		&category.IdCategory,
+		&category.Name,
+	)
+
+	return &category, err
 }
 
 func convertQuestionToQuestionMap(question *models.Question) map[string]interface{} {

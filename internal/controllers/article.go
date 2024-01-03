@@ -33,7 +33,7 @@ func (c *ArticleController) HandleGenerateArticles(w http.ResponseWriter, r *htt
 		return api.Error{Err: "bad request", Status: http.StatusBadRequest}
 	}
 
-	err = c.articleTasks.NewGenerateArticlesTask(request.DomainId, request.NumberOfArtilces, request.QuestionCategoryId, request.ImagesCategory)
+	err = c.articleTasks.NewGenerateArticlesTask(request.DomainId, request.NumberOfArticles, request.QuestionCategoryId, request.ImagesCategory)
 
 	if err != nil {
 		return api.Error{Err: err.Error(), Status: api.HandleErrorStatus(err)}

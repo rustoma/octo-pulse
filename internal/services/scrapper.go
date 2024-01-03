@@ -10,6 +10,7 @@ type ScrapperService interface {
 	GetQuestion(id int) (*models.Question, error)
 	GetQuestions(filters ...*storage.GetQuestionsFilters) ([]*models.Question, error)
 	UpdateQuestion(id int, question *models.Question) error
+	GetQuestionCategories() ([]*models.QuestionCategory, error)
 }
 
 type scrapperService struct {
@@ -49,4 +50,9 @@ func (s *scrapperService) UpdateQuestion(id int, question *models.Question) erro
 	}
 
 	return s.scrapperStore.UpdateQuestion(id, question)
+}
+
+func (s *scrapperService) GetQuestionCategories() ([]*models.QuestionCategory, error) {
+	questions, err := s.scrapperStore.GetQuestionCategories()
+	return questions, err
 }

@@ -87,6 +87,7 @@ type ScrapperStore interface {
 	GetQuestion(id int) (*models.Question, error)
 	GetQuestions(filters ...*GetQuestionsFilters) ([]*models.Question, error)
 	UpdateQuestion(id int, question *models.Question) error
+	GetQuestionCategories() ([]*models.QuestionCategory, error)
 }
 
 type GetImagesFilters struct {

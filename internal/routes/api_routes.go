@@ -23,6 +23,7 @@ type ApiControllers struct {
 	BasicPage *controllers.BasicPageController
 	Email     *controllers.EmailController
 	Author    *controllers.AuthorController
+	Scrapper  *controllers.ScrapperController
 }
 
 type ApiServices struct {
@@ -84,6 +85,8 @@ func NewApiRoutes(controllers ApiControllers, services ApiServices, tasks *tasks
 		r.Post("/categories", api.MakeHTTPHandler(controllers.Category.HandleCreateCategory))
 		r.Get("/categories/{id}", api.MakeHTTPHandler(controllers.Category.HandleGetCategory))
 		r.Put("/categories/{id}", api.MakeHTTPHandler(controllers.Category.HandleUpdateCategory))
+
+		r.Get("/question-categories", api.MakeHTTPHandler(controllers.Scrapper.HandleGetQuestionCategories))
 
 		r.Post("/domain-categories", api.MakeHTTPHandler(controllers.Category.HandleAssignCategoryToDomain))
 

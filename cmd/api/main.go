@@ -90,6 +90,7 @@ func main() {
 		basicPageController = controllers.NewBasicPageController(basicPageService)
 		emailController     = controllers.NewEmailController(emailService)
 		authorController    = controllers.NewAuthorController(authorService)
+		scrapperController  = controllers.NewScrapperController(scrapperService)
 		apiControllers      = routes.ApiControllers{
 			Auth:      authController,
 			Article:   articleController,
@@ -101,6 +102,7 @@ func main() {
 			BasicPage: basicPageController,
 			Email:     emailController,
 			Author:    authorController,
+			Scrapper:  scrapperController,
 		}
 		apiServices = routes.ApiServices{
 			Auth: authService,

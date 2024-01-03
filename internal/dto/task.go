@@ -7,7 +7,7 @@ type GetTasksInfoRequest struct {
 
 type GenerateArticlesRequest struct {
 	DomainId           int `json:"domainId"`
-	NumberOfArtilces   int `json:"numberOfArtilces"`
+	NumberOfArticles   int `json:"numberOfArticles"`
 	QuestionCategoryId int `json:"questionCategoryId"`
 	ImagesCategory     int `json:"imagesCategory"`
 }

@@ -23,3 +23,8 @@ type QuestionPageContent struct {
 	PageContent          string `json:"pageContent"`
 	PageContentProcessed string `json:"pageContentProcessed"`
 }
+
+type QuestionCategory struct {
+	IdCategory int    `json:"idCategory"`
+	Name       string `json:"name"`
+}
