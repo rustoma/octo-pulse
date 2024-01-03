@@ -7,6 +7,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/rustoma/octo-pulse/internal/api"
 	"github.com/rustoma/octo-pulse/internal/services"
@@ -29,14 +30,29 @@ func NewMiddleware(authService services.AuthService) Middleware {
 	}
 }
 
+func contains(v string, a []string) bool {
+	for _, i := range a {
+		if i == v {
+			return true
+		}
+	}
+	return false
+}
+
 func (m *middleware) EnableCORS(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		if !utils.IsProdDev() {
+		if utils.IsProdDev() {
 			w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
-			//w.Header().Set("Access-Control-Allow-Origin", "*")
 		} else {
-			w.Header().Set("Access-Control-Allow-Origin", os.Getenv("CLIENT_HOST"))
+			urlsStr := os.Getenv("CLIENT_HOSTS")
+			urlsStr = strings.ReplaceAll(urlsStr, " ", "")
+			urls := strings.Split(urlsStr, ",")
+
+			switch {
+			case contains(r.Header.Get("Origin"), urls):
+				w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
+			}
 		}
 
 		w.Header().Set("Access-Control-Allow-Credentials", "true")
