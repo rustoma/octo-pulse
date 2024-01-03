@@ -51,7 +51,7 @@ func main() {
 	logger.Info().Msg("Files renamed successfully: " + dirPath)
 
 	logger.Info().Msg("Scanning images from the directory: " + dirPath)
-	err = fileService.InsertJPGImagesFromDir(dirPath, 1)
+	err = fileService.InsertJPGImagesFromDir(dirPath, 2)
 	if err != nil {
 		logger.Fatal().Err(err).Send()
 	}

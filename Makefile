@@ -47,4 +47,4 @@ seed: build_seed
 	@./bin/seed
 
 insert_images: build_insert_images_script
-	@./bin/insert_images ./assets/images/panels
+	@./bin/insert_images ./assets/images/roofs
