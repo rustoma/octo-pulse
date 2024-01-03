@@ -10,19 +10,19 @@ import (
 	"github.com/rustoma/octo-pulse/internal/models"
 )
 
-type PostgressAuthorStore struct {
+type PostgresAuthorStore struct {
 	DB        *pgxpool.Pool
 	dbTimeout time.Duration
 }
 
-func NewAuthorStore(DB *pgxpool.Pool) *PostgressAuthorStore {
-	return &PostgressAuthorStore{
+func NewAuthorStore(DB *pgxpool.Pool) *PostgresAuthorStore {
+	return &PostgresAuthorStore{
 		DB:        DB,
 		dbTimeout: time.Second * 20,
 	}
 }
 
-func (s *PostgressAuthorStore) InsertAuthor(author *models.Author) (int, error) {
+func (s *PostgresAuthorStore) InsertAuthor(author *models.Author) (int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), s.dbTimeout)
 	defer cancel()
 
@@ -44,7 +44,7 @@ func (s *PostgressAuthorStore) InsertAuthor(author *models.Author) (int, error) 
 	return authorId, err
 }
 
-func (s *PostgressAuthorStore) GetAuthors() ([]*models.Author, error) {
+func (s *PostgresAuthorStore) GetAuthors() ([]*models.Author, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), s.dbTimeout)
 	defer cancel()
 
@@ -83,7 +83,7 @@ func (s *PostgressAuthorStore) GetAuthors() ([]*models.Author, error) {
 	return authors, err
 }
 
-func (s *PostgressAuthorStore) GetAuthor(id int) (*models.Author, error) {
+func (s *PostgresAuthorStore) GetAuthor(id int) (*models.Author, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), s.dbTimeout)
 	defer cancel()
@@ -123,6 +123,30 @@ func (s *PostgressAuthorStore) GetAuthor(id int) (*models.Author, error) {
 	return author, err
 }
 
+func (s *PostgresAuthorStore) UpdateAuthor(id int, author *models.Author) (int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), s.dbTimeout)
+	defer cancel()
+
+	authorMap := convertAuthorToAuthorMap(author)
+	authorMap["updated_at"] = time.Now().UTC()
+
+	stmt, args, err := pgQb().
+		Update("public.author").
+		SetMap(authorMap).
+		Where(squirrel.Eq{"id": id}).
+		Suffix("RETURNING \"id\"").ToSql()
+
+	if err != nil {
+		logger.Err(err).Send()
+		return 0, err
+	}
+
+	var updatedAuthorId int
+
+	err = s.DB.QueryRow(ctx, stmt, args...).Scan(&updatedAuthorId)
+	return updatedAuthorId, err
+}
+
 func scanToAuthor(rows pgx.Rows) (*models.Author, error) {
 	var author models.Author
 	err := rows.Scan(
@@ -136,4 +160,15 @@ func scanToAuthor(rows pgx.Rows) (*models.Author, error) {
 	)
 
 	return &author, err
+}
+
+func convertAuthorToAuthorMap(author *models.Author) map[string]interface{} {
+	return map[string]interface{}{
+		"first_name":  author.FirstName,
+		"last_name":   author.LastName,
+		"description": author.Description,
+		"image_url":   author.ImageUrl,
+		"created_at":  author.CreatedAt,
+		"updated_at":  author.UpdatedAt,
+	}
 }

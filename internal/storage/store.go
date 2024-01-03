@@ -57,6 +57,7 @@ type AuthorStore interface {
 	InsertAuthor(author *models.Author) (int, error)
 	GetAuthors() ([]*models.Author, error)
 	GetAuthor(id int) (*models.Author, error)
+	UpdateAuthor(id int, author *models.Author) (int, error)
 }
 
 type GetArticlesFilters struct {

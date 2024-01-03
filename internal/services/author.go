@@ -9,6 +9,7 @@ import (
 type AuthorService interface {
 	GetAuthors() ([]*models.Author, error)
 	CreateAuthor(author *models.Author) (int, error)
+	UpdateAuthor(id int, author *models.Author) (int, error)
 }
 
 type authorService struct {
@@ -32,4 +33,13 @@ func (s *authorService) CreateAuthor(author *models.Author) (int, error) {
 	}
 
 	return s.authorStore.InsertAuthor(author)
+}
+
+func (s *authorService) UpdateAuthor(id int, author *models.Author) (int, error) {
+	err := s.authorValidator.Validate(author)
+	if err != nil {
+		return 0, err
+	}
+
+	return s.authorStore.UpdateAuthor(id, author)
 }
