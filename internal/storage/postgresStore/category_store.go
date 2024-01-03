@@ -11,19 +11,19 @@ import (
 	"github.com/rustoma/octo-pulse/internal/models"
 )
 
-type PostgressCategoryStore struct {
+type PostgresCategoryStore struct {
 	DB        *pgxpool.Pool
 	dbTimeout time.Duration
 }
 
-func NewCategoryStore(DB *pgxpool.Pool) *PostgressCategoryStore {
-	return &PostgressCategoryStore{
+func NewCategoryStore(DB *pgxpool.Pool) *PostgresCategoryStore {
+	return &PostgresCategoryStore{
 		DB:        DB,
 		dbTimeout: time.Second * 20,
 	}
 }
 
-func (c *PostgressCategoryStore) InsertCategory(category *models.Category) (int, error) {
+func (c *PostgresCategoryStore) InsertCategory(category *models.Category) (int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), c.dbTimeout)
 	defer cancel()
 
@@ -45,7 +45,7 @@ func (c *PostgressCategoryStore) InsertCategory(category *models.Category) (int,
 	return categoryId, err
 }
 
-func (s *PostgressCategoryStore) GetCategories(filters ...*storage.GetCategoriesFilters) ([]*models.Category, error) {
+func (s *PostgresCategoryStore) GetCategories(filters ...*storage.GetCategoriesFilters) ([]*models.Category, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), s.dbTimeout)
 	defer cancel()
 
@@ -93,7 +93,7 @@ func (s *PostgressCategoryStore) GetCategories(filters ...*storage.GetCategories
 	return categories, err
 }
 
-func (s *PostgressCategoryStore) GetCategory(id int) (*models.Category, error) {
+func (s *PostgresCategoryStore) GetCategory(id int) (*models.Category, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), s.dbTimeout)
 	defer cancel()
 
@@ -132,6 +132,30 @@ func (s *PostgressCategoryStore) GetCategory(id int) (*models.Category, error) {
 	return category, err
 }
 
+func (s *PostgresCategoryStore) UpdateCategory(id int, category *models.Category) (int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), s.dbTimeout)
+	defer cancel()
+
+	categoryMap := convertCategoryToCategoryMap(category)
+	categoryMap["updated_at"] = time.Now().UTC()
+
+	stmt, args, err := pgQb().
+		Update("public.category").
+		SetMap(categoryMap).
+		Where(squirrel.Eq{"id": id}).
+		Suffix("RETURNING \"id\"").ToSql()
+
+	if err != nil {
+		logger.Err(err).Send()
+		return 0, err
+	}
+
+	var updatedCategoryId int
+
+	err = s.DB.QueryRow(ctx, stmt, args...).Scan(&updatedCategoryId)
+	return updatedCategoryId, err
+}
+
 func scanToCategory(rows pgx.Rows) (*models.Category, error) {
 	var category models.Category
 	err := rows.Scan(
@@ -144,4 +168,14 @@ func scanToCategory(rows pgx.Rows) (*models.Category, error) {
 	)
 
 	return &category, err
+}
+
+func convertCategoryToCategoryMap(category *models.Category) map[string]interface{} {
+	return map[string]interface{}{
+		"name":       category.Name,
+		"slug":       category.Slug,
+		"weight":     category.Weight,
+		"created_at": category.CreatedAt,
+		"updated_at": category.UpdatedAt,
+	}
 }

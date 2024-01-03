@@ -13,6 +13,7 @@ type CategoryService interface {
 	GetDomainCategories(domainId int) ([]*models.Category, error)
 	CreateCategory(category *models.Category) (int, error)
 	AssignCategoryToDomain(categoryId int, domainId int) error
+	UpdateCategory(id int, category *models.Category) (int, error)
 }
 
 type categoryService struct {
@@ -65,4 +66,15 @@ func (s *categoryService) CreateCategory(category *models.Category) (int, error)
 
 func (s *categoryService) AssignCategoryToDomain(categoryId int, domainId int) error {
 	return s.categoriesDomainsStore.AssignCategoryToDomain(categoryId, domainId)
+}
+
+func (s *categoryService) UpdateCategory(id int, category *models.Category) (int, error) {
+	category.Slug = slug.Make(category.Name)
+
+	err := s.categoryValidator.Validate(category)
+	if err != nil {
+		return 0, err
+	}
+
+	return s.categoryStore.UpdateCategory(id, category)
 }

@@ -110,3 +110,25 @@ func (c *CategoryController) HandleAssignCategoryToDomain(w http.ResponseWriter,
 
 	return api.WriteJSON(w, http.StatusOK, fmt.Sprintf("Category with ID %d was successfully assing to the Domain with ID %d", request.CategoryId, request.DomainId))
 }
+
+func (c *CategoryController) HandleUpdateCategory(w http.ResponseWriter, r *http.Request) error {
+	var category *models.Category
+
+	categoryIdParam := chi.URLParam(r, "id")
+	categoryId, err := strconv.Atoi(categoryIdParam)
+	if err != nil {
+		return api.Error{Err: "bad request", Status: http.StatusBadRequest}
+	}
+
+	err = api.ReadJSON(w, r, &category)
+	if err != nil {
+		return api.Error{Err: err.Error(), Status: http.StatusBadRequest}
+	}
+
+	updatedCategory, err := c.categoryService.UpdateCategory(categoryId, category)
+	if err != nil {
+		return api.Error{Err: err.Error(), Status: api.HandleErrorStatus(err)}
+	}
+
+	return api.WriteJSON(w, http.StatusOK, updatedCategory)
+}

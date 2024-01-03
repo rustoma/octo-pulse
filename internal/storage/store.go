@@ -45,6 +45,7 @@ type CategoryStore interface {
 	InsertCategory(category *models.Category) (int, error)
 	GetCategories(filters ...*GetCategoriesFilters) ([]*models.Category, error)
 	GetCategory(id int) (*models.Category, error)
+	UpdateCategory(id int, category *models.Category) (int, error)
 }
 
 type CategoriesDomainsStore interface {

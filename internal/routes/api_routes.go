@@ -82,6 +82,7 @@ func NewApiRoutes(controllers ApiControllers, services ApiServices, tasks *tasks
 		r.Get("/categories", api.MakeHTTPHandler(controllers.Category.HandleGetCategories))
 		r.Post("/categories", api.MakeHTTPHandler(controllers.Category.HandleCreateCategory))
 		r.Get("/categories/{id}", api.MakeHTTPHandler(controllers.Category.HandleGetCategory))
+		r.Put("/categories/{id}", api.MakeHTTPHandler(controllers.Category.HandleUpdateCategory))
 
 		r.Post("/domain-categories", api.MakeHTTPHandler(controllers.Category.HandleAssignCategoryToDomain))
 
