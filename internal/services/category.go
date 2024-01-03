@@ -12,6 +12,7 @@ type CategoryService interface {
 	GetCategory(id int) (*models.Category, error)
 	GetDomainCategories(domainId int) ([]*models.Category, error)
 	CreateCategory(category *models.Category) (int, error)
+	AssignCategoryToDomain(categoryId int, domainId int) error
 }
 
 type categoryService struct {
@@ -60,4 +61,8 @@ func (s *categoryService) CreateCategory(category *models.Category) (int, error)
 	}
 
 	return s.categoryStore.InsertCategory(category)
+}
+
+func (s *categoryService) AssignCategoryToDomain(categoryId int, domainId int) error {
+	return s.categoriesDomainsStore.AssignCategoryToDomain(categoryId, domainId)
 }

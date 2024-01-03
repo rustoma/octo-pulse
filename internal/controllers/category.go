@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"github.com/rustoma/octo-pulse/internal/dto"
 	"github.com/rustoma/octo-pulse/internal/models"
 	"github.com/rustoma/octo-pulse/internal/storage"
 	"net/http"
@@ -90,4 +91,22 @@ func (c *CategoryController) HandleCreateCategory(w http.ResponseWriter, r *http
 	}
 
 	return api.WriteJSON(w, http.StatusOK, fmt.Sprintf("Category with ID %d was created successfully", categoryId))
+}
+
+func (c *CategoryController) HandleAssignCategoryToDomain(w http.ResponseWriter, r *http.Request) error {
+	var request *dto.AssignCategoryToDomainRequest
+
+	err := api.ReadJSON(w, r, &request)
+	if err != nil {
+		logger.Err(err).Msg("Bad request")
+		return api.Error{Err: "bad request", Status: http.StatusBadRequest}
+	}
+
+	err = c.categoryService.AssignCategoryToDomain(request.CategoryId, request.DomainId)
+	if err != nil {
+		logger.Err(err).Send()
+		return api.Error{Err: "cannot create category", Status: api.HandleErrorStatus(err)}
+	}
+
+	return api.WriteJSON(w, http.StatusOK, fmt.Sprintf("Category with ID %d was successfully assing to the Domain with ID %d", request.CategoryId, request.DomainId))
 }
