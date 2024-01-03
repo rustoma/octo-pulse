@@ -12,6 +12,7 @@ type BasicPageService interface {
 	GetBasicPage(id int) (*models.BasicPage, error)
 	GetBasicPageBySlug(slug string, filters ...*storage.GetBasicPageBySlugFilters) (*models.BasicPage, error)
 	GetBasicPages(filters ...*storage.GetBasicPagesFilters) ([]*models.BasicPage, error)
+	UpdateBasicPage(id int, basicPage *models.BasicPage) (int, error)
 }
 
 type basicPageService struct {
@@ -45,4 +46,15 @@ func (s *basicPageService) CreateBasicPage(page *models.BasicPage) (int, error) 
 	}
 
 	return s.basicPageStore.InsertBasicPage(page)
+}
+
+func (s *basicPageService) UpdateBasicPage(id int, basicPage *models.BasicPage) (int, error) {
+	basicPage.Slug = slug.Make(basicPage.Title)
+
+	err := s.basicPageValidator.Validate(basicPage)
+	if err != nil {
+		return 0, err
+	}
+
+	return s.basicPageStore.UpdateBasicPage(id, basicPage)
 }

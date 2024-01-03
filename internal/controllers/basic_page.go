@@ -100,3 +100,25 @@ func (c *BasicPageController) HandleCreateBasicPage(w http.ResponseWriter, r *ht
 
 	return api.WriteJSON(w, http.StatusOK, fmt.Sprintf("Basic page with ID %d was created successfully", pageId))
 }
+
+func (c *BasicPageController) HandleUpdateBasicPage(w http.ResponseWriter, r *http.Request) error {
+	var basicPage *models.BasicPage
+
+	basicPageIdParam := chi.URLParam(r, "id")
+	basicPageId, err := strconv.Atoi(basicPageIdParam)
+	if err != nil {
+		return api.Error{Err: "bad request", Status: http.StatusBadRequest}
+	}
+
+	err = api.ReadJSON(w, r, &basicPage)
+	if err != nil {
+		return api.Error{Err: err.Error(), Status: http.StatusBadRequest}
+	}
+
+	updatedBasicPage, err := c.basicPageService.UpdateBasicPage(basicPageId, basicPage)
+	if err != nil {
+		return api.Error{Err: err.Error(), Status: api.HandleErrorStatus(err)}
+	}
+
+	return api.WriteJSON(w, http.StatusOK, updatedBasicPage)
+}

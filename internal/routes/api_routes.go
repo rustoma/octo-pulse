@@ -102,6 +102,7 @@ func NewApiRoutes(controllers ApiControllers, services ApiServices, tasks *tasks
 		r.Get("/basic-pages", api.MakeHTTPHandler(controllers.BasicPage.HandleGetBasicPages))
 		r.Post("/basic-pages", api.MakeHTTPHandler(controllers.BasicPage.HandleCreateBasicPage))
 		r.Get("/basic-pages/{id}", api.MakeHTTPHandler(controllers.BasicPage.HandleGetBasicPage))
+		r.Put("/basic-pages/{id}", api.MakeHTTPHandler(controllers.BasicPage.HandleUpdateBasicPage))
 	})
 
 	return r

@@ -117,4 +117,5 @@ type BasicPageStore interface {
 	GetBasicPages(filters ...*GetBasicPagesFilters) ([]*models.BasicPage, error)
 	GetBasicPage(id int) (*models.BasicPage, error)
 	GetBasicPageBySlug(slug string, filters ...*GetBasicPageBySlugFilters) (*models.BasicPage, error)
+	UpdateBasicPage(id int, basicPage *models.BasicPage) (int, error)
 }

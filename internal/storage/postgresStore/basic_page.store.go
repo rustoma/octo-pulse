@@ -180,6 +180,30 @@ func (s *PostgresBasicPageStore) GetBasicPageBySlug(slug string, filters ...*sto
 	return page, err
 }
 
+func (s *PostgresBasicPageStore) UpdateBasicPage(id int, basicPage *models.BasicPage) (int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), s.dbTimeout)
+	defer cancel()
+
+	basicPageMap := convertBasicPageToBasicPageMap(basicPage)
+	basicPageMap["updated_at"] = time.Now().UTC()
+
+	stmt, args, err := pgQb().
+		Update("public.basic_page").
+		SetMap(basicPageMap).
+		Where(squirrel.Eq{"id": id}).
+		Suffix("RETURNING \"id\"").ToSql()
+
+	if err != nil {
+		logger.Err(err).Send()
+		return 0, err
+	}
+
+	var updatedBasicPageId int
+
+	err = s.DB.QueryRow(ctx, stmt, args...).Scan(&updatedBasicPageId)
+	return updatedBasicPageId, err
+}
+
 func scanToBasicPage(rows pgx.Rows) (*models.BasicPage, error) {
 	var page models.BasicPage
 	err := rows.Scan(
@@ -193,4 +217,15 @@ func scanToBasicPage(rows pgx.Rows) (*models.BasicPage, error) {
 	)
 
 	return &page, err
+}
+
+func convertBasicPageToBasicPageMap(basicPage *models.BasicPage) map[string]interface{} {
+	return map[string]interface{}{
+		"title":      basicPage.Title,
+		"slug":       basicPage.Slug,
+		"body":       basicPage.Body,
+		"domain":     basicPage.Domain,
+		"created_at": basicPage.CreatedAt,
+		"updated_at": basicPage.UpdatedAt,
+	}
 }
