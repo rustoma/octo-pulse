@@ -81,3 +81,25 @@ func (c *DomainController) HandleCreateDomain(w http.ResponseWriter, r *http.Req
 
 	return api.WriteJSON(w, http.StatusOK, fmt.Sprintf("Domain with ID %d was created successfully", domainId))
 }
+
+func (c *DomainController) HandleUpdateDomain(w http.ResponseWriter, r *http.Request) error {
+	var domain *models.Domain
+
+	domainIdParam := chi.URLParam(r, "id")
+	domainId, err := strconv.Atoi(domainIdParam)
+	if err != nil {
+		return api.Error{Err: "bad request", Status: http.StatusBadRequest}
+	}
+
+	err = api.ReadJSON(w, r, &domain)
+	if err != nil {
+		return api.Error{Err: err.Error(), Status: http.StatusBadRequest}
+	}
+
+	updatedAuthor, err := c.domainService.UpdateDomain(domainId, domain)
+	if err != nil {
+		return api.Error{Err: err.Error(), Status: api.HandleErrorStatus(err)}
+	}
+
+	return api.WriteJSON(w, http.StatusOK, updatedAuthor)
+}

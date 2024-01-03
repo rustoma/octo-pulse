@@ -11,20 +11,20 @@ import (
 	"github.com/rustoma/octo-pulse/internal/models"
 )
 
-type PostgressDomainStore struct {
+type PostgresDomainStore struct {
 	DB        *pgxpool.Pool
 	dbTimeout time.Duration
 }
 
-func NewDomainStore(DB *pgxpool.Pool) *PostgressDomainStore {
-	return &PostgressDomainStore{
+func NewDomainStore(DB *pgxpool.Pool) *PostgresDomainStore {
+	return &PostgresDomainStore{
 		DB:        DB,
 		dbTimeout: time.Second * 20,
 	}
 }
 
-func (d *PostgressDomainStore) InsertDomain(domain *models.Domain) (int, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), d.dbTimeout)
+func (s *PostgresDomainStore) InsertDomain(domain *models.Domain) (int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), s.dbTimeout)
 	defer cancel()
 
 	stmt, args, err := pgQb().
@@ -41,11 +41,11 @@ func (d *PostgressDomainStore) InsertDomain(domain *models.Domain) (int, error) 
 
 	var domainId int
 
-	err = d.DB.QueryRow(ctx, stmt, args...).Scan(&domainId)
+	err = s.DB.QueryRow(ctx, stmt, args...).Scan(&domainId)
 	return domainId, err
 }
 
-func (s *PostgressDomainStore) GetDomains() ([]*models.Domain, error) {
+func (s *PostgresDomainStore) GetDomains() ([]*models.Domain, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), s.dbTimeout)
 	defer cancel()
 
@@ -83,7 +83,7 @@ func (s *PostgressDomainStore) GetDomains() ([]*models.Domain, error) {
 	return domains, err
 }
 
-func (s *PostgressDomainStore) GetDomain(id int) (*models.Domain, error) {
+func (s *PostgresDomainStore) GetDomain(id int) (*models.Domain, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), s.dbTimeout)
 	defer cancel()
 
@@ -122,7 +122,7 @@ func (s *PostgressDomainStore) GetDomain(id int) (*models.Domain, error) {
 	return domain, err
 }
 
-func (s *PostgressDomainStore) GetDomainPublicData(id int) (*dto.DomainPublicData, error) {
+func (s *PostgresDomainStore) GetDomainPublicData(id int) (*dto.DomainPublicData, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), s.dbTimeout)
 	defer cancel()
 
@@ -165,6 +165,30 @@ func (s *PostgressDomainStore) GetDomainPublicData(id int) (*dto.DomainPublicDat
 	return domainPublicData, err
 }
 
+func (s *PostgresDomainStore) UpdateDomain(id int, domain *models.Domain) (int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), s.dbTimeout)
+	defer cancel()
+
+	domainMap := convertDomainToDomainMap(domain)
+	domainMap["updated_at"] = time.Now().UTC()
+
+	stmt, args, err := pgQb().
+		Update("public.domain").
+		SetMap(domainMap).
+		Where(squirrel.Eq{"id": id}).
+		Suffix("RETURNING \"id\"").ToSql()
+
+	if err != nil {
+		logger.Err(err).Send()
+		return 0, err
+	}
+
+	var updatedDomainId int
+
+	err = s.DB.QueryRow(ctx, stmt, args...).Scan(&updatedDomainId)
+	return updatedDomainId, err
+}
+
 func scanToDomain(rows pgx.Rows) (*models.Domain, error) {
 	var domain models.Domain
 	err := rows.Scan(
@@ -176,4 +200,13 @@ func scanToDomain(rows pgx.Rows) (*models.Domain, error) {
 	)
 
 	return &domain, err
+}
+
+func convertDomainToDomainMap(domain *models.Domain) map[string]interface{} {
+	return map[string]interface{}{
+		"name":       domain.Name,
+		"email":      domain.Email,
+		"created_at": domain.CreatedAt,
+		"updated_at": domain.UpdatedAt,
+	}
 }

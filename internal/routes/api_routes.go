@@ -67,6 +67,7 @@ func NewApiRoutes(controllers ApiControllers, services ApiServices, tasks *tasks
 		r.Get("/domains", api.MakeHTTPHandler(controllers.Domain.HandleGetDomains))
 		r.Post("/domains", api.MakeHTTPHandler(controllers.Domain.HandleCreateDomain))
 		r.Get("/domains/{id}", api.MakeHTTPHandler(controllers.Domain.HandleGetDomain))
+		r.Put("/domains/{id}", api.MakeHTTPHandler(controllers.Domain.HandleUpdateDomain))
 
 		r.Get("/domain-categories/{id}", api.MakeHTTPHandler(controllers.Category.HandleGetDomainCategories))
 

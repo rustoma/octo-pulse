@@ -12,6 +12,7 @@ type DomainService interface {
 	GetDomain(id int) (*models.Domain, error)
 	GetDomainPublicData(id int) (*dto.DomainPublicData, error)
 	CreateDomain(domain *models.Domain) (int, error)
+	UpdateDomain(id int, domain *models.Domain) (int, error)
 }
 
 type domainService struct {
@@ -43,4 +44,13 @@ func (s *domainService) CreateDomain(domain *models.Domain) (int, error) {
 
 func (s *domainService) GetDomainPublicData(id int) (*dto.DomainPublicData, error) {
 	return s.domainStore.GetDomainPublicData(id)
+}
+
+func (s *domainService) UpdateDomain(id int, domain *models.Domain) (int, error) {
+	err := s.domainValidator.Validate(domain)
+	if err != nil {
+		return 0, err
+	}
+
+	return s.domainStore.UpdateDomain(id, domain)
 }
