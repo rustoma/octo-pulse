@@ -16,8 +16,8 @@ func newAuthorValidator(validate *validator.Validate) *authorValidator {
 	}
 }
 
-func (v *authorValidator) Validate(domain *models.Author) error {
-	err := v.validate.Struct(domain)
+func (v *authorValidator) Validate(author *models.Author) error {
+	err := v.validate.Struct(author)
 	if err != nil {
 		return errors.BadRequest{Err: err.Error()}
 	}
