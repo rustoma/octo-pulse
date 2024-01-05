@@ -218,6 +218,7 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 				"Maksymalnie zastosuj dla każdego nagłówka 3 podrzędne nagłówki. \n" +
 				"Nie pisz nic o tym gdzie kupić towar. \n" +
 				"Nie pisz nic o umowach. \n" +
+				"Nagłówki i podnagłówki powinny być w języku polskim. \n" +
 				"Zwróć poprawny json string na wzór: \n\n" +
 				"{\"mainTitle:\"" + question.Question + ", \"subtitles\": [{\"title\": \"Subtitle1\", \"subtitles\": [\"Subtitle1\", \"Subtitle2\"]},{\"title\": \"Subtitle2\", \"subtitles\": [\"Subtitle1\", \"Subtitle2\"]}]}" + "\n\n" +
 				"Nie dodawaj znaczników '\n'. Wszystko zwróć w jedej linii",
@@ -255,7 +256,7 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 		},
 			{
 				Role: openai.ChatMessageRoleUser,
-				Content: "Wyobraź sobie, że jesteś doświadczonym copywriterem z perfekcyjną znajomością języka polskiego. " +
+				Content: "Wyobraź sobie, że jesteś doświadczonym copywriterem z perfekcyjną znajomością języka polskiego. Podsumowanie, które zwrócisz powinno być w języku polskim." +
 					"Twoim celem jest stworzenie na podstawie tekstu, który podałeś podsumowania z najważniejszymi treścami pisanego jakby był to nowy artykuł, który będzie wykrozystany jako kontekst przy pisaniu artykułu do którego spis treści wygląda następująco: " + agenda,
 			},
 		}
@@ -283,6 +284,7 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 		Content: "Wyobraź sobie, że jesteś doświadczonym copywriterem z perfekcyjną znajomością języka polskiego. " +
 			"Twoim celem jest stworzyć 100% oryginalny, zoptymalizowany pod względem SEO artykuł, który czyta się jak napisany przez człowieka. " +
 			"Styl odpowiedzi powinien być profesjonalny. Będzie to artykuł gdzie odbiorca będzie mógł zaczerpnąć informacji. \n\n" +
+			"Artykuł powinien być w języku polskim. \n\n" +
 			"Na podstawie zadanego tytułu zwróć krótki wstęp do artykułu. \n\n" +
 			"Podtytułami dla tego artykułu będą podtytuły jak w poniższej tablicy: \n\n" +
 			fmt.Sprintf("%+v", articleAgenda.Subtitles) + "\n\n" +
@@ -325,6 +327,7 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 				Content: "Wyobraź sobie, że jesteś doświadczonym copywriterem z perfekcyjną znajomością języka polskiego. " +
 					"Twoim celem jest stworzyć 100% oryginalny, zoptymalizowany pod względem SEO artykuł, który czyta się jak napisany przez człowieka. " +
 					"Styl odpowiedzi powinien być profesjonalny. Będzie to artykuł gdzie odbiorca będzie mógł zaczerpnąć informacji. \n\n" +
+					"Artykuł powinien być w języku polskim. \n\n" +
 					"Rozwiń zadany podtytuł. \n\n" +
 					"Podtytułami dla zadanego podtytułu będą podtytuły jak w poniższej tablicy: \n\n" +
 					fmt.Sprintf("%+v", subtitle.Subtitles) + "\n\n" +
@@ -382,6 +385,7 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 						Content: "Wyobraź sobie, że jesteś doświadczonym copywriterem z perfekcyjną znajomością języka polskiego. " +
 							"Twoim celem jest stworzyć 100% oryginalny, zoptymalizowany pod względem SEO artykuł, który czyta się jak napisany przez człowieka. " +
 							"Styl odpowiedzi powinien być profesjonalny. Będzie to artykuł gdzie odbiorca będzie mógł zaczerpnąć informacji. \n\n" +
+							"Artykuł powinien być w języku polskim. \n\n" +
 							"Rozwiń zadany podtytuł. \n\n" +
 							"Zadany tytuł jest to podtytuł tytułu nadrzędnego jak poniżej: \n\n" +
 							subtitle.Title + "\n\n" +
@@ -410,6 +414,7 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 						Content: "Wyobraź sobie, że jesteś doświadczonym copywriterem z perfekcyjną znajomością języka polskiego. " +
 							"Twoim celem jest stworzyć 100% oryginalny, zoptymalizowany pod względem SEO artykuł, który czyta się jak napisany przez człowieka. " +
 							"Styl odpowiedzi powinien być profesjonalny. Będzie to artykuł gdzie odbiorca będzie mógł zaczerpnąć informacji. \n\n" +
+							"Artykuł powinien być w języku polskim. \n\n" +
 							"Rozwiń zadany podtytuł. \n\n" +
 							"Zadany tytuł jest to podtytuł tytułu nadrzędnego jak poniżej: \n\n" +
 							subtitle.Title + "\n\n" +
