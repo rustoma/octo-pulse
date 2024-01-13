@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
 	lr "github.com/rustoma/octo-pulse/internal/logger"
@@ -10,15 +9,30 @@ import (
 	postgresstore "github.com/rustoma/octo-pulse/internal/storage/postgresStore"
 	"os"
 	"path/filepath"
+	"strconv"
 )
 
 func main() {
 
 	dirPath := os.Args[1]
+	imageCatIdParam := os.Args[2]
 
 	//Init logger
 	logger, logFile := lr.NewLogger()
 	defer logFile.Close()
+
+	if dirPath == "" {
+		logger.Fatal().Msg("dir path is missing")
+	}
+
+	if imageCatIdParam == "" {
+		logger.Fatal().Msg("image cat id is missing")
+	}
+
+	imageCatId, err := strconv.Atoi(imageCatIdParam)
+	if err != nil {
+		logger.Fatal().Msg("image cat id wrong format")
+	}
 
 	//Init .env
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
@@ -34,7 +48,6 @@ func main() {
 	dbpool, err := pgxpool.New(context.Background(), os.Getenv("DATABASE_URL"))
 
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		logger.Fatal().Err(err).Send()
 	}
 
@@ -51,7 +64,7 @@ func main() {
 	logger.Info().Msg("Files renamed successfully: " + dirPath)
 
 	logger.Info().Msg("Scanning images from the directory: " + dirPath)
-	err = fileService.InsertJPGImagesFromDir(dirPath, 2)
+	err = fileService.InsertJPGImagesFromDir(dirPath, imageCatId)
 	if err != nil {
 		logger.Fatal().Err(err).Send()
 	}
