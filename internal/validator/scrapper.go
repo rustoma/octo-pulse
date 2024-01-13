@@ -19,14 +19,12 @@ func newScrapperValidator(validate *validator.Validate) *scrapperValidator {
 type ScrapperValidation struct {
 	Question string `validate:"required"`
 	Answear  string `validate:"required"`
-	Href     string `validate:"required"`
 }
 
 func (v *scrapperValidator) Validate(question *models.Question) error {
 	propertiesToValidate := ScrapperValidation{
 		Question: question.Question,
 		Answear:  question.Answer,
-		Href:     question.Href,
 	}
 
 	err := v.validate.Struct(propertiesToValidate)
