@@ -116,23 +116,26 @@ func (s *articleService) RemoveDuplicateHeadingsFromArticle(articleId int) error
 				// Check if startIndex is valid
 				if startIndex >= 0 {
 					lastCharacters := matches[0][startIndex:]
+					logger.Info().Interface("HTML with heading to remove: ", modifiedHTML).Send()
+					logger.Info().Interface("match to replace: ", matches[0]).Send()
+					logger.Info().Interface("lastCharacters: ", lastCharacters).Send()
 					modifiedHTML = strings.Replace(modifiedHTML, matches[0], lastCharacters, 1)
 				} else {
 					fmt.Println("Input string is too short.")
 				}
 
-			}
+				logger.Info().Interface("modifiedHTML: ", modifiedHTML).Send()
+				article.Body = modifiedHTML
 
-			article.Body = modifiedHTML
+				_, err := s.UpdateArticle(article.ID, article)
+				if err != nil {
+					return err
+				}
 
-			_, err := s.UpdateArticle(article.ID, article)
-			if err != nil {
-				return err
-			}
-
-			err = s.RemoveDuplicateHeadingsFromArticle(articleId)
-			if err != nil {
-				return err
+				err = s.RemoveDuplicateHeadingsFromArticle(articleId)
+				if err != nil {
+					return err
+				}
 			}
 		} else {
 			headingMap[match] = true

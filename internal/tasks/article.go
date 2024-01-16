@@ -179,8 +179,6 @@ func (t articleTasks) HandleGenerateArticles(ctx context.Context, task *asynq.Ta
 		return err
 	}
 
-	logger.Info().Interface("Domain categories", domainCategories).Send()
-
 	//---------------------
 
 	createdArticles := 0
