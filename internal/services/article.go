@@ -104,7 +104,7 @@ func (s *articleService) RemoveDuplicateHeadingsFromArticle(articleId int) error
 		if headingMap[match] {
 
 			logger.Info().Interface("Heading to remove: ", match).Send()
-			pattern := match + `(.*?)(<h[1-6][^>]*>|$)`
+			pattern := utils.EscapeSpecialCharacters(match) + `(.*?)(<h[1-6][^>]*>|$)`
 			re := regexp.MustCompile(pattern)
 			matches := re.FindAllString(utils.RemoveMultipleSpaces(htmlString), -1)
 			modifiedHTML := utils.RemoveMultipleSpaces(htmlString)

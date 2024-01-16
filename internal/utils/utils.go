@@ -56,3 +56,15 @@ func RemoveMultipleSpaces(text string) string {
 	// Replace multiple whitespaces with a single space
 	return reg.ReplaceAllString(trimmedText, " ") + "\n\n"
 }
+
+func EscapeSpecialCharacters(input string) string {
+	// List of special characters that need to be escaped in a regular expression
+	specialCharacters := []string{`\`, ".", "?", "+", "*", "|", "(", ")", "[", "]", "{", "}", "^", "$"}
+
+	// Escape each special character in the input string
+	for _, char := range specialCharacters {
+		input = strings.ReplaceAll(input, char, "\\"+char)
+	}
+
+	return input
+}
