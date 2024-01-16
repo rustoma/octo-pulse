@@ -226,12 +226,16 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 
 	agenda, err := c.ask(messages)
 	if err != nil {
+		logger.Info().Interface("Agenda: ", agenda).Send()
+		logger.Err(err).Msg("Incorrect agenda format")
 		return "", err
 	}
 
 	var articleAgenda ArticleAgenda
 	err = json.Unmarshal([]byte(agenda), &articleAgenda)
 	if err != nil {
+		logger.Info().Interface("Agenda: ", agenda).Send()
+		logger.Err(err).Msg("Cannot Unmarshal agenda")
 		return "", err
 	}
 
