@@ -134,8 +134,6 @@ func (s *SqlScrapperStore) GetQuestion(id int) (*models.Question, error) {
 
 	question.PageContents = questionPageContents
 
-	logger.Info().Interface("Question db: ", question).Send()
-
 	return question, nil
 }
 

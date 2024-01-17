@@ -221,6 +221,8 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 				"Nagłówki i podnagłówki powinny być w języku polskim. \n" +
 				"Zwróć poprawny json string na wzór: \n\n" +
 				"{\"mainTitle:\"" + question.Question + ", \"subtitles\": [{\"title\": \"Subtitle1\", \"subtitles\": [\"Subtitle1\", \"Subtitle2\"]},{\"title\": \"Subtitle2\", \"subtitles\": [\"Subtitle1\", \"Subtitle2\"]}]}" + "\n\n" +
+				"Zwróć wyłącznie obiekt, gotowy do serializacji. \n" +
+				"Nie dodawaj na początku ```json\\n. Twoja odpowiedź powinna zacząć się od { \n" +
 				"Nie dodawaj znaczników '\n'. Wszystko zwróć w jedej linii",
 		})
 
