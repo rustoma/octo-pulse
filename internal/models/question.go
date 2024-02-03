@@ -27,5 +27,6 @@ type QuestionPageContent struct {
 type QuestionCategory struct {
 	IdCategory  int    `json:"idCategory"`
 	Name        string `json:"name"`
+	Language    string `json:"language"`
 	DateCreated string `json:"dateCreated"`
 }

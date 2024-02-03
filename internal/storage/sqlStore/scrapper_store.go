@@ -286,6 +286,7 @@ func scanToQuestionCategory(rows *sql.Rows) (*models.QuestionCategory, error) {
 	err := rows.Scan(
 		&category.IdCategory,
 		&category.Name,
+		&category.Language,
 		&category.DateCreated,
 	)
 
