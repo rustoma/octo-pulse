@@ -12,7 +12,7 @@ require (
 	github.com/jackc/pgx/v5 v5.4.3
 	github.com/joho/godotenv v1.5.1
 	github.com/rs/zerolog v1.30.0
-	github.com/sashabaranov/go-openai v1.17.5
+	github.com/sashabaranov/go-openai v1.24.0
 	golang.org/x/crypto v0.13.0
 )
 
