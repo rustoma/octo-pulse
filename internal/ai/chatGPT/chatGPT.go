@@ -215,7 +215,7 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 				"Nie odbiegaj od głównego tematu. \n" +
 				"Ogranicz wygenerowany obiekt do kilku najważniejszych nagłówków i podrzędnych nagłówków. \n" +
 				"Maksymalnie zastosuj cztery nagłówki. \n" +
-				"Maksymalnie zastosuj dla każdego nagłówka 3 podrzędne nagłówki. \n" +
+				"Maksymalnie zastosuj dla każdego nagłówka 2 podrzędne nagłówki. \n" +
 				"Nie pisz nic o tym gdzie kupić towar. \n" +
 				"Nie pisz nic o umowach. \n" +
 				"Nagłówki i podnagłówki powinny być w języku polskim. \n" +
@@ -530,7 +530,7 @@ func (c *chatGPT) retry(messages []openai.ChatCompletionMessage, retriesLimit in
 }
 
 func (c *chatGPT) ask(messages []openai.ChatCompletionMessage, model ...string) (string, error) {
-	chatCompletionModel := openai.GPT4TurboPreview
+	chatCompletionModel := openai.GPT4o
 	if len(model) > 0 {
 		chatCompletionModel = model[0]
 	}
