@@ -24,7 +24,7 @@ go.work
 
 .idea
 .env
-.env-prod
+__env-prod
 
 .DS_Store
 .vercel
