@@ -25,7 +25,7 @@ migration_go_to:
 	migrate -path internal/db/migrations/ -database "postgresql://${dbuser}@${host}:${dbport}/${dbname}?sslmode=disable" -verbose goto VERSION
 
 migration_create:
-	migrate create -ext sql -dir internal/db/migrations -seq change_many_to_many_to_one_to_many_categories_domains
+	migrate create -ext sql -dir internal/db/migrations -seq drop_unique_index_for_cat_name_and_add_new_one
 
 task_monit:
 	./asynqmon --port=9090 --redis-password=${REDIS_PASSWORD}
