@@ -69,6 +69,7 @@ type GetArticlesFilters struct {
 	Featured    string
 	Slug        string
 	ExcludeBody string
+	IsPublished string
 }
 
 type ArticleStore interface {

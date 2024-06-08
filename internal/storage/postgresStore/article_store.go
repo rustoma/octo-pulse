@@ -130,6 +130,19 @@ func (s *PostgressArticleStore) GetArticles(filters ...*storage.GetArticlesFilte
 			})
 	}
 
+	if len(filters) > 0 && (filters[0].IsPublished == "true" || filters[0].IsPublished == "false") {
+		isPublished := false
+
+		if filters[0].IsPublished == "true" {
+			isPublished = true
+		}
+
+		articlesStmt = articlesStmt.Where(
+			squirrel.And{
+				squirrel.Eq{"is_published": isPublished},
+			})
+	}
+
 	stmt, args, err := articlesStmt.ToSql()
 
 	if err != nil {

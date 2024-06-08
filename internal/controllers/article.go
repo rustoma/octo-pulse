@@ -73,6 +73,7 @@ func (c *ArticleController) HandleGetArticles(w http.ResponseWriter, r *http.Req
 	featuredParam := r.URL.Query().Get("featured")
 	slug := r.URL.Query().Get("slug")
 	excludeBodyParam := r.URL.Query().Get("excludeBody")
+	isPublished := r.URL.Query().Get("isPublished")
 
 	var filters storage.GetArticlesFilters
 
@@ -122,6 +123,10 @@ func (c *ArticleController) HandleGetArticles(w http.ResponseWriter, r *http.Req
 
 	if slug != "" {
 		filters.Slug = slug
+	}
+
+	if isPublished == "true" || isPublished == "false" {
+		filters.IsPublished = isPublished
 	}
 
 	articles, err := c.articleService.GetArticles(&filters)
