@@ -9,4 +9,5 @@ type Category struct {
 	Weight    int       `json:"weight"`
 	CreatedAt time.Time `json:"createdAt" validate:"required"`
 	UpdatedAt time.Time `json:"updatedAt" validate:"required"`
+	DomainId  int       `json:"domainId" validate:"required"`
 }

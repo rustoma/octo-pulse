@@ -35,21 +35,10 @@ func (s *categoryService) GetCategory(id int) (*models.Category, error) {
 }
 
 func (s *categoryService) GetDomainCategories(domainId int) ([]*models.Category, error) {
-	categoryIds, err := s.categoriesDomainsStore.GetDomainCategories(domainId)
-	if err != nil {
-		return nil, err
-	}
+	var filters storage.GetCategoriesFilters
+	filters.DomainId = domainId
 
-	var categories []*models.Category
-	for _, categoryId := range categoryIds {
-		category, err := s.categoryStore.GetCategory(categoryId)
-		if err != nil {
-			return nil, err
-		}
-		categories = append(categories, category)
-	}
-
-	return categories, nil
+	return s.categoryStore.GetCategories(&filters)
 }
 
 func (s *categoryService) CreateCategory(category *models.Category) (int, error) {

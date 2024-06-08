@@ -39,7 +39,8 @@ type DomainStore interface {
 }
 
 type GetCategoriesFilters struct {
-	Slug string
+	Slug     string
+	DomainId int
 }
 
 type CategoryStore interface {

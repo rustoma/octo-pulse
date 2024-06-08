@@ -25,11 +25,21 @@ func NewCategoryController(categoryService services.CategoryService) *CategoryCo
 
 func (c *CategoryController) HandleGetCategories(w http.ResponseWriter, r *http.Request) error {
 	slug := r.URL.Query().Get("slug")
+	domainId := r.URL.Query().Get("domainId")
 
 	var filters storage.GetCategoriesFilters
 
 	if slug != "" {
 		filters.Slug = slug
+	}
+
+	if domainId != "" {
+		domainId, err := strconv.Atoi(domainId)
+		if err != nil {
+			return api.Error{Err: "bad request - domainId wrong format", Status: http.StatusBadRequest}
+		}
+
+		filters.DomainId = domainId
 	}
 
 	categories, err := c.categoryService.GetCategories(&filters)

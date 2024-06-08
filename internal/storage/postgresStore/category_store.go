@@ -29,8 +29,8 @@ func (c *PostgresCategoryStore) InsertCategory(category *models.Category) (int, 
 
 	stmt, args, err := pgQb().
 		Insert("public.category").
-		Columns("name, slug, weight, created_at, updated_at").
-		Values(category.Name, category.Slug, category.Weight, time.Now().UTC(), time.Now().UTC()).
+		Columns("name, slug, weight, created_at, updated_at, domain_id").
+		Values(category.Name, category.Slug, category.Weight, time.Now().UTC(), time.Now().UTC(), category.DomainId).
 		Suffix("RETURNING \"id\"").
 		ToSql()
 
@@ -59,6 +59,13 @@ func (s *PostgresCategoryStore) GetCategories(filters ...*storage.GetCategoriesF
 		categoriesStmt = categoriesStmt.Where(
 			squirrel.And{
 				squirrel.Eq{"slug": filters[0].Slug},
+			})
+	}
+
+	if len(filters) > 0 && filters[0].DomainId != 0 {
+		categoriesStmt = categoriesStmt.Where(
+			squirrel.And{
+				squirrel.Eq{"domain_id": filters[0].DomainId},
 			})
 	}
 
@@ -165,6 +172,7 @@ func scanToCategory(rows pgx.Rows) (*models.Category, error) {
 		&category.Weight,
 		&category.CreatedAt,
 		&category.UpdatedAt,
+		&category.DomainId,
 	)
 
 	return &category, err
@@ -177,5 +185,6 @@ func convertCategoryToCategoryMap(category *models.Category) map[string]interfac
 		"weight":     category.Weight,
 		"created_at": category.CreatedAt,
 		"updated_at": category.UpdatedAt,
+		"domain_id":  category.DomainId,
 	}
 }
