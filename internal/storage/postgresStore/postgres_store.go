@@ -11,30 +11,28 @@ import (
 var logger *zerolog.Logger
 
 type PostgressStore struct {
-	User              storage.UserStore
-	Role              storage.RoleStore
-	Domain            storage.DomainStore
-	Category          storage.CategoryStore
-	Author            storage.AuthorStore
-	Article           storage.ArticleStore
-	CategoriesDomains storage.CategoriesDomainsStore
-	Image             storage.ImageStorageStore
-	ImageCategory     storage.ImageCategoryStore
-	BasicPage         storage.BasicPageStore
+	User          storage.UserStore
+	Role          storage.RoleStore
+	Domain        storage.DomainStore
+	Category      storage.CategoryStore
+	Author        storage.AuthorStore
+	Article       storage.ArticleStore
+	Image         storage.ImageStorageStore
+	ImageCategory storage.ImageCategoryStore
+	BasicPage     storage.BasicPageStore
 }
 
 func NewPostgresStorage(DB *pgxpool.Pool) *PostgressStore {
 	return &PostgressStore{
-		User:              NewUserStore(DB),
-		Role:              NewRoleStore(DB),
-		Domain:            NewDomainStore(DB),
-		Category:          NewCategoryStore(DB),
-		Author:            NewAuthorStore(DB),
-		Article:           NewArticleStore(DB, NewCategoryStore(DB), NewImageStorageStore(DB), NewAuthorStore(DB)),
-		CategoriesDomains: NewCategoriesDomainsStore(DB),
-		Image:             NewImageStorageStore(DB),
-		ImageCategory:     NewImageCategoryStore(DB),
-		BasicPage:         NewBasicPageStore(DB),
+		User:          NewUserStore(DB),
+		Role:          NewRoleStore(DB),
+		Domain:        NewDomainStore(DB),
+		Category:      NewCategoryStore(DB),
+		Author:        NewAuthorStore(DB),
+		Article:       NewArticleStore(DB, NewCategoryStore(DB), NewImageStorageStore(DB), NewAuthorStore(DB)),
+		Image:         NewImageStorageStore(DB),
+		ImageCategory: NewImageCategoryStore(DB),
+		BasicPage:     NewBasicPageStore(DB),
 	}
 }
 

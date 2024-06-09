@@ -6,17 +6,16 @@ import (
 )
 
 type Store struct {
-	User              UserStore
-	Role              RoleStore
-	Domain            DomainStore
-	Category          CategoryStore
-	Author            AuthorStore
-	Article           ArticleStore
-	CategoriesDomains CategoriesDomainsStore
-	Scrapper          ScrapperStore
-	Image             ImageStorageStore
-	ImageCategory     ImageCategoryStore
-	BasicPage         BasicPageStore
+	User          UserStore
+	Role          RoleStore
+	Domain        DomainStore
+	Category      CategoryStore
+	Author        AuthorStore
+	Article       ArticleStore
+	Scrapper      ScrapperStore
+	Image         ImageStorageStore
+	ImageCategory ImageCategoryStore
+	BasicPage     BasicPageStore
 }
 
 type UserStore interface {
@@ -48,11 +47,6 @@ type CategoryStore interface {
 	GetCategories(filters ...*GetCategoriesFilters) ([]*models.Category, error)
 	GetCategory(id int) (*models.Category, error)
 	UpdateCategory(id int, category *models.Category) (int, error)
-}
-
-type CategoriesDomainsStore interface {
-	AssignCategoryToDomain(categoryId int, domainId int) error
-	GetDomainCategories(domainId int) ([]int, error)
 }
 
 type AuthorStore interface {

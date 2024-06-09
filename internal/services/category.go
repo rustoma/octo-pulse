@@ -12,18 +12,16 @@ type CategoryService interface {
 	GetCategory(id int) (*models.Category, error)
 	GetDomainCategories(domainId int) ([]*models.Category, error)
 	CreateCategory(category *models.Category) (int, error)
-	AssignCategoryToDomain(categoryId int, domainId int) error
 	UpdateCategory(id int, category *models.Category) (int, error)
 }
 
 type categoryService struct {
-	categoryStore          storage.CategoryStore
-	categoriesDomainsStore storage.CategoriesDomainsStore
-	categoryValidator      validator.CategoryValidatorer
+	categoryStore     storage.CategoryStore
+	categoryValidator validator.CategoryValidatorer
 }
 
-func NewCategoryService(categoryStore storage.CategoryStore, categoriesDomainsStore storage.CategoriesDomainsStore, categoryValidator validator.CategoryValidatorer) CategoryService {
-	return &categoryService{categoryStore: categoryStore, categoriesDomainsStore: categoriesDomainsStore, categoryValidator: categoryValidator}
+func NewCategoryService(categoryStore storage.CategoryStore, categoryValidator validator.CategoryValidatorer) CategoryService {
+	return &categoryService{categoryStore: categoryStore, categoryValidator: categoryValidator}
 }
 
 func (s *categoryService) GetCategories(filters ...*storage.GetCategoriesFilters) ([]*models.Category, error) {
@@ -51,10 +49,6 @@ func (s *categoryService) CreateCategory(category *models.Category) (int, error)
 	}
 
 	return s.categoryStore.InsertCategory(category)
-}
-
-func (s *categoryService) AssignCategoryToDomain(categoryId int, domainId int) error {
-	return s.categoriesDomainsStore.AssignCategoryToDomain(categoryId, domainId)
 }
 
 func (s *categoryService) UpdateCategory(id int, category *models.Category) (int, error) {

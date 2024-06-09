@@ -90,50 +90,56 @@ func main() {
 		logger.Fatal().Err(err).Send()
 	}
 
-	installationOfPanelsCategory := fixtures.CreateCategory("Installation of Panels")
+	installationOfPanelsCategory := fixtures.CreateCategory("Installation of Panels", homeDesignDomainId)
 	installationOfPanelsCategoryId, err := store.Category.InsertCategory(installationOfPanelsCategory)
 	if err != nil {
 		logger.Fatal().Err(err).Send()
 	}
 
-	materialsAndToolsCategory := fixtures.CreateCategory("Materials and Tools")
+	materialsAndToolsCategory := fixtures.CreateCategory("Materials and Tools", homeDesignDomainId)
 	materialsAndToolsCategoryId, err := store.Category.InsertCategory(materialsAndToolsCategory)
 	if err != nil {
 		logger.Fatal().Err(err).Send()
 	}
 
-	maintenanceAndRepairCategory := fixtures.CreateCategory("Maintenance and Repair")
+	maintenanceAndRepairCategory := fixtures.CreateCategory("Maintenance and Repair", homeDesignDomainId)
 	maintenanceAndRepairCategoryId, err := store.Category.InsertCategory(maintenanceAndRepairCategory)
 	if err != nil {
 		logger.Fatal().Err(err).Send()
 	}
 
-	underfloorHeatingCategory := fixtures.CreateCategory("Underfloor Heating")
+	underfloorHeatingCategory := fixtures.CreateCategory("Underfloor Heating", homeDesignDomainId)
 	underfloorHeatingCategoryId, err := store.Category.InsertCategory(underfloorHeatingCategory)
 	if err != nil {
 		logger.Fatal().Err(err).Send()
 	}
 
-	moistureAndWaterproofingCategory := fixtures.CreateCategory("Moisture and Waterproofing")
+	moistureAndWaterproofingCategory := fixtures.CreateCategory("Moisture and Waterproofing", homeDesignDomainId)
 	moistureAndWaterproofingCategoryId, err := store.Category.InsertCategory(moistureAndWaterproofingCategory)
 	if err != nil {
 		logger.Fatal().Err(err).Send()
 	}
 
-	diyProjectsCategory := fixtures.CreateCategory("DIY projects")
+	diyProjectsCategory := fixtures.CreateCategory("DIY projects", homeDesignDomainId)
 	diyProjectsCategoryCategoryId, err := store.Category.InsertCategory(diyProjectsCategory)
 	if err != nil {
 		logger.Fatal().Err(err).Send()
 	}
 
-	technicalSolutionsCategory := fixtures.CreateCategory("Technical Solutions")
+	technicalSolutionsCategory := fixtures.CreateCategory("Technical Solutions", homeDesignDomainId)
 	technicalSolutionsCategoryId, err := store.Category.InsertCategory(technicalSolutionsCategory)
 	if err != nil {
 		logger.Fatal().Err(err).Send()
 	}
 
-	designAndTrendsCategory := fixtures.CreateCategory("Design and Trends")
+	designAndTrendsCategory := fixtures.CreateCategory("Design and Trends", homeDesignDomainId)
 	designAndTrendsCategoryId, err := store.Category.InsertCategory(designAndTrendsCategory)
+	if err != nil {
+		logger.Fatal().Err(err).Send()
+	}
+
+	designAndTrendsCategoryForNews := fixtures.CreateCategory("Design and Trends", newsDomainId)
+	designAndTrendsCategoryForNewsId, err := store.Category.InsertCategory(designAndTrendsCategoryForNews)
 	if err != nil {
 		logger.Fatal().Err(err).Send()
 	}
@@ -149,51 +155,6 @@ func main() {
 	jane := fixtures.CreateAuthor("Jane", "Doe", "Lorem ipsum dolor", "/assets/images/avatars/man-avatar.png")
 
 	janeId, err := store.Author.InsertAuthor(jane)
-	if err != nil {
-		logger.Fatal().Err(err).Send()
-	}
-
-	err = store.CategoriesDomains.AssignCategoryToDomain(installationOfPanelsCategoryId, homeDesignDomainId)
-	if err != nil {
-		logger.Fatal().Err(err).Send()
-	}
-
-	err = store.CategoriesDomains.AssignCategoryToDomain(materialsAndToolsCategoryId, homeDesignDomainId)
-	if err != nil {
-		logger.Fatal().Err(err).Send()
-	}
-
-	err = store.CategoriesDomains.AssignCategoryToDomain(maintenanceAndRepairCategoryId, homeDesignDomainId)
-	if err != nil {
-		logger.Fatal().Err(err).Send()
-	}
-
-	err = store.CategoriesDomains.AssignCategoryToDomain(underfloorHeatingCategoryId, homeDesignDomainId)
-	if err != nil {
-		logger.Fatal().Err(err).Send()
-	}
-
-	err = store.CategoriesDomains.AssignCategoryToDomain(moistureAndWaterproofingCategoryId, homeDesignDomainId)
-	if err != nil {
-		logger.Fatal().Err(err).Send()
-	}
-
-	err = store.CategoriesDomains.AssignCategoryToDomain(diyProjectsCategoryCategoryId, homeDesignDomainId)
-	if err != nil {
-		logger.Fatal().Err(err).Send()
-	}
-
-	err = store.CategoriesDomains.AssignCategoryToDomain(technicalSolutionsCategoryId, homeDesignDomainId)
-	if err != nil {
-		logger.Fatal().Err(err).Send()
-	}
-
-	err = store.CategoriesDomains.AssignCategoryToDomain(designAndTrendsCategoryId, homeDesignDomainId)
-	if err != nil {
-		logger.Fatal().Err(err).Send()
-	}
-
-	err = store.CategoriesDomains.AssignCategoryToDomain(designAndTrendsCategoryId, newsDomainId)
 	if err != nil {
 		logger.Fatal().Err(err).Send()
 	}
@@ -484,7 +445,7 @@ func main() {
 		thumbnail := n
 		isPubished := true
 		authorId := johnId
-		categoryId := designAndTrendsCategoryId
+		categoryId := designAndTrendsCategoryForNewsId
 		domainId := newsDomainId
 		featured := false
 		article := fixtures.CreateArticle(title, body, thumbnail, isPubished, authorId, categoryId, domainId, featured)

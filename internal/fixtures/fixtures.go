@@ -54,13 +54,14 @@ func (f *fixtures) CreateDomain(name, email string) *models.Domain {
 	}
 }
 
-func (f *fixtures) CreateCategory(name string) *models.Category {
+func (f *fixtures) CreateCategory(name string, domainId int) *models.Category {
 	return &models.Category{
 		Name:      name,
 		Slug:      slug.Make(name),
 		Weight:    0,
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
+		DomainId:  domainId,
 	}
 }
 

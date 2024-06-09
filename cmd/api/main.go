@@ -51,17 +51,16 @@ func main() {
 		postgressStore = postgresstore.NewPostgresStorage(dbpool)
 		sqlStore       = sqlstore.NewSqlStorage(db)
 		store          = storage.Store{
-			User:              postgressStore.User,
-			Role:              postgressStore.Role,
-			Domain:            postgressStore.Domain,
-			Category:          postgressStore.Category,
-			Author:            postgressStore.Author,
-			Article:           postgressStore.Article,
-			CategoriesDomains: postgressStore.CategoriesDomains,
-			Image:             postgressStore.Image,
-			ImageCategory:     postgressStore.ImageCategory,
-			BasicPage:         postgressStore.BasicPage,
-			Scrapper:          sqlStore.Scrapper,
+			User:          postgressStore.User,
+			Role:          postgressStore.Role,
+			Domain:        postgressStore.Domain,
+			Category:      postgressStore.Category,
+			Author:        postgressStore.Author,
+			Article:       postgressStore.Article,
+			Image:         postgressStore.Image,
+			ImageCategory: postgressStore.ImageCategory,
+			BasicPage:     postgressStore.BasicPage,
+			Scrapper:      sqlStore.Scrapper,
 		}
 		//Validator
 		validator = validator.NewValidator()
@@ -69,7 +68,7 @@ func main() {
 		authService      = services.NewAuthService(store.User)
 		articleService   = services.NewArticleService(store.Article, validator.Article, ai)
 		domainService    = services.NewDomainService(store.Domain, validator.Domain)
-		categoryService  = services.NewCategoryService(store.Category, store.CategoriesDomains, validator.Category)
+		categoryService  = services.NewCategoryService(store.Category, validator.Category)
 		scrapperService  = services.NewScrapperService(store.Scrapper, validator.Scrapper)
 		fileService      = services.NewFileService(store.Article, store.Domain, store.Category, store.Image)
 		basicPageService = services.NewBasicPageService(store.BasicPage, validator.BasicPage)
