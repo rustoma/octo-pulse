@@ -60,7 +60,7 @@ func WriteJSON(w http.ResponseWriter, status int, data interface{}, headers ...h
 }
 
 func ReadJSON(w http.ResponseWriter, r *http.Request, data interface{}) error {
-	maxBytes := 1024 * 1024 //one megabyte
+	maxBytes := 1024 * 1024 * 1.99 //almost 2 megabyte
 
 	r.Body = http.MaxBytesReader(w, r.Body, int64(maxBytes))
 
