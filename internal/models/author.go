@@ -10,4 +10,5 @@ type Author struct {
 	ImageUrl    string    `json:"imageUrl" validate:"required"`
 	CreatedAt   time.Time `json:"createdAt" validate:"required"`
 	UpdatedAt   time.Time `json:"updatedAt" validate:"required"`
+	Domain      int       `json:"domain"`
 }

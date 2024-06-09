@@ -28,8 +28,8 @@ func (s *PostgresAuthorStore) InsertAuthor(author *models.Author) (int, error) {
 
 	stmt, args, err := pgQb().
 		Insert("public.author").
-		Columns("first_name, last_name, description, image_url, created_at, updated_at").
-		Values(author.FirstName, author.LastName, author.Description, author.ImageUrl, time.Now().UTC(), time.Now().UTC()).
+		Columns("first_name, last_name, description, image_url, created_at, updated_at, domain").
+		Values(author.FirstName, author.LastName, author.Description, author.ImageUrl, time.Now().UTC(), time.Now().UTC(), author.Domain).
 		Suffix("RETURNING \"id\"").
 		ToSql()
 
@@ -49,7 +49,7 @@ func (s *PostgresAuthorStore) GetAuthors() ([]*models.Author, error) {
 	defer cancel()
 
 	stmt, args, err := pgQb().
-		Select("*").
+		Select("id, first_name, last_name, description, image_url,created_at, updated_at, COALESCE(domain, 0)").
 		OrderBy("first_name ASC").
 		From("public.author").
 		ToSql()
@@ -89,7 +89,7 @@ func (s *PostgresAuthorStore) GetAuthor(id int) (*models.Author, error) {
 	defer cancel()
 
 	stmt, args, err := pgQb().
-		Select("*").
+		Select("id, first_name, last_name, description, image_url,created_at, updated_at, COALESCE(domain, 0)").
 		From("public.author").
 		Where(squirrel.Eq{"id": id}).
 		ToSql()
@@ -157,6 +157,7 @@ func scanToAuthor(rows pgx.Rows) (*models.Author, error) {
 		&author.ImageUrl,
 		&author.CreatedAt,
 		&author.UpdatedAt,
+		&author.Domain,
 	)
 
 	return &author, err
@@ -170,5 +171,6 @@ func convertAuthorToAuthorMap(author *models.Author) map[string]interface{} {
 		"image_url":   author.ImageUrl,
 		"created_at":  author.CreatedAt,
 		"updated_at":  author.UpdatedAt,
+		"domain":      author.Domain,
 	}
 }
