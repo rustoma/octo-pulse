@@ -59,7 +59,7 @@ func (s *SqlScrapperStore) GetQuestionSources(id int) ([]*models.QuestionSource,
 func (s *SqlScrapperStore) GetQuestionPageContents(id int) ([]*models.QuestionPageContent, error) {
 
 	stmt, args, err := sqlQb().
-		Select("octopulse_question_sources.id_question_source, octopulse_question_sources.id_question, octopulse_question_sources.href, COALESCE(page_content, '') AS page_content, COALESCE(page_content_processed, '') AS page_content_processed").
+		Select("octopulse_question_sources.id_question_source, octopulse_question_sources.id_question, octopulse_question_sources.href, COALESCE(page_content_processed, '') AS page_content_processed").
 		From("octopulse_question_sources").
 		Join("octopulse_page_contents USING (id_question_source)").
 		Where(squirrel.Eq{"octopulse_question_sources.id_question": id}).
@@ -274,7 +274,6 @@ func scanToQuestionPageContent(rows *sql.Rows) (*models.QuestionPageContent, err
 		&questionPageContent.SourceId,
 		&questionPageContent.QuestionId,
 		&questionPageContent.Href,
-		&questionPageContent.PageContent,
 		&questionPageContent.PageContentProcessed,
 	)
 
