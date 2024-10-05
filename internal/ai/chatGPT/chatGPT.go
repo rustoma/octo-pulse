@@ -197,7 +197,7 @@ func (c *chatGPT) CheckIfPageContentIsValid(text string) (bool, error) {
 
 	messages := []openai.ChatCompletionMessage{
 		{
-			Role:    openai.ChatMessageRoleSystem,
+			Role:    openai.ChatMessageRoleAssistant,
 			Content: content,
 		},
 	}
@@ -246,7 +246,7 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 	var messages []openai.ChatCompletionMessage
 
 	messages = append(messages, openai.ChatCompletionMessage{
-		Role:    openai.ChatMessageRoleSystem,
+		Role:    openai.ChatMessageRoleAssistant,
 		Content: sourceText,
 	})
 
@@ -260,6 +260,10 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 			"Die Überschriften und untergeordneten Überschriften sollten sich auf die wichtigsten Punkte, Unterthemen oder Abschnitte konzentrieren, die mit dem Haupttitel zusammenhängen. \n" +
 			"Das Objekt sollte prägnant sein und die Überschriften sollten im Rahmen des Haupttitels und des umgebenden Kontexts bleiben. \n" +
 			"Weiche nicht vom Hauptthema ab. \n" +
+			"Fügen Sie niemals die Tags '```html' hinzu. \n" +
+			"Fügen Sie niemals die Tags '<body>' hinzu. \n" +
+			"Fügen Sie niemals die Tags '<html>' hinzu. \n" +
+			"Fügen Sie niemals die Tags '<!DOCTYPE html>' hinzu. \n" +
 			"Beschränke das generierte Objekt auf einige der wichtigsten Überschriften und untergeordneten Überschriften. \n" +
 			"Verwende maximal vier Überschriften. \n" +
 			"Verwende für jede Überschrift maximal 2 untergeordnete Überschriften. \n" +
@@ -280,6 +284,10 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 			"Nagłówki i podrzędnye nagłówki powinny koncentrować się na kluczowych punktach, podtematach lub sekcjach związanych z głównym tytułem. \n" +
 			"Obiekt powinien być zwięzły, a nagłówki mieścić się w zakresie głównego tytułu i otaczającego go kontekstu. \n" +
 			"Nie odbiegaj od głównego tematu. \n" +
+			"Nie dodawaj znaczników '```html'. \n" +
+			"Nie dodawaj znaczników '<body>'. \n" +
+			"Nie dodawaj znaczników '<html>'. \n" +
+			"Nie dodawaj znaczników '<!DOCTYPE html>'. \n" +
 			"Ogranicz wygenerowany obiekt do kilku najważniejszych nagłówków i podrzędnych nagłówków. \n" +
 			"Maksymalnie zastosuj cztery nagłówki. \n" +
 			"Maksymalnie zastosuj dla każdego nagłówka 2 podrzędne nagłówki. \n" +
@@ -315,7 +323,7 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 	}
 
 	messages = append(messages, openai.ChatCompletionMessage{
-		Role:    openai.ChatMessageRoleSystem,
+		Role:    openai.ChatMessageRoleAssistant,
 		Content: agenda,
 	})
 
@@ -339,7 +347,7 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 		}
 
 		summaryPromp := []openai.ChatCompletionMessage{{
-			Role:    openai.ChatMessageRoleSystem,
+			Role:    openai.ChatMessageRoleAssistant,
 			Content: pageContent.PageContentProcessed,
 		},
 			{
@@ -362,7 +370,7 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 	logger.Info().Msg("Generating summary COMPLETED!")
 
 	messages[0] = openai.ChatCompletionMessage{
-		Role:    openai.ChatMessageRoleSystem,
+		Role:    openai.ChatMessageRoleAssistant,
 		Content: "Streszczenie: " + summary,
 	}
 
@@ -380,6 +388,10 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 			"- Schreibe nur die Einleitung für diesen Titel, antworte nicht auf die Untertitel. \n" +
 			"- Wiederhole dich nicht. \n" +
 			"- Schreibe nichts über SEO. \n" +
+			"- Fügen Sie niemals die Tags '```html' hinzu. \n" +
+			"- Fügen Sie niemals die Tags '<body>' hinzu. \n" +
+			"- Fügen Sie niemals die Tags '<html>' hinzu. \n" +
+			"- Fügen Sie niemals die Tags '<!DOCTYPE html>' hinzu. \n" +
 			"- Die Einleitung sollte mindestens 1000 Zeichen lang sein. \n" +
 			"- Du kannst mehrere Absätze definieren, um die erforderliche Länge der Einleitung zu erreichen. \n" +
 			"- Die Länge der Einleitung ist zwingend erforderlich und muss unbedingt eingehalten werden! \n" +
@@ -401,6 +413,10 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 			"- Napisz tylko wstęp dla tego tytułu nie odpowiadaj na żadne podtytuły. \n" +
 			"- Nie powtarzaj się. \n" +
 			"- Nie pisz nic na temat SEO \n" +
+			"- Nie dodawaj znaczników '```html'. \n" +
+			"- Nie dodawaj znaczników '<body>'. \n" +
+			"- Nie dodawaj znaczników '<html>'. \n" +
+			"- Nie dodawaj znaczników '<!DOCTYPE html>'. \n" +
 			"- Długość wstępu powinina mieć minimum 1000 liter. \n" +
 			"- Możesz zdefiniować kilka paragrafów, aby osiągnąć wymaganą długość wstępu. \n" +
 			"- Długość wstępu jest wymagana! Powinna być bezwględnie przestrzegana! \n" +
@@ -443,6 +459,10 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 				"- Gib den Text als HTML zurück. Der vorgegebene Untertitel sollte im <h2>-Tag sein. \n" +
 				"- Gib nur HTML mit dem Text zurück, damit er in den bestehenden HTML-Code eingefügt werden kann. \n" +
 				"- Gib nur HTML zurück, sodass ich die gesamte Antwort kopieren und einfügen kann. \n" +
+				"- Fügen Sie niemals die Tags '```html' hinzu. \n" +
+				"- Fügen Sie niemals die Tags '<body>' hinzu. \n" +
+				"- Fügen Sie niemals die Tags '<html>' hinzu. \n" +
+				"- Fügen Sie niemals die Tags '<!DOCTYPE html>' hinzu. \n" +
 				"- Antworte nur mit HTML. Schreib mir nicht, was ich damit machen soll, oder dass es die Antwort ist." +
 				"- Beantworte keine der Untertitel im Text. \n" +
 				"- Erlaubte HTML-Tags sind: <p>, <ul>, <li>, <ol>, <strong>, <h2> \n" +
@@ -467,6 +487,10 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 				"- Tekst zwróć jako HTML. Zadany podtytuł powinien być w tagu <h2> \n" +
 				"- Zwróć jedynie HTML z tekstem tak, aby dało się go dołączyć do już isntniejącego HTML. \n" +
 				"- Odpowiedz jedynie HTML, tak abym całą odpowiedź mógł to skopiować i wkleić. \n" +
+				"- Nie dodawaj znaczników '```html'. \n" +
+				"- Nie dodawaj znaczników '<body>'. \n" +
+				"- Nie dodawaj znaczników '<html>'. \n" +
+				"- Nie dodawaj znaczników '<!DOCTYPE html>'. \n" +
 				"- Odpowiedz jedynie za pomocą HTML. Nie pisz mi nic co mam z nim zrobić, ani że jest to odpowiedź." +
 				"- W tekście nie odpowiadaj na żadne podtytuły. \n" +
 				"- Dozwolone tagi HTML to : <p>, <ul>, <li>, <ol>, <strong>, <h2> \n" +
@@ -485,7 +509,7 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 		messagesLvl2 := []openai.ChatCompletionMessage{
 			messages[0],
 			{
-				Role:    openai.ChatMessageRoleSystem,
+				Role:    openai.ChatMessageRoleAssistant,
 				Content: correctedEntryText,
 			},
 			{
@@ -530,6 +554,10 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 						"- Gib den Text als HTML zurück. Der vorgegebene Untertitel sollte im <h3>-Tag sein. \n" +
 						"- Gib nur HTML mit dem Text zurück, damit er in den bestehenden HTML-Code eingefügt werden kann. \n" +
 						"- Gib nur HTML zurück, sodass ich die gesamte Antwort kopieren und einfügen kann. \n" +
+						"- Fügen Sie niemals die Tags '```html' hinzu. \n" +
+						"- Fügen Sie niemals die Tags '<body>' hinzu. \n" +
+						"- Fügen Sie niemals die Tags '<html>' hinzu. \n" +
+						"- Fügen Sie niemals die Tags '<!DOCTYPE html>' hinzu. \n" +
 						"- Antworte nur mit HTML. Schreib mir nicht, was ich damit machen soll, oder dass es die Antwort ist." +
 						"- Erlaubte HTML-Tags sind: <p>, <ul>, <li>, <ol>, <strong>, <h3> \n" +
 						"- Der Text sollte im Zusammenhang mit den vorherigen Antworten stehen. \n" +
@@ -552,6 +580,10 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 						"Stosuj się do poniższych wymagań: \n\n" +
 						"- Tekst zwróć jako HTML. Zadany podtytuł powinien być w tagu <h3> \n" +
 						"- Zwróć jedynie HTML z tekstem tak, aby dało się go dołączyć do już isntniejącego HTML. \n" +
+						"- Nie dodawaj znaczników '```html'. \n" +
+						"- Nie dodawaj znaczników '<body>'. \n" +
+						"- Nie dodawaj znaczników '<html>'. \n" +
+						"- Nie dodawaj znaczników '<!DOCTYPE html>'. \n" +
 						"- Odpowiedz jedynie HTML, tak abym całą odpowiedź mógł to skopiować i wkleić. \n" +
 						"- Odpowiedz jedynie za pomocą HTML. Nie pisz mi nic co mam z nim zrobić, ani że jest to odpowiedź." +
 						"- Dozwolone tagi HTML to : <p>, <ul>, <li>, <ol>, <strong>, <h3> \n" +
@@ -568,7 +600,7 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 				messagesLvl3 := []openai.ChatCompletionMessage{
 					messagesLvl2[1],
 					{
-						Role:    openai.ChatMessageRoleSystem,
+						Role:    openai.ChatMessageRoleAssistant,
 						Content: correctedRespLvl2,
 					},
 					{
@@ -592,6 +624,10 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 						"- Gib den Text als HTML zurück. Der vorgegebene Untertitel sollte im <h3>-Tag sein. \n" +
 						"- Gib nur HTML mit dem Text zurück, damit er in den bestehenden HTML-Code eingefügt werden kann. \n" +
 						"- Gib nur HTML zurück, sodass ich die gesamte Antwort kopieren und einfügen kann. \n" +
+						"- Fügen Sie niemals die Tags '```html' hinzu. \n" +
+						"- Fügen Sie niemals die Tags '<body>' hinzu. \n" +
+						"- Fügen Sie niemals die Tags '<html>' hinzu. \n" +
+						"- Fügen Sie niemals die Tags '<!DOCTYPE html>' hinzu. \n" +
 						"- Antworte nur mit HTML. Schreib mir nicht, was ich damit machen soll, oder dass es die Antwort ist." +
 						"- Erlaubte HTML-Tags sind: <p>, <ul>, <li>, <ol>, <strong>, <h3> \n" +
 						"- Der Text sollte im Zusammenhang mit den vorherigen Antworten stehen. \n" +
@@ -614,6 +650,10 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 						"Stosuj się do poniższych wymagań: \n\n" +
 						"- Tekst zwróć jako HTML. Zadany podtytuł powinien być w tagu <h3> \n" +
 						"- Zwróć jedynie HTML z tekstem tak, aby dało się go dołączyć do już isntniejącego HTML. \n" +
+						"- Nie dodawaj znaczników '```html'. \n" +
+						"- Nie dodawaj znaczników '<body>'. \n" +
+						"- Nie dodawaj znaczników '<html>'. \n" +
+						"- Nie dodawaj znaczników '<!DOCTYPE html>'. \n" +
 						"- Odpowiedz jedynie HTML, tak abym całą odpowiedź mógł to skopiować i wkleić. \n" +
 						"- Odpowiedz jedynie za pomocą HTML. Nie pisz mi nic co mam z nim zrobić, ani że jest to odpowiedź." +
 						"- Dozwolone tagi HTML to : <p>, <ul>, <li>, <ol>, <strong>, <h3> \n" +
