@@ -20,7 +20,6 @@ type QuestionPageContent struct {
 	SourceId             int    `json:"sourceId"`
 	QuestionId           int    `json:"questionId"`
 	Href                 string `json:"href"`
-	PageContent          string `json:"pageContent"`
 	PageContentProcessed string `json:"pageContentProcessed"`
 }
 
