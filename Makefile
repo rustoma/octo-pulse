@@ -9,10 +9,10 @@ run: build
 test:
 	@go test -v ./...
 
-migration_up:
+#migration_up:
 	migrate -path internal/db/migrations/ -database "postgresql://${dbuser}@${host}:${dbport}/${dbname}?sslmode=disable" -verbose up
 
-#migration_up:
+migration_up:
 	migrate -path internal/db/migrations/ -database "postgresql://${dbuser}:${dbpass}@${host}:${dbport}/${dbname}?sslmode=disable" -verbose up
 
 migration_down:

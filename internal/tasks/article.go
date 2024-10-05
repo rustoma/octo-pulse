@@ -56,6 +56,7 @@ func NewArticleTasks(
 type DescriptionTaskPayload struct {
 	ArticleId  int
 	QuestionId int
+	Lang       string
 }
 
 type GenerateArticlesTaskPayload struct {
@@ -63,9 +64,10 @@ type GenerateArticlesTaskPayload struct {
 	NumberOfArticlesToCreate int
 	QuestionCategoryId       int
 	ImagesCategory           int
+	Lang                     string
 }
 
-func (t articleTasks) NewGenerateArticlesTask(domainId int, numberOfArticlesToCreate int, questionCategoryId int, imagesCategory int) error {
+func (t articleTasks) NewGenerateArticlesTask(domainId int, numberOfArticlesToCreate int, questionCategoryId int, imagesCategory int, lang string) error {
 	client := asynq.NewClient(asynq.RedisClientOpt{Addr: os.Getenv("REDIS_ADDR"), Password: os.Getenv("REDIS_PASSWORD")})
 	defer client.Close()
 
@@ -74,6 +76,7 @@ func (t articleTasks) NewGenerateArticlesTask(domainId int, numberOfArticlesToCr
 		NumberOfArticlesToCreate: numberOfArticlesToCreate,
 		QuestionCategoryId:       questionCategoryId,
 		ImagesCategory:           imagesCategory,
+		Lang:                     lang,
 	})
 
 	if err != nil {
@@ -92,11 +95,11 @@ func (t articleTasks) NewGenerateArticlesTask(domainId int, numberOfArticlesToCr
 	return nil
 }
 
-func (t articleTasks) NewGenerateDescriptionTask(articleId int, questionId int) error {
+func (t articleTasks) NewGenerateDescriptionTask(articleId int, questionId int, lang string) error {
 	client := asynq.NewClient(asynq.RedisClientOpt{Addr: os.Getenv("REDIS_ADDR"), Password: os.Getenv("REDIS_PASSWORD")})
 	defer client.Close()
 
-	payload, err := json.Marshal(DescriptionTaskPayload{ArticleId: articleId, QuestionId: questionId})
+	payload, err := json.Marshal(DescriptionTaskPayload{ArticleId: articleId, QuestionId: questionId, Lang: lang})
 	if err != nil {
 		return err
 	}
@@ -134,7 +137,7 @@ func (t articleTasks) HandleGenerateDescription(ctx context.Context, task *asynq
 		return fmt.Errorf("question with %d not found", payload.QuestionId)
 	}
 
-	description, err := t.articleService.GenerateDescription(question)
+	description, err := t.articleService.GenerateDescription(question, payload.Lang)
 
 	if err != nil {
 		return err
@@ -239,10 +242,17 @@ func (t articleTasks) HandleGenerateArticles(ctx context.Context, task *asynq.Ta
 			}
 		}
 
+		var temporaryBody string
+		if payload.Lang == "de" {
+			temporaryBody = "Inhalt in Vorbereitung"
+		} else {
+			temporaryBody = "Treść w przygotowaniu"
+		}
+
 		article := &models.Article{
 			Title:       question.Question,
 			Slug:        slug.Make(question.Question),
-			Body:        "Treść w przygotowaniu",
+			Body:        temporaryBody,
 			Thumbnail:   thumbnailId,
 			CategoryId:  catgoryId,
 			AuthorId:    1,
@@ -270,7 +280,7 @@ func (t articleTasks) HandleGenerateArticles(ctx context.Context, task *asynq.Ta
 		}
 
 		//Generate Description For article
-		_ = t.NewGenerateDescriptionTask(articleId, question.Id)
+		_ = t.NewGenerateDescriptionTask(articleId, question.Id, payload.Lang)
 	}
 
 	return nil

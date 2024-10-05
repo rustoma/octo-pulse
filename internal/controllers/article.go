@@ -33,7 +33,7 @@ func (c *ArticleController) HandleGenerateArticles(w http.ResponseWriter, r *htt
 		return api.Error{Err: "bad request", Status: http.StatusBadRequest}
 	}
 
-	err = c.articleTasks.NewGenerateArticlesTask(request.DomainId, request.NumberOfArticles, request.QuestionCategoryId, request.ImagesCategory)
+	err = c.articleTasks.NewGenerateArticlesTask(request.DomainId, request.NumberOfArticles, request.QuestionCategoryId, request.ImagesCategory, request.Lang)
 
 	if err != nil {
 		return api.Error{Err: err.Error(), Status: api.HandleErrorStatus(err)}
@@ -56,7 +56,7 @@ func (c *ArticleController) HandleGenerateDescritption(w http.ResponseWriter, r 
 		return api.Error{Err: "bad request", Status: http.StatusBadRequest}
 	}
 
-	err = c.articleTasks.NewGenerateDescriptionTask(pageId, request.QuestionId)
+	err = c.articleTasks.NewGenerateDescriptionTask(pageId, request.QuestionId, request.Lang)
 
 	if err != nil {
 		return api.Error{Err: err.Error(), Status: api.HandleErrorStatus(err)}

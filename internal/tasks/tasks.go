@@ -35,9 +35,9 @@ func NewTasks(
 }
 
 type ArticleTasker interface {
-	NewGenerateDescriptionTask(pageId int, questionId int) error
+	NewGenerateDescriptionTask(pageId int, questionId int, lang string) error
 	HandleGenerateDescription(ctx context.Context, task *asynq.Task) error
-	NewGenerateArticlesTask(domainId int, numberOfArticlesToCreate int, questionCategoryId int, imagesCategory int) error
+	NewGenerateArticlesTask(domainId int, numberOfArticlesToCreate int, questionCategoryId int, imagesCategory int, lang string) error
 	HandleGenerateArticles(ctx context.Context, task *asynq.Task) error
 }
 
