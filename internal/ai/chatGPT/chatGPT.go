@@ -74,9 +74,9 @@ func (c *chatGPT) CorrectGrammar(text string) (string, error) {
 
 	var content string
 	if c.lang == "de" {
-		content = "Zwróć bezpośrednio poprawiony tekst bez żadnego dodatkowego opisu. \n" +
-			"Popraw gramatykę, błędy stylystyczne, składniowe oraz składnię HTML. Nie zmieniaj tekstu, ani struktury HTML, jedynie popraw błędy. \n" +
-			"Tekst do poprawy: \n\n" +
+		content = "Gib direkt den korrigierten Text ohne zusätzliche Beschreibung zurück. \n" +
+			"Verbessere Grammatik, stilistische Fehler, syntaktische Fehler und HTML-Syntax. Ändere weder den Text noch die HTML-Struktur, korrigiere nur die Fehler. \n" +
+			"Text zur Korrektur: \n\n" +
 			text
 	} else {
 		content = "Zwróć bezpośrednio poprawiony tekst bez żadnego dodatkowego opisu. \n" +
@@ -110,15 +110,15 @@ func (c *chatGPT) AssignToCategory(categories []*models.Category, question *mode
 
 	var content string
 	if c.lang == "de" {
-		content = "Tytuł artykułu to: " + question.Question + "\n" +
-			"Opis artykułu: " + question.Answer + "\n\n" +
-			"Dostępne kategorie: " + string(categoriesJSON) + "\n\n" +
-			"Przypasuj tytuł artykułu do jednej z podanych kategorii. Zwróć jedynie id kategorii. \n\n" +
-			"Odpowiedź według zaleceń: \n\n" +
-			"- zwróć jedynie id kategorii do której pasuje tytuł \n" +
-			"- jeżeli tytuł nie pasuje do żadnej kategorii zwróć 0 \n" +
-			"- id kategorii zwróć pomiędzy trzema myślnikami \n\n" +
-			"Przykład poprawnej odpowiedzi: ---133---"
+		content = "Der Titel des Artikels lautet: " + question.Question + "\n" +
+			"Die Beschreibung des Artikels: " + question.Answer + "\n\n" +
+			"Verfügbare Kategorien: " + string(categoriesJSON) + "\n\n" +
+			"Ordne den Titel des Artikels einer der angegebenen Kategorien zu. Gib nur die ID der Kategorie zurück. \n\n" +
+			"Antwort nach den Vorgaben: \n\n" +
+			"- Gib nur die ID der Kategorie zurück, zu der der Titel passt \n" +
+			"- Wenn der Titel zu keiner Kategorie passt, gib 0 zurück \n" +
+			"- Gib die ID der Kategorie zwischen drei Bindestrichen zurück \n\n" +
+			"Beispiel einer korrekten Antwort: ---133---"
 	} else {
 		content = "Tytuł artykułu to: " + question.Question + "\n" +
 			"Opis artykułu: " + question.Answer + "\n\n" +
@@ -186,9 +186,9 @@ func (c *chatGPT) CheckIfPageContentIsValid(text string) (bool, error) {
 
 	var content string
 	if c.lang == "de" {
-		content = "Przeanalizuj poniższy tekst i zwróć pomiędzy trzema myślnikami ---reject--- jeżeli: \n\n" +
-			"1. Jeżeli tekst jest w języku angielskim. \n" +
-			"2. Jeżeli 1 punkt nie pasuje to zwróć pomiędzy trzema myślnikami ---approved---"
+		content = "Analysiere den folgenden Text und gib zwischen drei Bindestrichen ---reject--- zurück, wenn: \n\n" +
+			"1. Der Text in englischer Sprache ist. \n" +
+			"2. Wenn Punkt 1 nicht zutrifft, gib zwischen drei Bindestrichen ---approved--- zurück."
 	} else {
 		content = "Przeanalizuj poniższy tekst i zwróć pomiędzy trzema myślnikami ---reject--- jeżeli: \n\n" +
 			"1. Jeżeli tekst jest w języku angielskim. \n" +
@@ -252,25 +252,25 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 
 	var headingsContent string
 	if c.lang == "de" {
-		headingsContent = "Głównym nagłówkiem będzie: " + question.Question + "\n Na podstawie tekstu który podałeś zwróć obiekt z nagłówkami i podrzędnymi nagłówkami, które mogą posłużyć do napisania takiego artykułu. \n" +
-			"Nie uwzględniaj treści związanych z informacjami na temat firmy, polityki prywatności lub ciasteczek cookies. \n" +
-			"Nie uwzględniaj tytułów takich jak 'o nas', 'informacje kontaktowe', 'o firmie' i wszystkich innych powiązanych z konkretną firmą. Nie dodawaj tytułów związanych z newsletter, biuletynem itp. \n" +
-			"Nie dodawaj podtytułów 'podsumowanie', 'kontynuacja tematu' \n" +
-			"Nie numeruj tytułów. \n" +
-			"Nagłówki i podrzędnye nagłówki powinny koncentrować się na kluczowych punktach, podtematach lub sekcjach związanych z głównym tytułem. \n" +
-			"Obiekt powinien być zwięzły, a nagłówki mieścić się w zakresie głównego tytułu i otaczającego go kontekstu. \n" +
-			"Nie odbiegaj od głównego tematu. \n" +
-			"Ogranicz wygenerowany obiekt do kilku najważniejszych nagłówków i podrzędnych nagłówków. \n" +
-			"Maksymalnie zastosuj cztery nagłówki. \n" +
-			"Maksymalnie zastosuj dla każdego nagłówka 2 podrzędne nagłówki. \n" +
-			"Nie pisz nic o tym gdzie kupić towar. \n" +
-			"Nie pisz nic o umowach. \n" +
-			"Nagłówki i podnagłówki powinny być w języku polskim. \n" +
-			"Zwróć poprawny json string na wzór: \n\n" +
-			"{\"mainTitle:\"" + question.Question + ", \"subtitles\": [{\"title\": \"Subtitle1\", \"subtitles\": [\"Subtitle1\", \"Subtitle2\"]},{\"title\": \"Subtitle2\", \"subtitles\": [\"Subtitle1\", \"Subtitle2\"]}]}" + "\n\n" +
-			"Zwróć wyłącznie obiekt, gotowy do serializacji. \n" +
-			"Nie dodawaj na początku ```json\\n. Twoja odpowiedź powinna zacząć się od { \n" +
-			"Nie dodawaj znaczników '\n'. Wszystko zwróć w jedej linii"
+		headingsContent = "Die Hauptüberschrift lautet: " + question.Question + "\n Basierend auf dem von dir bereitgestellten Text, gib ein Objekt mit Überschriften und untergeordneten Überschriften zurück, die zum Schreiben eines solchen Artikels verwendet werden können. \n" +
+			"Schließe Inhalte aus, die Informationen über das Unternehmen, Datenschutzrichtlinien oder Cookies betreffen. \n" +
+			"Schließe Titel wie 'über uns', 'Kontaktinformationen', 'über das Unternehmen' und alle anderen, die mit einem bestimmten Unternehmen in Verbindung stehen, aus. Füge keine Titel hinzu, die mit Newsletter, Rundbrief usw. zu tun haben. \n" +
+			"Füge keine Untertitel wie 'Zusammenfassung', 'Fortsetzung des Themas' hinzu. \n" +
+			"Nummeriere die Titel nicht. \n" +
+			"Die Überschriften und untergeordneten Überschriften sollten sich auf die wichtigsten Punkte, Unterthemen oder Abschnitte konzentrieren, die mit dem Haupttitel zusammenhängen. \n" +
+			"Das Objekt sollte prägnant sein und die Überschriften sollten im Rahmen des Haupttitels und des umgebenden Kontexts bleiben. \n" +
+			"Weiche nicht vom Hauptthema ab. \n" +
+			"Beschränke das generierte Objekt auf einige der wichtigsten Überschriften und untergeordneten Überschriften. \n" +
+			"Verwende maximal vier Überschriften. \n" +
+			"Verwende für jede Überschrift maximal 2 untergeordnete Überschriften. \n" +
+			"Schreibe nichts darüber, wo man Waren kaufen kann. \n" +
+			"Schreibe nichts über Verträge. \n" +
+			"Die Überschriften und Unterüberschriften sollten auf Deutsch sein. \n" +
+			"Gib einen korrekten JSON-String im folgenden Format zurück: \n\n" +
+			"{\"mainTitle:\"" + question.Question + ", \"subtitles\": [{\"title\": \"Untertitel1\", \"subtitles\": [\"Untertitel1\", \"Untertitel2\"]},{\"title\": \"Untertitel2\", \"subtitles\": [\"Untertitel1\", \"Untertitel2\"]}]}" + "\n\n" +
+			"Gib nur das Objekt zurück, bereit zur Serialisierung. \n" +
+			"Füge am Anfang kein ```json\\n hinzu. Deine Antwort sollte mit { beginnen. \n" +
+			"Füge keine '\n' -Zeichen hinzu. Gib alles in einer Zeile zurück."
 	} else {
 		headingsContent = "Głównym nagłówkiem będzie: " + question.Question + "\n Na podstawie tekstu który podałeś zwróć obiekt z nagłówkami i podrzędnymi nagłówkami, które mogą posłużyć do napisania takiego artykułu. \n" +
 			"Nie uwzględniaj treści związanych z informacjami na temat firmy, polityki prywatności lub ciasteczek cookies. \n" +
@@ -331,8 +331,8 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 
 		var summaryContent string
 		if c.lang == "de" {
-			summaryContent = "Wyobraź sobie, że jesteś doświadczonym copywriterem z perfekcyjną znajomością języka polskiego. Podsumowanie, które zwrócisz powinno być w języku polskim." +
-				"Twoim celem jest stworzenie na podstawie tekstu, który podałeś podsumowania z najważniejszymi treścami pisanego jakby był to nowy artykuł, który będzie wykrozystany jako kontekst przy pisaniu artykułu do którego spis treści wygląda następująco: " + agenda
+			summaryContent = "Stell dir vor, du bist ein erfahrener Texter mit perfekter Beherrschung der deutschen Sprache. Die Zusammenfassung, die du zurückgibst, sollte auf Deutsch sein." +
+				"Dein Ziel ist es, basierend auf dem von dir bereitgestellten Text, eine Zusammenfassung mit den wichtigsten Inhalten zu erstellen, die so geschrieben ist, als wäre es ein neuer Artikel, der als Kontext beim Schreiben eines Artikels verwendet wird, dessen Inhaltsverzeichnis wie folgt aussieht: " + agenda
 		} else {
 			summaryContent = "Wyobraź sobie, że jesteś doświadczonym copywriterem z perfekcyjną znajomością języka polskiego. Podsumowanie, które zwrócisz powinno być w języku polskim." +
 				"Twoim celem jest stworzenie na podstawie tekstu, który podałeś podsumowania z najważniejszymi treścami pisanego jakby był to nowy artykuł, który będzie wykrozystany jako kontekst przy pisaniu artykułu do którego spis treści wygląda następująco: " + agenda
@@ -368,26 +368,26 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 
 	var entryContent string
 	if c.lang == "de" {
-		entryContent = "Wyobraź sobie, że jesteś doświadczonym copywriterem z perfekcyjną znajomością języka polskiego. " +
-			"Twoim celem jest stworzyć 100% oryginalny, zoptymalizowany pod względem SEO artykuł, który czyta się jak napisany przez człowieka. " +
-			"Styl odpowiedzi powinien być profesjonalny. Będzie to artykuł gdzie odbiorca będzie mógł zaczerpnąć informacji. \n\n" +
-			"Artykuł powinien być w języku polskim. \n\n" +
-			"Na podstawie zadanego tytułu zwróć krótki wstęp do artykułu. \n\n" +
-			"Podtytułami dla tego artykułu będą podtytuły jak w poniższej tablicy: \n\n" +
+		entryContent = "Stell dir vor, du bist ein erfahrener Texter mit perfekter Beherrschung der deutschen Sprache. " +
+			"Dein Ziel ist es, einen 100% originalen, SEO-optimierten Artikel zu erstellen, der wie von einem Menschen geschrieben klingt. " +
+			"Der Stil der Antwort sollte professionell sein. Es wird ein Artikel sein, aus dem der Leser Informationen beziehen kann. \n\n" +
+			"Der Artikel sollte auf Deutsch sein. \n\n" +
+			"Basierend auf dem angegebenen Titel, gib eine kurze Einleitung für den Artikel zurück. \n\n" +
+			"Die Untertitel für diesen Artikel werden die Untertitel aus der folgenden Liste sein: \n\n" +
 			fmt.Sprintf("%+v", articleAgenda.Subtitles) + "\n\n" +
-			"Tytuł artykułu to: " + question.Question + "\n\n" +
-			"Stosuj się do poniższych wymagań: \n\n" +
-			"- Napisz tylko wstęp dla tego tytułu nie odpowiadaj na żadne podtytuły. \n" +
-			"- Nie powtarzaj się. \n" +
-			"- Nie pisz nic na temat SEO \n" +
-			"- Długość wstępu powinina mieć minimum 1000 liter. \n" +
-			"- Możesz zdefiniować kilka paragrafów, aby osiągnąć wymaganą długość wstępu. \n" +
-			"- Długość wstępu jest wymagana! Powinna być bezwględnie przestrzegana! \n" +
-			"- Tekst zwróć jako HTML. Tytuł artykułu powinien być w tagu <h1> \n" +
-			"- Zwróć jedynie HTML z tekstem tak, aby dało się go dołączyć do już isntniejącego HTML. \n" +
-			"- Odpowiedz jedynie HTML, tak abym całą odpowiedź mógł to skopiować i wkleić. \n" +
-			"- Dozwolone tagi HTML to : <p>, <ul>, <li>, <ol>, <strong>, <h1> \n" +
-			"- Nie dodawaj żadnych instrukcji od siebie."
+			"Der Titel des Artikels lautet: " + question.Question + "\n\n" +
+			"Befolge die folgenden Anforderungen: \n\n" +
+			"- Schreibe nur die Einleitung für diesen Titel, antworte nicht auf die Untertitel. \n" +
+			"- Wiederhole dich nicht. \n" +
+			"- Schreibe nichts über SEO. \n" +
+			"- Die Einleitung sollte mindestens 1000 Zeichen lang sein. \n" +
+			"- Du kannst mehrere Absätze definieren, um die erforderliche Länge der Einleitung zu erreichen. \n" +
+			"- Die Länge der Einleitung ist zwingend erforderlich und muss unbedingt eingehalten werden! \n" +
+			"- Gib den Text als HTML zurück. Der Titel des Artikels sollte im <h1>-Tag sein. \n" +
+			"- Gib nur HTML mit dem Text zurück, damit er in den bestehenden HTML-Code eingefügt werden kann. \n" +
+			"- Gib nur HTML zurück, sodass ich die gesamte Antwort kopieren und einfügen kann. \n" +
+			"- Erlaubte HTML-Tags sind: <p>, <ul>, <li>, <ol>, <strong>, <h1> \n" +
+			"- Füge keine eigenen Anweisungen hinzu."
 	} else {
 		entryContent = "Wyobraź sobie, że jesteś doświadczonym copywriterem z perfekcyjną znajomością języka polskiego. " +
 			"Twoim celem jest stworzyć 100% oryginalny, zoptymalizowany pod względem SEO artykuł, który czyta się jak napisany przez człowieka. " +
@@ -431,30 +431,28 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 	for _, subtitle := range articleAgenda.Subtitles {
 		var lvl2Content string
 		if c.lang == "de" {
-			lvl2Content = "Wyobraź sobie, że jesteś doświadczonym copywriterem z perfekcyjną znajomością języka polskiego. " +
-				"Twoim celem jest stworzyć 100% oryginalny, zoptymalizowany pod względem SEO artykuł, który czyta się jak napisany przez człowieka. " +
-				"Styl odpowiedzi powinien być profesjonalny. Będzie to artykuł gdzie odbiorca będzie mógł zaczerpnąć informacji. \n\n" +
-				"Artykuł powinien być w języku polskim. \n\n" +
-				"Rozwiń zadany podtytuł. \n\n" +
-				"Podtytułami dla zadanego podtytułu będą podtytuły jak w poniższej tablicy: \n\n" +
+			lvl2Content = "Stell dir vor, du bist ein erfahrener Texter mit perfekter Beherrschung der deutschen Sprache. " +
+				"Dein Ziel ist es, einen 100% originalen, SEO-optimierten Artikel zu erstellen, der wie von einem Menschen geschrieben klingt. " +
+				"Der Stil der Antwort sollte professionell sein. Es wird ein Artikel sein, aus dem der Leser Informationen beziehen kann. \n\n" +
+				"Der Artikel sollte auf Deutsch sein. \n\n" +
+				"Erläutere den vorgegebenen Untertitel. \n\n" +
+				"Die Untertitel für den vorgegebenen Untertitel werden die Untertitel aus der folgenden Liste sein: \n\n" +
 				fmt.Sprintf("%+v", subtitle.Subtitles) + "\n\n" +
-				"Zadany podtytuł to: " + subtitle.Title + "\n\n" +
-				"Stosuj się do poniższych wymagań: \n\n" +
-				"- Tekst zwróć jako HTML. Zadany podtytuł powinien być w tagu <h2> \n" +
-				"- Zwróć jedynie HTML z tekstem tak, aby dało się go dołączyć do już isntniejącego HTML. \n" +
-				"- Odpowiedz jedynie HTML, tak abym całą odpowiedź mógł to skopiować i wkleić. \n" +
-				"- Odpowiedz jedynie za pomocą HTML. Nie pisz mi nic co mam z nim zrobić, ani że jest to odpowiedź." +
-				"- W tekście nie odpowiadaj na żadne podtytuły. \n" +
-				"- Dozwolone tagi HTML to : <p>, <ul>, <li>, <ol>, <strong>, <h2> \n" +
-				"- Tekst powinien być powiązany kontekstem z głównym tytułem artykułu. \n" +
-				"- Nie używaj w odpowiedzi tytułu nadrzędnego lub podtytułów dla zadanego podtytułu \n" +
-				"- Tekst powinien być powiązany kontekstem z poprzednimi odpowiedziami. \n" +
-				"- Nie używaj w odpowiedzi tytułu nadrzędnego \n" +
-				"- Nie powtarzaj się \n" +
-				"- Nie pisz nic na temat SEO \n" +
-				"- Możesz bazować na informacjach zawartych w streszczeniu. \n" +
-				"- Jeżeli nie możesz udzielić lub kontynuować odpowiedzi zwróć pomiędzy trzema myślnikami ---reject--- \nn" +
-				"Przykład poprawnej struktury odpowiedzi: \n\n" +
+				"Der vorgegebene Untertitel lautet: " + subtitle.Title + "\n\n" +
+				"Befolge die folgenden Anforderungen: \n\n" +
+				"- Gib den Text als HTML zurück. Der vorgegebene Untertitel sollte im <h2>-Tag sein. \n" +
+				"- Gib nur HTML mit dem Text zurück, damit er in den bestehenden HTML-Code eingefügt werden kann. \n" +
+				"- Gib nur HTML zurück, sodass ich die gesamte Antwort kopieren und einfügen kann. \n" +
+				"- Antworte nur mit HTML. Schreib mir nicht, was ich damit machen soll, oder dass es die Antwort ist." +
+				"- Beantworte keine der Untertitel im Text. \n" +
+				"- Erlaubte HTML-Tags sind: <p>, <ul>, <li>, <ol>, <strong>, <h2> \n" +
+				"- Der Text sollte im Zusammenhang mit dem Haupttitel des Artikels stehen. \n" +
+				"- Verwende in der Antwort weder den übergeordneten Titel noch die Untertitel des vorgegebenen Untertitels. \n" +
+				"- Wiederhole dich nicht. \n" +
+				"- Schreibe nichts über SEO. \n" +
+				"- Du kannst dich auf Informationen aus der Zusammenfassung stützen. \n" +
+				"- Wenn du keine Antwort geben oder fortsetzen kannst, gib zwischen drei Strichen ---reject--- zurück. \n" +
+				"Beispiel für eine korrekte Struktur der Antwort: \n\n" +
 				"<h2>" + subtitle.Title + "</h2>" + "<p>...</p>"
 		} else {
 			lvl2Content = "Wyobraź sobie, że jesteś doświadczonym copywriterem z perfekcyjną znajomością języka polskiego. " +
@@ -520,27 +518,27 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 			if index == 1 {
 				var lvl3Content string
 				if c.lang == "de" {
-					lvl3Content = "Wyobraź sobie, że jesteś doświadczonym copywriterem z perfekcyjną znajomością języka polskiego. " +
-						"Twoim celem jest stworzyć 100% oryginalny, zoptymalizowany pod względem SEO artykuł, który czyta się jak napisany przez człowieka. " +
-						"Styl odpowiedzi powinien być profesjonalny. Będzie to artykuł gdzie odbiorca będzie mógł zaczerpnąć informacji. \n\n" +
-						"Artykuł powinien być w języku polskim. \n\n" +
-						"Rozwiń zadany podtytuł. \n\n" +
-						"Zadany tytuł jest to podtytuł tytułu nadrzędnego jak poniżej: \n\n" +
+					lvl3Content = "Stell dir vor, du bist ein erfahrener Texter mit perfekter Beherrschung der deutschen Sprache. " +
+						"Dein Ziel ist es, einen 100% originalen, SEO-optimierten Artikel zu erstellen, der wie von einem Menschen geschrieben klingt. " +
+						"Der Stil der Antwort sollte professionell sein. Es wird ein Artikel sein, aus dem der Leser Informationen beziehen kann. \n\n" +
+						"Der Artikel sollte auf Deutsch sein. \n\n" +
+						"Erläutere den vorgegebenen Untertitel. \n\n" +
+						"Der vorgegebene Titel ist ein Untertitel des übergeordneten Titels, wie unten gezeigt: \n\n" +
 						subtitle.Title + "\n\n" +
-						"Zadany podtytuł to: " + subtitle3lvl + "\n\n" +
-						"Stosuj się do poniższych wymagań: \n\n" +
-						"- Tekst zwróć jako HTML. Zadany podtytuł powinien być w tagu <h3> \n" +
-						"- Zwróć jedynie HTML z tekstem tak, aby dało się go dołączyć do już isntniejącego HTML. \n" +
-						"- Odpowiedz jedynie HTML, tak abym całą odpowiedź mógł to skopiować i wkleić. \n" +
-						"- Odpowiedz jedynie za pomocą HTML. Nie pisz mi nic co mam z nim zrobić, ani że jest to odpowiedź." +
-						"- Dozwolone tagi HTML to : <p>, <ul>, <li>, <ol>, <strong>, <h3> \n" +
-						"- Tekst powinien być powiązany kontekstem z poprzednimi odpowiedziami. \n" +
-						"- Nie używaj w odpowiedzi tytułu nadrzędnego \n" +
-						"- Nie powtarzaj się \n" +
-						"- Nie pisz nic na temat SEO \n" +
-						"- Możesz bazować na informacjach zawartych w streszczeniu. \n" +
-						"- Jeżeli nie możesz udzielić lub kontynuować odpowiedzi zwróć pomiędzy trzema myślnikami ---reject--- \nn" +
-						"Przykład poprawnej struktury odpowiedzi: \n\n" +
+						"Der vorgegebene Untertitel lautet: " + subtitle3lvl + "\n\n" +
+						"Befolge die folgenden Anforderungen: \n\n" +
+						"- Gib den Text als HTML zurück. Der vorgegebene Untertitel sollte im <h3>-Tag sein. \n" +
+						"- Gib nur HTML mit dem Text zurück, damit er in den bestehenden HTML-Code eingefügt werden kann. \n" +
+						"- Gib nur HTML zurück, sodass ich die gesamte Antwort kopieren und einfügen kann. \n" +
+						"- Antworte nur mit HTML. Schreib mir nicht, was ich damit machen soll, oder dass es die Antwort ist." +
+						"- Erlaubte HTML-Tags sind: <p>, <ul>, <li>, <ol>, <strong>, <h3> \n" +
+						"- Der Text sollte im Zusammenhang mit den vorherigen Antworten stehen. \n" +
+						"- Verwende in der Antwort nicht den übergeordneten Titel. \n" +
+						"- Wiederhole dich nicht. \n" +
+						"- Schreibe nichts über SEO. \n" +
+						"- Du kannst dich auf Informationen aus der Zusammenfassung stützen. \n" +
+						"- Wenn du keine Antwort geben oder fortsetzen kannst, gib zwischen drei Strichen ---reject--- zurück. \n" +
+						"Beispiel für eine korrekte Struktur der Antwort: \n\n" +
 						"<h3>" + subtitle3lvl + "</h3>" + "<p>...</p>"
 				} else {
 					lvl3Content = "Wyobraź sobie, że jesteś doświadczonym copywriterem z perfekcyjną znajomością języka polskiego. " +
@@ -580,31 +578,59 @@ func (c *chatGPT) GenerateArticleDescription(question *models.Question) (string,
 				}
 				allMessagesLvl3 = messagesLvl3
 			} else {
+				var lvl3MessageContent string
+				if c.lang == "de" {
+					lvl3MessageContent = "Stell dir vor, du bist ein erfahrener Texter mit perfekter Beherrschung der deutschen Sprache. " +
+						"Dein Ziel ist es, einen 100% originalen, SEO-optimierten Artikel zu erstellen, der wie von einem Menschen geschrieben klingt. " +
+						"Der Stil der Antwort sollte professionell sein. Es wird ein Artikel sein, aus dem der Leser Informationen beziehen kann. \n\n" +
+						"Der Artikel sollte auf Deutsch sein. \n\n" +
+						"Erläutere den vorgegebenen Untertitel. \n\n" +
+						"Der vorgegebene Titel ist ein Untertitel des übergeordneten Titels, wie unten gezeigt: \n\n" +
+						subtitle.Title + "\n\n" +
+						"Der vorgegebene Untertitel lautet: " + subtitle3lvl + "\n\n" +
+						"Befolge die folgenden Anforderungen: \n\n" +
+						"- Gib den Text als HTML zurück. Der vorgegebene Untertitel sollte im <h3>-Tag sein. \n" +
+						"- Gib nur HTML mit dem Text zurück, damit er in den bestehenden HTML-Code eingefügt werden kann. \n" +
+						"- Gib nur HTML zurück, sodass ich die gesamte Antwort kopieren und einfügen kann. \n" +
+						"- Antworte nur mit HTML. Schreib mir nicht, was ich damit machen soll, oder dass es die Antwort ist." +
+						"- Erlaubte HTML-Tags sind: <p>, <ul>, <li>, <ol>, <strong>, <h3> \n" +
+						"- Der Text sollte im Zusammenhang mit den vorherigen Antworten stehen. \n" +
+						"- Verwende in der Antwort nicht den übergeordneten Titel. \n" +
+						"- Wiederhole dich nicht. \n" +
+						"- Schreibe nichts über SEO. \n" +
+						"- Du kannst dich auf Informationen aus der Zusammenfassung stützen. \n" +
+						"- Wenn du keine Antwort geben oder fortsetzen kannst, gib zwischen drei Strichen ---reject--- zurück. \n\n" +
+						"Beispiel für eine korrekte Struktur der Antwort: \n\n" +
+						"<h3>" + subtitle3lvl + "</h3>" + "<p>...</p>"
+				} else {
+					lvl3MessageContent = "Wyobraź sobie, że jesteś doświadczonym copywriterem z perfekcyjną znajomością języka polskiego. " +
+						"Twoim celem jest stworzyć 100% oryginalny, zoptymalizowany pod względem SEO artykuł, który czyta się jak napisany przez człowieka. " +
+						"Styl odpowiedzi powinien być profesjonalny. Będzie to artykuł gdzie odbiorca będzie mógł zaczerpnąć informacji. \n\n" +
+						"Artykuł powinien być w języku polskim. \n\n" +
+						"Rozwiń zadany podtytuł. \n\n" +
+						"Zadany tytuł jest to podtytuł tytułu nadrzędnego jak poniżej: \n\n" +
+						subtitle.Title + "\n\n" +
+						"Zadany podtytuł to: " + subtitle3lvl + "\n\n" +
+						"Stosuj się do poniższych wymagań: \n\n" +
+						"- Tekst zwróć jako HTML. Zadany podtytuł powinien być w tagu <h3> \n" +
+						"- Zwróć jedynie HTML z tekstem tak, aby dało się go dołączyć do już isntniejącego HTML. \n" +
+						"- Odpowiedz jedynie HTML, tak abym całą odpowiedź mógł to skopiować i wkleić. \n" +
+						"- Odpowiedz jedynie za pomocą HTML. Nie pisz mi nic co mam z nim zrobić, ani że jest to odpowiedź." +
+						"- Dozwolone tagi HTML to : <p>, <ul>, <li>, <ol>, <strong>, <h3> \n" +
+						"- Tekst powinien być powiązany kontekstem z poprzednimi odpowiedziami. \n" +
+						"- Nie używaj w odpowiedzi tytułu nadrzędnego \n" +
+						"- Nie powtarzaj się \n" +
+						"- Nie pisz nic na temat SEO \n" +
+						"- Możesz bazować na informacjach zawartych w streszczeniu. \n" +
+						"- Jeżeli nie możesz udzielić lub kontynuować odpowiedzi zwróć pomiędzy trzema myślnikami ---reject--- \nn" +
+						"Przykład poprawnej struktury odpowiedzi: \n\n" +
+						"<h3>" + subtitle3lvl + "</h3>" + "<p>...</p>"
+				}
+
 				messagesLvl3 := []openai.ChatCompletionMessage{
 					{
-						Role: openai.ChatMessageRoleUser,
-						Content: "Wyobraź sobie, że jesteś doświadczonym copywriterem z perfekcyjną znajomością języka polskiego. " +
-							"Twoim celem jest stworzyć 100% oryginalny, zoptymalizowany pod względem SEO artykuł, który czyta się jak napisany przez człowieka. " +
-							"Styl odpowiedzi powinien być profesjonalny. Będzie to artykuł gdzie odbiorca będzie mógł zaczerpnąć informacji. \n\n" +
-							"Artykuł powinien być w języku polskim. \n\n" +
-							"Rozwiń zadany podtytuł. \n\n" +
-							"Zadany tytuł jest to podtytuł tytułu nadrzędnego jak poniżej: \n\n" +
-							subtitle.Title + "\n\n" +
-							"Zadany podtytuł to: " + subtitle3lvl + "\n\n" +
-							"Stosuj się do poniższych wymagań: \n\n" +
-							"- Tekst zwróć jako HTML. Zadany podtytuł powinien być w tagu <h3> \n" +
-							"- Zwróć jedynie HTML z tekstem tak, aby dało się go dołączyć do już isntniejącego HTML. \n" +
-							"- Odpowiedz jedynie HTML, tak abym całą odpowiedź mógł to skopiować i wkleić. \n" +
-							"- Odpowiedz jedynie za pomocą HTML. Nie pisz mi nic co mam z nim zrobić, ani że jest to odpowiedź." +
-							"- Dozwolone tagi HTML to : <p>, <ul>, <li>, <ol>, <strong>, <h3> \n" +
-							"- Tekst powinien być powiązany kontekstem z poprzednimi odpowiedziami. \n" +
-							"- Nie używaj w odpowiedzi tytułu nadrzędnego \n" +
-							"- Nie powtarzaj się \n" +
-							"- Nie pisz nic na temat SEO \n" +
-							"- Możesz bazować na informacjach zawartych w streszczeniu. \n" +
-							"- Jeżeli nie możesz udzielić lub kontynuować odpowiedzi zwróć pomiędzy trzema myślnikami ---reject--- \nn" +
-							"Przykład poprawnej struktury odpowiedzi: \n\n" +
-							"<h3>" + subtitle3lvl + "</h3>" + "<p>...</p>",
+						Role:    openai.ChatMessageRoleUser,
+						Content: lvl3MessageContent,
 					},
 				}
 				allMessagesLvl3 = append(allMessagesLvl3, messagesLvl3...)
