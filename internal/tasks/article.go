@@ -249,13 +249,20 @@ func (t articleTasks) HandleGenerateArticles(ctx context.Context, task *asynq.Ta
 			temporaryBody = "Treść w przygotowaniu"
 		}
 
+		var authorId int
+		if payload.Lang == "de" {
+			authorId = 2
+		} else {
+			authorId = 1
+		}
+
 		article := &models.Article{
 			Title:       question.Question,
 			Slug:        slug.Make(question.Question),
 			Body:        temporaryBody,
 			Thumbnail:   thumbnailId,
 			CategoryId:  catgoryId,
-			AuthorId:    1,
+			AuthorId:    authorId,
 			DomainId:    payload.DomainId,
 			Featured:    false,
 			IsSponsored: false,
